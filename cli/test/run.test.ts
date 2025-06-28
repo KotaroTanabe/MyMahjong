@@ -23,3 +23,31 @@ test('run processes a single turn', async () => {
   await run(game, rl);
   assert.strictEqual(game.wall.count, 0);
 });
+
+test('run prints discards', async () => {
+  const game = {
+    wall: { count: 1 },
+    players: [{ hand: ['tile'], discards: [] }],
+    deal() {},
+    drawCurrent() { this.wall.count = 0; return 'drawn'; },
+    discardCurrent() { this.players[0].discards.push('discarded'); return 'discarded'; },
+  } as any;
+
+  const answers = ['', '0'];
+  const rl: any = {
+    question() { return Promise.resolve(answers.shift()); },
+    close() {},
+  };
+
+  const logs: string[] = [];
+  const originalLog = console.log;
+  console.log = (msg?: unknown) => { logs.push(String(msg)); };
+  try {
+    await run(game, rl);
+  } finally {
+    console.log = originalLog;
+  }
+
+  assert.ok(logs.includes('Your discards:'));
+  assert.ok(logs.includes('discarded'));
+});
