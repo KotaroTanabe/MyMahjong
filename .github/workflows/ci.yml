@@ -54,6 +54,8 @@ jobs:
           cache: 'npm'
       - run: npm install
       - run: npm run build
+      - name: Remove symlinks before deployment
+        run: find web/dist -type l -delete
       - name: Upload GitHub Pages artifact
         uses: actions/upload-artifact@v4
         with:
