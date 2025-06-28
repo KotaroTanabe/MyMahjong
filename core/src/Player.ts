@@ -9,6 +9,9 @@ export class Player {
   }
 
   discard(index: number): Tile {
+    if (index < 0 || index >= this.hand.length) {
+      throw new Error('Index out of range');
+    }
     const [tile] = this.hand.splice(index, 1);
     this.discards.push(tile);
     return tile;

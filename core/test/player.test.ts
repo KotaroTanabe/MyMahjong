@@ -14,3 +14,8 @@ test('player draw and discard', () => {
   assert.strictEqual(player.hand.length, 0);
   assert.strictEqual(player.discards.length, 1);
 });
+
+test('discard throws on invalid index', () => {
+  const player = new Player();
+  assert.throws(() => player.discard(0), /index out of range/i);
+});
