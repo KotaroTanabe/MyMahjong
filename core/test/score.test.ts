@@ -8,6 +8,18 @@ test('tanyao detection and scoring', () => {
   assert.deepStrictEqual(result, { yaku: ['tanyao'], han: 1, fu: 20, points: 20 });
 });
 
+test('chiitoitsu detection and scoring', () => {
+  const pairs = [1,2,3,4,5,6,7];
+  const hand = pairs.flatMap(v => [
+    new Tile({ suit: 'man', value: v as 1|2|3|4|5|6|7|8|9 }),
+    new Tile({ suit: 'man', value: v as 1|2|3|4|5|6|7|8|9 }),
+  ]);
+  const result = calculateScore(hand);
+  assert.ok(result.yaku.includes('chiitoitsu'));
+  assert.strictEqual(result.han, 2);
+  assert.strictEqual(result.points, 40);
+});
+
 test('hand with honors scores zero', () => {
   const hand = [
     new Tile({ suit: 'wind', value: 'east' }),
