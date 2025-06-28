@@ -1,7 +1,7 @@
 import readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 import { Game } from '@mymahjong/core';
-import { renderHand, prompt } from './UI.js';
+import { renderHand, renderDiscards, prompt } from './UI.js';
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
 
@@ -28,6 +28,8 @@ export async function run(
     console.log(`You discarded: ${discarded}`);
     console.log('Your hand:');
     console.log(renderHand(player.hand));
+    console.log('Your discards:');
+    console.log(renderDiscards(player.discards));
   }
   console.log('Wall exhausted, game over.');
   rl.close();

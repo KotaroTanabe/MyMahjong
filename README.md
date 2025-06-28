@@ -36,6 +36,16 @@ npm run build -w cli
 npm start -w cli
 ```
 
+### Running the Web Demo
+
+Start the Vite development server:
+
+```bash
+npm run dev -w web
+```
+
+Then open `http://localhost:5173` in your browser.
+
 
 ### Run Tests
 
