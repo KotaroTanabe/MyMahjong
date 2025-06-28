@@ -10,6 +10,19 @@ MyMahjong is a simple TypeScript monorepo for experimenting with a Mahjong game 
 
 https://kotarotanabe.github.io/MyMahjong/
 
+### GitHub Pages
+
+Running `npm run build` from the repository root compiles every package and
+produces static files for the web demo under `web/dist`. The CI workflow deploys
+those files to GitHub Pages using
+[peaceiris/actions-gh-pages](https://github.com/peaceiris/actions-gh-pages).
+You can preview the built site locally with:
+
+```bash
+npm run build
+npm run preview -w web
+```
+
 ## Overview
 
 The **core** package models tiles, player hands and the wall.  The **cli**
