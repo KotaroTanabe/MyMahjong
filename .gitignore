@@ -1,4 +1,3 @@
-node_modules/
-core/dist/
-cli/dist/
-web/dist/
+**/dist/
+**/node_modules/
+
