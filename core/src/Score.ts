@@ -28,6 +28,31 @@ export function detectSevenPairs(hand: Tile[]): boolean {
   );
 }
 
+/**
+ * Detects triplets of honor tiles (winds or dragons).
+ * Returns an array of yakuhai names for each qualifying triplet.
+ */
+export function detectYakuhai(hand: Tile[]): string[] {
+  const counts = new Map<string, { tile: Tile; count: number }>();
+  for (const tile of hand) {
+    const key = tile.toString();
+    const entry = counts.get(key);
+    if (entry) {
+      entry.count += 1;
+    } else {
+      counts.set(key, { tile, count: 1 });
+    }
+  }
+
+  const result: string[] = [];
+  for (const { tile, count } of counts.values()) {
+    if (count >= 3 && (tile.suit === 'wind' || tile.suit === 'dragon')) {
+      result.push(`yakuhai-${tile.value}`);
+    }
+  }
+  return result;
+}
+
 export function calculateScore(hand: Tile[]): ScoreResult {
   const yaku: string[] = [];
   let han = 0;
@@ -38,6 +63,11 @@ export function calculateScore(hand: Tile[]): ScoreResult {
   if (detectSevenPairs(hand)) {
     yaku.push('chiitoitsu');
     han += 2;
+  }
+  const yakuhai = detectYakuhai(hand);
+  if (yakuhai.length > 0) {
+    yaku.push(...yakuhai);
+    han += yakuhai.length;
   }
   const fu = 20;
   const points = han * fu;

@@ -29,3 +29,36 @@ test('hand with honors scores zero', () => {
   assert.strictEqual(result.han, 0);
   assert.strictEqual(result.points, 0);
 });
+
+test('yakuhai detection for dragon triplet', () => {
+  const hand = [
+    new Tile({ suit: 'dragon', value: 'white' }),
+    new Tile({ suit: 'dragon', value: 'white' }),
+    new Tile({ suit: 'dragon', value: 'white' }),
+    ...Array.from({ length: 11 }, () => new Tile({ suit: 'man', value: 2 })),
+  ];
+  const result = calculateScore(hand);
+  assert.ok(result.yaku.includes('yakuhai-white'));
+  assert.strictEqual(result.han, 1);
+  assert.strictEqual(result.points, 20);
+});
+
+test('multiple yakuhai triplets each add han', () => {
+  const hand = [
+    // dragon triplet
+    new Tile({ suit: 'dragon', value: 'green' }),
+    new Tile({ suit: 'dragon', value: 'green' }),
+    new Tile({ suit: 'dragon', value: 'green' }),
+    // wind triplet
+    new Tile({ suit: 'wind', value: 'east' }),
+    new Tile({ suit: 'wind', value: 'east' }),
+    new Tile({ suit: 'wind', value: 'east' }),
+    // rest of hand
+    ...Array.from({ length: 8 }, () => new Tile({ suit: 'man', value: 2 })),
+  ];
+  const result = calculateScore(hand);
+  assert.ok(result.yaku.includes('yakuhai-green'));
+  assert.ok(result.yaku.includes('yakuhai-east'));
+  assert.strictEqual(result.han, 2);
+  assert.strictEqual(result.points, 40);
+});
