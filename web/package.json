@@ -1,14 +1,25 @@
 {
   "name": "@mymahjong/web",
   "version": "0.1.0",
+  "type": "module",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "scripts": {
-    "build": "tsc -b",
+    "dev": "vite",
+    "build": "vite build && tsc -b",
+    "preview": "vite preview",
     "test": "node --test dist/test",
-    "lint": "eslint .",
+    "lint": "eslint ."
   },
   "dependencies": {
-    "@mymahjong/core": "*"
+    "@mymahjong/core": "*",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@vitejs/plugin-react": "^4.0.0",
+    "vite": "^4.0.0"
   }
 }

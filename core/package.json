@@ -1,11 +1,12 @@
 {
   "name": "@mymahjong/core",
   "version": "0.1.0",
+  "type": "module",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "scripts": {
     "build": "tsc -b",
     "test": "node --test dist/test",
-    "lint": "eslint .",
+    "lint": "eslint ."
   }
 }

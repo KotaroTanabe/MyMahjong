@@ -1,0 +1,19 @@
+body {
+  font-family: sans-serif;
+  padding: 1rem;
+}
+
+.hand,
+.discards {
+  list-style: none;
+  padding: 0;
+}
+
+.hand li,
+.discards li {
+  margin-bottom: 0.25rem;
+}
+
+button {
+  margin-left: 0.5rem;
+}
