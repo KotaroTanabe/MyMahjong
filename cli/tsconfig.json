@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "ES2019",
+    "module": "commonjs",
+    "declaration": true,
+    "outDir": "dist",
+    "rootDir": ".",
+    "composite": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "paths": {
+      "@mymahjong/core": [
+        "../core/src/index"
+      ]
+    },
+    "baseUrl": ".",
+    "moduleResolution": "node"
+  },
+  "references": [
+    {
+      "path": "../core"
+    }
+  ],
+  "include": [
+    "src",
+    "test"
+  ]
+}
