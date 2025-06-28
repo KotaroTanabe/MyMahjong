@@ -8,7 +8,7 @@
     "web"
   ],
   "scripts": {
-    "build": "tsc -b && npm run build -w web",
+    "build": "tsc -b && npm run build -w web && touch web/dist/.keep",
     "typecheck": "tsc -b",
     "lint": "eslint .",
     "test": "npm run build && npm run test -w core && npm run test -w cli && npm run test -w web"
