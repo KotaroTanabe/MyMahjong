@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc -b",
     "test": "node --test dist/test",
-    "lint": "eslint ."
+    "lint": "eslint .",
   },
   "dependencies": {
     "@mymahjong/core": "*"
