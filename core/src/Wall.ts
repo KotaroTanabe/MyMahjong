@@ -1,5 +1,5 @@
 import { Tile } from './Tile.js';
-import type { Dragon, NumberSuit, Suit, TileType, Wind } from './types.js';
+import type { Dragon, NumberSuit, Wind } from './types.js';
 
 export class Wall {
   private tiles: Tile[];

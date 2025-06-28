@@ -1,15 +1,23 @@
 {
   "name": "mymahjong",
   "private": true,
-  "workspaces": ["core", "cli", "web"],
+  "type": "module",
+  "workspaces": [
+    "core",
+    "cli",
+    "web"
+  ],
   "scripts": {
     "build": "tsc -b",
     "typecheck": "tsc -b",
-    "lint": "echo 'No lint configured'",
+    "lint": "eslint .",
     "test": "npm run build && npm run test -w core && npm run test -w cli && npm run test -w web"
   },
   "devDependencies": {
-    "typescript": "^5.2.0",
-    "@types/node": "^20.0.0"
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.35.0",
+    "@typescript-eslint/parser": "^8.35.0",
+    "eslint": "^9.30.0",
+    "typescript": "^5.2.0"
   }
 }

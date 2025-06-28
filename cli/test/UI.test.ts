@@ -3,6 +3,8 @@ import assert from 'node:assert';
 import { Tile } from '@mymahjong/core';
 import { renderHand } from '../src/UI.js';
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 function makeTile(label: string): Tile {
   const [suit, value] = label.split('-');
   return new Tile({ suit: suit as any, value: isNaN(Number(value)) ? value as any : Number(value) as any });
