@@ -5,6 +5,7 @@
   "types": "dist/src/index.d.ts",
   "scripts": {
     "build": "tsc -b",
-    "test": "node --test dist/test/*.js"
+    "test": "node --test dist/test",
+    "lint": "eslint .",
   }
 }

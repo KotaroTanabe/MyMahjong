@@ -5,8 +5,9 @@
   "types": "dist/src/index.d.ts",
   "scripts": {
     "build": "tsc -b",
-    "test": "node --test dist/test/*.js",
-    "start": "node dist/src/index.js"
+    "test": "node --test dist/test",
+    "start": "node dist/src/index.js",
+    "lint": "eslint .",
   },
   "dependencies": {
     "@mymahjong/core": "*"
