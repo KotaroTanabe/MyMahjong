@@ -1,6 +1,6 @@
 # MyMahjong
 
-MyMahjong is a simple TypeScript monorepo for experimenting with a Mahjong game engine and related tooling. It contains three packages:
+MyMahjong is a simple TypeScript monorepo for experimenting with a Mahjong game engine and related tooling.  The repository is intentionally small so the entire system can be understood at a glance.  It contains three packages:
 
 - **core** – the game logic such as tiles, players and wall implementation
 - **cli** – a command line interface for playing the game in the terminal
@@ -9,6 +9,13 @@ MyMahjong is a simple TypeScript monorepo for experimenting with a Mahjong game 
 ## Deployed to
 
 https://kotarotanabe.github.io/MyMahjong/
+
+## Overview
+
+The **core** package models tiles, player hands and the wall.  The **cli**
+package provides a simple terminal interface for a few demonstration turns, and
+the **web** package shows how the same logic can drive a React app.  Feel free
+to expand the rules or presentation layer to suit your needs.
 
 ## Getting Started
 
@@ -26,6 +33,13 @@ Compile all TypeScript packages using:
 
 ```bash
 npm run build
+```
+
+You can also build a specific workspace by passing the `-w` option. For example
+the following will compile only the core package:
+
+```bash
+npm run build -w core
 ```
 ### Running the CLI
 
@@ -60,6 +74,12 @@ Tests are written with Node's built‑in `node:test` runner. Build and run tests
 npm test
 ```
 
+Individual workspaces can be tested using `-w` as well. The command below runs only the CLI tests:
+
+```bash
+npm test -w cli
+```
+
 ### Package Layout
 
 ```
@@ -68,7 +88,10 @@ cli/   – terminal interface using the core package
 web/   – example web package also using the core package
 ```
 
-Each package has its own `package.json` and `tsconfig.json`. The root `package.json` defines npm workspaces so the packages can reference each other.
+Each package has its own `package.json` and `tsconfig.json`. The root
+`package.json` defines npm workspaces so the packages can reference each other
+without publishing to a registry. Source lives in the `src` folders and compiled
+JavaScript is emitted to `dist` when you run the build script.
 
 ## Continuous Integration
 
