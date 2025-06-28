@@ -2,6 +2,8 @@ import readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 import { Game } from '@mymahjong/core';
 import { renderHand, prompt } from './UI.js';
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
 
 export async function run(
   game: Game = new Game(1),
@@ -31,7 +33,9 @@ export async function run(
   rl.close();
 }
 
-if (typeof require !== 'undefined' && require.main === module) {
+const thisFile = fileURLToPath(import.meta.url);
+dirname(thisFile);
+if (process.argv[1] === thisFile) {
   run();
 }
 
