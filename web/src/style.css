@@ -17,3 +17,39 @@ body {
 button {
   margin-left: 0.5rem;
 }
+
+.board {
+  display: grid;
+  grid-template-areas:
+    '. top .'
+    'left center right'
+    '. bottom .';
+  grid-template-columns: 1fr 2fr 1fr;
+  grid-template-rows: auto 1fr auto;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.player-area {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+}
+
+.player-area.top {
+  grid-area: top;
+  text-align: center;
+}
+.player-area.bottom {
+  grid-area: bottom;
+  text-align: center;
+}
+.player-area.left {
+  grid-area: left;
+}
+.player-area.right {
+  grid-area: right;
+}
+.center {
+  grid-area: center;
+  text-align: center;
+}
