@@ -23,6 +23,11 @@ npm run build
 npm run preview -w web
 ```
 
+The web build uses the repository name as its base path so assets resolve
+correctly on GitHub Pages. If you fork this project, update `web/vite.config.ts`
+to use your repository name.
+
+
 ## Overview
 
 The **core** package models tiles, player hands and the wall.  The **cli**
