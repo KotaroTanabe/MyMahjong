@@ -27,6 +27,15 @@ Compile all TypeScript packages using:
 ```bash
 npm run build
 ```
+### Running the CLI
+
+Build and launch the command line interface:
+
+```bash
+npm run build -w cli
+npm start -w cli
+```
+
 
 ### Run Tests
 
