@@ -14,7 +14,8 @@
       ]
     },
     "baseUrl": ".",
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "types": ["node"]
   },
   "references": [
     {
