@@ -3,9 +3,10 @@ import { stdin as input, stdout as output } from 'node:process';
 import { Game } from '@mymahjong/core';
 import { renderHand, prompt } from './UI.js';
 
-export async function run(): Promise<void> {
-  const rl = readline.createInterface({ input, output });
-  const game = new Game(1);
+export async function run(
+  game: Game = new Game(1),
+  rl: readline.Interface = readline.createInterface({ input, output })
+): Promise<void> {
   game.deal();
   const player = game.players[0];
   console.log('Your starting hand:');
@@ -30,7 +31,7 @@ export async function run(): Promise<void> {
   rl.close();
 }
 
-if (require.main === module) {
+if (typeof require !== 'undefined' && require.main === module) {
   run();
 }
 
