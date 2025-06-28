@@ -1,6 +1,6 @@
 import readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
-import { Game } from '@mymahjong/core';
+import { Game, ScoreResult } from '@mymahjong/core';
 import { renderHand, renderDiscards, prompt } from './UI.js';
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
@@ -28,6 +28,11 @@ export async function run(
     console.log(`You discarded: ${discarded}`);
     console.log('Your hand:');
     console.log(renderHand(player.hand));
+    const score: ScoreResult = game.calculateScore(0);
+    if (score.han > 0) {
+      console.log(`Possible yaku: ${score.yaku.join(', ')}`);
+      console.log(`Han: ${score.han} Fu: ${score.fu} -> ${score.points} points`);
+    }
     console.log('Your discards:');
     console.log(renderDiscards(player.discards));
   }

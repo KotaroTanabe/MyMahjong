@@ -12,6 +12,7 @@ test('run processes a single turn', async () => {
     drawCurrent() { this.wall.count = 0; return 'drawn'; },
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     discardCurrent(index: number) { return 'discarded'; },
+    calculateScore() { return { han: 0, fu: 20, points: 0, yaku: [] }; },
   } as any;
 
   const answers = ['', '0'];
@@ -31,6 +32,7 @@ test('run prints discards', async () => {
     deal() {},
     drawCurrent() { this.wall.count = 0; return 'drawn'; },
     discardCurrent() { this.players[0].discards.push('discarded'); return 'discarded'; },
+    calculateScore() { return { han: 1, fu: 20, points: 20, yaku: ['tanyao'] }; },
   } as any;
 
   const answers = ['', '0'];

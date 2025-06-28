@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Game, Tile } from '@mymahjong/core';
+import { Game, Tile, ScoreResult } from '@mymahjong/core';
 
 interface GameState {
   hand: Tile[];
   discards: Tile[];
   wallCount: number;
+  score: ScoreResult;
 }
 
 export function useGame(): GameState & {
@@ -21,6 +22,7 @@ export function useGame(): GameState & {
     hand: [...game.players[0].hand],
     discards: [...game.players[0].discards],
     wallCount: game.wall.count,
+    score: game.calculateScore(0),
   }));
 
   const sync = () => {
@@ -28,6 +30,7 @@ export function useGame(): GameState & {
       hand: [...game.players[0].hand],
       discards: [...game.players[0].discards],
       wallCount: game.wall.count,
+      score: game.calculateScore(0),
     });
   };
 

@@ -7,6 +7,7 @@ import { useGame } from '../src/hooks/useGame.js';
 interface GameHandle {
   hand: ReturnType<typeof useGame>['hand'];
   discards: ReturnType<typeof useGame>['discards'];
+  score: ReturnType<typeof useGame>['score'];
   draw: () => unknown;
   discard: (index: number) => unknown;
 }
@@ -25,12 +26,14 @@ test('draw and discard update state', () => {
   assert.ok(ref.current);
   const initialHand = ref.current!.hand.length;
   const initialDiscards = ref.current!.discards.length;
+  const initialPoints = ref.current!.score.points;
 
   act(() => {
     ref.current!.draw();
   });
   // after draw, hand should increase
   assert.strictEqual(ref.current!.hand.length, initialHand + 1);
+  assert.ok(ref.current!.score.points >= initialPoints);
 
   act(() => {
     ref.current!.discard(ref.current!.hand.length - 1);

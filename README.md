@@ -46,6 +46,11 @@ npm run dev -w web
 
 Then open `http://localhost:5173` in your browser.
 
+### Scoring
+
+After each discard the game now evaluates your hand for the simple `tanyao` yaku.
+When applicable, the CLI and web UI display the number of han and total points.
+
 
 ### Run Tests
 
