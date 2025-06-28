@@ -44,9 +44,7 @@ Each package has its own `package.json` and `tsconfig.json`. The root `package.j
 
 ## Contributing
 
-1. Fork the repository and create a new branch.
-2. Install dependencies and ensure `npm run lint`, `npm run typecheck`, `npm run build`, and `npm test` all succeed.
-3. Commit your changes with clear messages and open a pull request.
-
-Feel free to open issues or suggestions for improvements.
+This repository is provided as a demonstration of Codex. We are not accepting
+external pull requests or commits. If you have questions or suggestions, feel
+free to open an issue.
 
