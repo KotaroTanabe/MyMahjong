@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2019",
-    "module": "commonjs",
+    "module": "esnext",
     "declaration": true,
     "outDir": "dist",
     "rootDir": ".",
@@ -15,7 +15,8 @@
     },
     "baseUrl": ".",
     "moduleResolution": "node",
-    "types": ["node"]
+    "types": ["node"],
+    "jsx": "react-jsx"
   },
   "references": [
     {
