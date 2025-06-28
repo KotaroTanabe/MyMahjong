@@ -3,6 +3,7 @@ export * from './Tile.js';
 export * from './Wall.js';
 export * from './Player.js';
 export * from './Game.js';
+export * from './Score.js';
 
 export function sum(a: number, b: number): number {
   return a + b;
