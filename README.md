@@ -46,6 +46,11 @@ web/   – example web package also using the core package
 
 Each package has its own `package.json` and `tsconfig.json`. The root `package.json` defines npm workspaces so the packages can reference each other.
 
+## Continuous Integration
+
+GitHub Actions run linting, type checking, build and tests for every pull request.
+Once these checks succeed, the workflow automatically approves and merges the PR.
+
 ## Contributing
 
 This repository is provided as a demonstration of Codex. We are not accepting
