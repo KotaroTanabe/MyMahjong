@@ -1,4 +1,3 @@
-import React from 'react';
 import type { Tile } from '@mymahjong/core';
 
 export interface HandProps {
