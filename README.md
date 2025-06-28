@@ -49,8 +49,7 @@ Each package has its own `package.json` and `tsconfig.json`. The root `package.j
 ## Continuous Integration
 
 GitHub Actions run linting, type checking, build and tests for every pull request.
-When the **CI** workflow succeeds, the **Auto Merge** workflow automatically
-approves and merges the PR.
+Once these checks succeed, the workflow automatically approves and merges the PR.
 
 ## Contributing
 
