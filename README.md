@@ -6,6 +6,10 @@ MyMahjong is a simple TypeScript monorepo for experimenting with a Mahjong game 
 - **cli** – a command line interface for playing the game in the terminal
 - **web** – a minimal web layer that demonstrates using the core package
 
+## Deployed to
+
+https://kotarotanabe.github.io/MyMahjong/
+
 ## Getting Started
 
 ### Install Dependencies
