@@ -73,3 +73,57 @@ export function calculateScore(hand: Tile[]): ScoreResult {
   const points = han * fu;
   return { yaku, han, fu, points };
 }
+
+function canFormSets(counts: Map<string, number>, pairUsed: boolean): boolean {
+  let first: string | undefined;
+  for (const [tile, count] of counts) {
+    if (count > 0) {
+      first = tile;
+      break;
+    }
+  }
+  if (!first) return pairUsed;
+  const [suit, valueStr] = first.split('-');
+  const value = parseInt(valueStr, 10);
+
+  // try pair
+  if (!pairUsed && (counts.get(first) ?? 0) >= 2) {
+    counts.set(first, (counts.get(first) ?? 0) - 2);
+    if (canFormSets(counts, true)) return true;
+    counts.set(first, (counts.get(first) ?? 0) + 2);
+  }
+
+  // try triplet
+  if ((counts.get(first) ?? 0) >= 3) {
+    counts.set(first, (counts.get(first) ?? 0) - 3);
+    if (canFormSets(counts, pairUsed)) return true;
+    counts.set(first, (counts.get(first) ?? 0) + 3);
+  }
+
+  // try sequence for number tiles
+  if (suit === 'man' || suit === 'pin' || suit === 'sou') {
+    const t1 = `${suit}-${value + 1}`;
+    const t2 = `${suit}-${value + 2}`;
+    if ((counts.get(first) ?? 0) > 0 && (counts.get(t1) ?? 0) > 0 && (counts.get(t2) ?? 0) > 0) {
+      counts.set(first, (counts.get(first) ?? 0) - 1);
+      counts.set(t1, (counts.get(t1) ?? 0) - 1);
+      counts.set(t2, (counts.get(t2) ?? 0) - 1);
+      if (canFormSets(counts, pairUsed)) return true;
+      counts.set(first, (counts.get(first) ?? 0) + 1);
+      counts.set(t1, (counts.get(t1) ?? 0) + 1);
+      counts.set(t2, (counts.get(t2) ?? 0) + 1);
+    }
+  }
+  return false;
+}
+
+export function isWinningHand(hand: Tile[]): boolean {
+  if (detectSevenPairs(hand)) return true;
+  if (hand.length !== 14) return false;
+  const counts = new Map<string, number>();
+  for (const tile of hand) {
+    const key = tile.toString();
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
+  return canFormSets(counts, false);
+}
