@@ -89,8 +89,11 @@ export class Game {
     return false;
   }
 
-  calculateScore(playerIndex = this.currentIndex): ScoreResult {
-    return calculateScore(this.players[playerIndex].hand);
+  calculateScore(
+    playerIndex = this.currentIndex,
+    options: import('./Score.js').ScoreOptions = {}
+  ): ScoreResult {
+    return calculateScore(this.players[playerIndex].hand, options);
   }
 
   isWinningHand(playerIndex = this.currentIndex): boolean {
