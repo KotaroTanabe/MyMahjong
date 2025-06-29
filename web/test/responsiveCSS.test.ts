@@ -12,6 +12,6 @@ const cssPath = path.join(__dirname, '../../src/style.css');
 const css = fs.readFileSync(cssPath, 'utf8');
 
 test('style.css includes responsive media query', () => {
-  assert.match(css, /@media\s*\(max-width:\s*600px\)/);
+  assert.match(css, /@media\s*\(max-width:\s*37\.5rem\)/);
   assert.match(css, /grid-template-areas:[^}]*'top'[\s\S]*'left'[\s\S]*'right'[\s\S]*'center'[\s\S]*'bottom'/);
 });

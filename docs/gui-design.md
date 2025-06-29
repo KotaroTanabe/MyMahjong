@@ -9,6 +9,7 @@ This document summarizes the ongoing discussion about how to present the Mahjong
 - **Responsive grid** – Keep all components visible on common PC screens and introduce media queries to reposition elements for narrow displays.
 - **Compact controls** – Replace text buttons with small icons (with tooltips) to reduce clutter.
 - **Relative units** – Size elements with `rem` and `%` so they scale naturally when the viewport changes.
+  The stylesheet now avoids fixed pixel values; breakpoints and border widths use `rem` units to scale with the root font size.
 
 ## Implementation Tasks
 
