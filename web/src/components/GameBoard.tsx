@@ -9,9 +9,13 @@ export interface GameBoardProps {
   playerDiscards: Tile[][];
   currentMelds?: Tile[][];
   onDiscard: (index: number) => void;
+  onPon?: (fromIndex: number) => void;
+  onChi?: (fromIndex: number) => void;
+  onKan?: (fromIndex: number) => void;
+  onRon?: (fromIndex: number) => void;
 }
 
-export function GameBoard({ currentHand, playerDiscards, currentMelds = [], onDiscard }: GameBoardProps): JSX.Element {
+export function GameBoard({ currentHand, playerDiscards, currentMelds = [], onDiscard, onPon, onChi, onKan, onRon }: GameBoardProps): JSX.Element {
   return (
     <div className="board">
       <div className="player-area top">
@@ -33,6 +37,12 @@ export function GameBoard({ currentHand, playerDiscards, currentMelds = [], onDi
           <Discards tiles={playerDiscards[0] ?? []} />
         </div>
         <Hand tiles={currentHand} onDiscard={onDiscard} />
+        <div className="meld-buttons">
+          <button onClick={() => onPon?.(3)}>Pon</button>
+          <button onClick={() => onChi?.(3)}>Chi</button>
+          <button onClick={() => onKan?.(3)}>Kan</button>
+          <button onClick={() => onRon?.(3)}>Ron</button>
+        </div>
       </div>
     </div>
   );

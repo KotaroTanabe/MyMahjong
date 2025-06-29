@@ -16,4 +16,8 @@ This document outlines how the Mahjong board is arranged in the web UI. The desi
 To conserve screen space the interface avoids lengthy text and uses small buttons or icons. The layout reserves fixed regions for each player so elements do not jump as the game progresses. Media queries can stack the side players vertically when the viewport becomes narrow, ensuring controls remain accessible on phones.
 The discard areas maintain a minimum height so a player's hand does not shift when the first tile is thrown.
 
+### Meld Buttons
+
+The bottom player area now includes small "Pon", "Chi", "Kan" and "Ron" buttons beneath the hand. These trigger calls on the most recent discard from the right-hand opponent. Future versions may allow targeting any discard or provide icon-based controls.
+
 These guidelines provide a baseline for implementing responsive components in the `web` package.
