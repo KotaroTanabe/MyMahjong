@@ -20,3 +20,14 @@ test('style.css includes height and overflow rules', async () => {
   assert.match(css, /\.discards[^}]*overflow-y:\s*auto/);
   assert.match(css, /\.melds[^}]*overflow-y:\s*auto/);
 });
+
+test('hand layout is horizontal', async () => {
+  const css = await readCss();
+  assert.match(css, /\.hand[^}]*display:\s*flex/);
+});
+
+test('font sizes are reduced for small screens', async () => {
+  const css = await readCss();
+  assert.match(css, /body[^}]*font-size:\s*0\.875rem/);
+  assert.match(css, /\.app h1[^}]*font-size:\s*1\.25rem/);
+});
