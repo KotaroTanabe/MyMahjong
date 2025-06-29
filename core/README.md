@@ -18,6 +18,7 @@ Currently implemented yaku detection includes:
 - Pinfu (all sequences with no extra fu)
 - Dora (bonus tiles from indicators)
 - Riichi (declaring ready hand)
+- Kan draws a replacement tile and reveals an extra dora indicator
 
 Fu is calculated using a simplified model based on meld composition and honor
 tiles. See `Score.ts` for details.
