@@ -5,7 +5,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { GameBoard } from '../src/components/GameBoard.js';
 import { Tile } from '@mymahjong/core';
 
-test('GameBoard renders hand, discards and melds', () => {
+test('GameBoard renders hand, discard piles and melds', () => {
   const tiles = [new Tile({ suit: 'man', value: 1 })];
   const discards = [new Tile({ suit: 'pin', value: 2 })];
   const discardsByPlayer = [discards, [], [], []];
@@ -18,4 +18,6 @@ test('GameBoard renders hand, discards and melds', () => {
   assert.ok(html.includes('man-1.svg'));
   assert.ok(html.includes('pin-2.svg'));
   assert.ok(html.includes('sou-3.svg'));
+  assert.ok(html.includes('class="discard-pile bottom"'));
+  assert.ok(html.includes('class="discard-pile top"'));
 });
