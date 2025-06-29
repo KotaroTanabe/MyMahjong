@@ -112,6 +112,22 @@ export function detectIipeikou(hand: Tile[]): boolean {
 }
 
 /**
+ * Detects the "pinfu" yaku (all sequences with no extra fu). This simplified
+ * version only checks that the hand is composed entirely of sequences, the pair
+ * is not an honor tile and that fu calculation yields the base 20 fu. Wait
+ * shapes are not analysed in detail.
+ */
+export function detectPinfu(hand: Tile[]): boolean {
+  if (detectSevenPairs(hand)) return false;
+  const analysis = analyzeHand(hand);
+  if (!analysis) return false;
+  if (!analysis.melds.every(m => m.type === 'sequence')) return false;
+  const pairTile = analysis.pair[0];
+  if (pairTile.suit === 'wind' || pairTile.suit === 'dragon') return false;
+  return calculateFu(hand) === 20;
+}
+
+/**
  * Detects triplets of honor tiles (winds or dragons).
  * Returns an array of yakuhai names for each qualifying triplet.
  */
@@ -181,6 +197,10 @@ export function calculateScore(hand: Tile[], options: ScoreOptions = {}): ScoreR
   }
   if (detectIipeikou(hand)) {
     yaku.push('iipeikou');
+    han += 1;
+  }
+  if (detectPinfu(hand)) {
+    yaku.push('pinfu');
     han += 1;
   }
   if (doraIndicators.length > 0) {
