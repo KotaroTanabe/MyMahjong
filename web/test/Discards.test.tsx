@@ -10,5 +10,6 @@ test('Discards renders tiles', () => {
   const html = renderToStaticMarkup(
     <Discards tiles={tiles} />
   );
-  assert.ok(html.includes('sou-3'));
+  assert.ok(html.includes('<img'));
+  assert.ok(html.includes('sou-3.svg'));
 });

@@ -1,4 +1,5 @@
 import type { Tile } from '@mymahjong/core';
+import { TileImage } from './TileImage.js';
 
 export interface HandProps {
   tiles: Tile[];
@@ -10,7 +11,7 @@ export function Hand({ tiles, onDiscard }: HandProps): JSX.Element {
     <ul className="hand">
       {tiles.map((tile, i) => (
         <li key={i}>
-          {tile.toString()}
+          <TileImage tile={tile} />
           <button aria-label="Discard" onClick={() => onDiscard(i)}>🗑️</button>
         </li>
       ))}
