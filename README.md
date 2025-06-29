@@ -108,6 +108,7 @@ status and a suggested roadmap for extending the rules.
 - Basic win detection for standard hands
 - Win by ron (claiming another player's discard)
 - Ability to call pon, chi and kan (melds)
+- Replacement tile draw and extra dora indicator after kan
 - Scoring for:
   - `tanyao` (all simples)
   - `chiitoitsu` (seven pairs)
