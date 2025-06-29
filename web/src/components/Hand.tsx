@@ -11,8 +11,13 @@ export function Hand({ tiles, onDiscard }: HandProps): JSX.Element {
     <ul className="hand">
       {tiles.map((tile, i) => (
         <li key={i}>
-          <TileImage tile={tile} />
-          <button aria-label="Discard" onClick={() => onDiscard(i)}>🗑️</button>
+          <button
+            className="tile-button"
+            aria-label="Discard"
+            onClick={() => onDiscard(i)}
+          >
+            <TileImage tile={tile} />
+          </button>
         </li>
       ))}
     </ul>

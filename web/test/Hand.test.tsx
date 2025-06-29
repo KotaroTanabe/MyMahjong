@@ -10,7 +10,8 @@ test('Hand renders tile images', () => {
   const html = renderToStaticMarkup(
     <Hand tiles={tiles} onDiscard={() => {}} />
   );
-  assert.ok(html.includes('<img')); 
+  assert.ok(html.includes('<img'));
   assert.ok(html.includes('man-1.svg'));
   assert.ok(html.includes('aria-label="Discard"'));
+  assert.ok(html.includes('class="tile-button"'));
 });
