@@ -8,9 +8,10 @@ import { Tile } from '@mymahjong/core';
 test('GameBoard renders hand, discards and melds', () => {
   const tiles = [new Tile({ suit: 'man', value: 1 })];
   const discards = [new Tile({ suit: 'pin', value: 2 })];
+  const discardsByPlayer = [discards, [], [], []];
   const melds = [[new Tile({ suit: 'sou', value: 3 })]];
   const html = renderToStaticMarkup(
-    <GameBoard currentHand={tiles} currentDiscards={discards} currentMelds={melds} onDiscard={() => {}} />
+    <GameBoard currentHand={tiles} playerDiscards={discardsByPlayer} currentMelds={melds} onDiscard={() => {}} />
   );
   const count = (html.match(/class="player-area/g) || []).length;
   assert.equal(count, 4);
