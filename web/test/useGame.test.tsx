@@ -14,6 +14,8 @@ interface GameHandle {
   scoreboard: ReturnType<typeof useGame>['scoreboard'];
   draw: () => unknown;
   discard: (index: number) => unknown;
+  pon: (fromIndex: number) => unknown;
+  chi: (fromIndex: number) => unknown;
 }
 
 function createFixedGame(): Game {
@@ -24,6 +26,26 @@ function createFixedGame(): Game {
   return g;
 }
 
+function createPonGame(): Game {
+  const wall = new Wall([]);
+  const g = new Game(2, wall);
+  g.players[0].hand.push(new Tile({ suit: 'man', value: 3 }), new Tile({ suit: 'man', value: 3 }));
+  const discarded = new Tile({ suit: 'man', value: 3 });
+  g.players[1].hand.push(discarded);
+  g.players[1].discard(0);
+  return g;
+}
+
+function createChiGame(): Game {
+  const wall = new Wall([]);
+  const g = new Game(2, wall);
+  g.players[0].hand.push(new Tile({ suit: 'man', value: 1 }), new Tile({ suit: 'man', value: 3 }));
+  const discarded = new Tile({ suit: 'man', value: 2 });
+  g.players[1].hand.push(discarded);
+  g.players[1].discard(0);
+  return g;
+}
+
 const GameHarness = forwardRef<GameHandle>((_props, ref) => {
   const state = useGame(createFixedGame());
   useImperativeHandle(ref, () => state);
@@ -31,6 +53,22 @@ const GameHarness = forwardRef<GameHandle>((_props, ref) => {
 });
 
 GameHarness.displayName = 'GameHarness';
+
+const PonHarness = forwardRef<GameHandle>((_props, ref) => {
+  const state = useGame(createPonGame());
+  useImperativeHandle(ref, () => state);
+  return null;
+});
+
+PonHarness.displayName = 'PonHarness';
+
+const ChiHarness = forwardRef<GameHandle>((_props, ref) => {
+  const state = useGame(createChiGame());
+  useImperativeHandle(ref, () => state);
+  return null;
+});
+
+ChiHarness.displayName = 'ChiHarness';
 
 test('draw and discard update state', () => {
   const ref = React.createRef<GameHandle>();
@@ -62,6 +100,40 @@ test('draw and discard update state', () => {
   );
 
   assert.ok(ref.current!.scoreboard[0].points >= initialScoreboard[0]);
+
+  renderer.unmount();
+});
+
+test('pon updates melds and discards', () => {
+  const ref = React.createRef<GameHandle>();
+  const renderer = create(<PonHarness ref={ref} />);
+  assert.ok(ref.current);
+  const initialHand = ref.current!.hand.length;
+  const initialOpponentDiscards = ref.current!.playerDiscards[1].length;
+
+  act(() => {
+    ref.current!.pon(1);
+  });
+
+  assert.strictEqual(ref.current!.playerDiscards[1].length, initialOpponentDiscards - 1);
+  assert.strictEqual(ref.current!.hand.length, initialHand - 2);
+
+  renderer.unmount();
+});
+
+test('chi updates melds and discards', () => {
+  const ref = React.createRef<GameHandle>();
+  const renderer = create(<ChiHarness ref={ref} />);
+  assert.ok(ref.current);
+  const initialHand = ref.current!.hand.length;
+  const initialOpponentDiscards = ref.current!.playerDiscards[1].length;
+
+  act(() => {
+    ref.current!.chi(1);
+  });
+
+  assert.strictEqual(ref.current!.playerDiscards[1].length, initialOpponentDiscards - 1);
+  assert.strictEqual(ref.current!.hand.length, initialHand - 2);
 
   renderer.unmount();
 });

@@ -129,6 +129,13 @@ button {
   flex-wrap: wrap;
 }
 
+.meld-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+}
+
 .melds {
   list-style: none;
   padding: 0;

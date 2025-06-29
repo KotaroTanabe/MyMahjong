@@ -3,7 +3,7 @@ import { ScoreBoard } from './components/ScoreBoard.js';
 import { useGame } from './hooks/useGame.js';
 
 export default function App(): JSX.Element {
-  const { hand, playerDiscards, wallCount, doraIndicators, draw, discard, score, scoreboard } = useGame();
+  const { hand, playerDiscards, melds, wallCount, doraIndicators,　draw, discard, pon, chi, kan, ron, score, scoreboard } = useGame();
   return (
     <div className="app">
       <h1>My Mahjong</h1>
@@ -17,7 +17,12 @@ export default function App(): JSX.Element {
         currentHand={hand}
         playerDiscards={playerDiscards}
         centerTiles={doraIndicators}
+        currentMelds={melds}
         onDiscard={discard}
+        onPon={pon}
+        onChi={chi}
+        onKan={kan}
+        onRon={ron}
       />
     </div>
   );

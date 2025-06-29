@@ -9,6 +9,7 @@ interface GameState {
    * The first entry corresponds to the local player.
    */
   playerDiscards: Tile[][];
+  melds: Tile[][];
   wallCount: number;
   doraIndicators: Tile[];
   score: ScoreResult;
@@ -18,6 +19,10 @@ interface GameState {
 export function useGame(game?: Game): GameState & {
   draw: () => Tile;
   discard: (index: number) => Tile;
+  pon: (fromIndex: number) => void;
+  chi: (fromIndex: number) => void;
+  kan: (fromIndex: number) => void;
+  ron: (fromIndex: number) => boolean;
 } {
   const [gameInstance] = useState(() => {
     const g = game ?? new Game(1);
@@ -31,6 +36,7 @@ export function useGame(game?: Game): GameState & {
     hand: [...gameInstance.players[0].hand],
     discards: [...gameInstance.players[0].discards],
     playerDiscards: gameInstance.players.map(p => [...p.discards]),
+    melds: gameInstance.players[0].melds.map(m => [...m]),
     wallCount: gameInstance.wall.count,
     doraIndicators: [...gameInstance.doraIndicators],
     score: gameInstance.calculateScore(0),
@@ -45,6 +51,7 @@ export function useGame(game?: Game): GameState & {
       hand: [...gameInstance.players[0].hand],
       discards: [...gameInstance.players[0].discards],
       playerDiscards: gameInstance.players.map(p => [...p.discards]),
+      melds: gameInstance.players[0].melds.map(m => [...m]),
       wallCount: gameInstance.wall.count,
       doraIndicators: [...gameInstance.doraIndicators],
       score: gameInstance.calculateScore(0),
@@ -67,5 +74,26 @@ export function useGame(game?: Game): GameState & {
     return tile;
   };
 
-  return { ...state, draw, discard };
+  const pon = (fromIndex: number) => {
+    gameInstance.callPon(0, fromIndex);
+    sync();
+  };
+
+  const chi = (fromIndex: number) => {
+    gameInstance.callChi(0, fromIndex);
+    sync();
+  };
+
+  const kan = (fromIndex: number) => {
+    gameInstance.callKan(0, fromIndex);
+    sync();
+  };
+
+  const ron = (fromIndex: number) => {
+    const result = gameInstance.declareRon(0, fromIndex);
+    sync();
+    return result;
+  };
+
+  return { ...state, draw, discard, pon, chi, kan, ron };
 }
