@@ -6,3 +6,4 @@ export { Discards } from './components/Discards.js';
 export { Melds } from './components/Melds.js';
 export { TileImage } from './components/TileImage.js';
 export { DiscardPile } from './components/DiscardPile.js';
+export { ScoreBoard } from './components/ScoreBoard.js';

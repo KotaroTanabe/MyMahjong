@@ -20,10 +20,11 @@ test('tanyao detection and scoring', () => {
     new Tile({ suit: 'pin', value: 6 }),
   ];
   const result = calculateScore(hand);
-  assert.deepStrictEqual(result.yaku, ['tanyao']);
-  assert.strictEqual(result.han, 1);
+  assert.ok(result.yaku.includes('tanyao'));
+  assert.ok(result.yaku.includes('pinfu'));
+  assert.strictEqual(result.han, 2); // tanyao + pinfu
   assert.strictEqual(result.fu, 20);
-  assert.strictEqual(result.points, 700);
+  assert.strictEqual(result.points, 1300);
 });
 
 test('chiitoitsu detection and scoring', () => {
@@ -97,13 +98,35 @@ test('multiple yakuhai triplets each add han', () => {
     new Tile({ suit: 'pin', value: 2 }),
     new Tile({ suit: 'pin', value: 2 }),
   ];
-  const result = calculateScore(hand);
+  const result = calculateScore(hand, { seatWind: 'east', roundWind: 'south' });
   assert.ok(result.yaku.includes('yakuhai-green'));
   assert.ok(result.yaku.includes('yakuhai-east'));
   assert.strictEqual(result.han, 2);
   assert.strictEqual(result.rawFu, 28);
   assert.strictEqual(result.fu, 30);
   assert.strictEqual(result.points, 2000);
+});
+
+test('wind triplet not matching seat or round wind gives no yakuhai', () => {
+  const hand = [
+    // non-yakuhai wind triplet
+    new Tile({ suit: 'wind', value: 'west' }),
+    new Tile({ suit: 'wind', value: 'west' }),
+    new Tile({ suit: 'wind', value: 'west' }),
+    // sequences
+    new Tile({ suit: 'man', value: 1 }),
+    new Tile({ suit: 'man', value: 2 }),
+    new Tile({ suit: 'man', value: 3 }),
+    new Tile({ suit: 'man', value: 4 }),
+    new Tile({ suit: 'man', value: 5 }),
+    new Tile({ suit: 'man', value: 6 }),
+    // pair
+    new Tile({ suit: 'pin', value: 2 }),
+    new Tile({ suit: 'pin', value: 2 }),
+  ];
+  const result = calculateScore(hand, { seatWind: 'east', roundWind: 'south' });
+  assert.strictEqual(result.han, 0);
+  assert.ok(!result.yaku.includes('yakuhai-west'));
 });
 
 test('toitoi detection and fu calculation', () => {
@@ -131,4 +154,104 @@ test('toitoi detection and fu calculation', () => {
   assert.strictEqual(result.rawFu, 32);
   assert.strictEqual(result.fu, 40);
   assert.strictEqual(result.points, 5200);
+});
+
+test('iipeikou detection and scoring', () => {
+  const hand = [
+    // identical sequences
+    new Tile({ suit: 'man', value: 2 }),
+    new Tile({ suit: 'man', value: 3 }),
+    new Tile({ suit: 'man', value: 4 }),
+    new Tile({ suit: 'man', value: 2 }),
+    new Tile({ suit: 'man', value: 3 }),
+    new Tile({ suit: 'man', value: 4 }),
+    // additional sequences
+    new Tile({ suit: 'pin', value: 3 }),
+    new Tile({ suit: 'pin', value: 4 }),
+    new Tile({ suit: 'pin', value: 5 }),
+    new Tile({ suit: 'sou', value: 7 }),
+    new Tile({ suit: 'sou', value: 8 }),
+    new Tile({ suit: 'sou', value: 9 }),
+    // pair
+    new Tile({ suit: 'dragon', value: 'green' }),
+    new Tile({ suit: 'dragon', value: 'green' }),
+  ];
+  const result = calculateScore(hand);
+  assert.ok(result.yaku.includes('iipeikou'));
+  assert.strictEqual(result.han, 1);
+  assert.strictEqual(result.fu, 30);
+  assert.strictEqual(result.points, 1000);
+});
+
+test('pinfu detection and scoring', () => {
+  const hand = [
+    new Tile({ suit: 'man', value: 1 }),
+    new Tile({ suit: 'man', value: 2 }),
+    new Tile({ suit: 'man', value: 3 }),
+    new Tile({ suit: 'pin', value: 2 }),
+    new Tile({ suit: 'pin', value: 3 }),
+    new Tile({ suit: 'pin', value: 4 }),
+    new Tile({ suit: 'sou', value: 6 }),
+    new Tile({ suit: 'sou', value: 7 }),
+    new Tile({ suit: 'sou', value: 8 }),
+    new Tile({ suit: 'man', value: 4 }),
+    new Tile({ suit: 'man', value: 5 }),
+    new Tile({ suit: 'man', value: 6 }),
+    new Tile({ suit: 'pin', value: 5 }),
+    new Tile({ suit: 'pin', value: 5 }),
+  ];
+  const result = calculateScore(hand);
+  assert.ok(result.yaku.includes('pinfu'));
+  assert.strictEqual(result.han, 1);
+  assert.strictEqual(result.fu, 20);
+  assert.strictEqual(result.points, 700);
+});
+
+test('dora indicators add han', () => {
+  const hand = [
+    new Tile({ suit: 'man', value: 2 }),
+    new Tile({ suit: 'man', value: 3 }),
+    new Tile({ suit: 'man', value: 4 }),
+    new Tile({ suit: 'pin', value: 2 }),
+    new Tile({ suit: 'pin', value: 3 }),
+    new Tile({ suit: 'pin', value: 4 }),
+    new Tile({ suit: 'sou', value: 2 }),
+    new Tile({ suit: 'sou', value: 3 }),
+    new Tile({ suit: 'sou', value: 4 }),
+    new Tile({ suit: 'man', value: 5 }),
+    new Tile({ suit: 'man', value: 6 }),
+    new Tile({ suit: 'man', value: 7 }),
+    new Tile({ suit: 'pin', value: 6 }),
+    new Tile({ suit: 'pin', value: 6 }),
+  ];
+  const indicators = [new Tile({ suit: 'pin', value: 2 })];
+  const result = calculateScore(hand, { doraIndicators: indicators });
+  assert.ok(result.yaku.includes('dora'));
+  assert.ok(result.yaku.includes('tanyao'));
+  assert.ok(result.yaku.includes('pinfu'));
+  assert.strictEqual(result.han, 3); // tanyao + pinfu + 1 dora
+});
+
+test('riichi adds han', () => {
+  const hand = [
+    new Tile({ suit: 'man', value: 2 }),
+    new Tile({ suit: 'man', value: 3 }),
+    new Tile({ suit: 'man', value: 4 }),
+    new Tile({ suit: 'pin', value: 2 }),
+    new Tile({ suit: 'pin', value: 3 }),
+    new Tile({ suit: 'pin', value: 4 }),
+    new Tile({ suit: 'sou', value: 2 }),
+    new Tile({ suit: 'sou', value: 3 }),
+    new Tile({ suit: 'sou', value: 4 }),
+    new Tile({ suit: 'man', value: 5 }),
+    new Tile({ suit: 'man', value: 6 }),
+    new Tile({ suit: 'man', value: 7 }),
+    new Tile({ suit: 'pin', value: 6 }),
+    new Tile({ suit: 'pin', value: 6 }),
+  ];
+  const result = calculateScore(hand, { riichi: true });
+  assert.ok(result.yaku.includes('riichi'));
+  assert.ok(result.yaku.includes('tanyao'));
+  assert.ok(result.yaku.includes('pinfu'));
+  assert.strictEqual(result.han, 3); // tanyao + pinfu + riichi
 });

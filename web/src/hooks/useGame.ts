@@ -11,6 +11,7 @@ interface GameState {
   playerDiscards: Tile[][];
   wallCount: number;
   score: ScoreResult;
+  scoreboard: { wind: import('@mymahjong/core').Wind; points: number }[];
 }
 
 export function useGame(game?: Game): GameState & {
@@ -31,6 +32,10 @@ export function useGame(game?: Game): GameState & {
     playerDiscards: gameInstance.players.map(p => [...p.discards]),
     wallCount: gameInstance.wall.count,
     score: gameInstance.calculateScore(0),
+    scoreboard: gameInstance.players.map((p, i) => ({
+      wind: p.seatWind!,
+      points: gameInstance.calculateScore(i).points,
+    })),
   }));
 
   const sync = () => {
@@ -40,6 +45,10 @@ export function useGame(game?: Game): GameState & {
       playerDiscards: gameInstance.players.map(p => [...p.discards]),
       wallCount: gameInstance.wall.count,
       score: gameInstance.calculateScore(0),
+      scoreboard: gameInstance.players.map((p, i) => ({
+        wind: p.seatWind!,
+        points: gameInstance.calculateScore(i).points,
+      })),
     });
   };
 

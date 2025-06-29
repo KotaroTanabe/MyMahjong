@@ -23,6 +23,8 @@ body {
   justify-content: center;
   flex-wrap: wrap;
   overflow-y: auto;
+  /* Reserve space so the hand does not shift when the first row appears */
+  min-height: calc(2rem + 0.5rem);
 }
 
 .discard-pile {
@@ -68,6 +70,16 @@ button {
   border: none;
   background: none;
   cursor: pointer;
+}
+
+.tile-image,
+.tile-fallback {
+  width: 2rem;
+  height: 2rem;
+  display: inline-block;
+  text-align: center;
+  line-height: 2rem;
+  font-size: 1.5rem;
 }
 
 .board {
@@ -136,3 +148,7 @@ button {
     grid-template-columns: 1fr;
   }
 }
+
+.scoreboard { margin-top: 0.5rem; border-collapse: collapse; }
+.scoreboard th, .scoreboard td { padding: 0.25rem 0.5rem; border: 1px solid #ccc; }
+

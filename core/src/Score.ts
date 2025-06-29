@@ -1,4 +1,5 @@
 import { Tile } from './Tile.js';
+import type { Wind, Dragon } from './types.js';
 
 export interface Meld {
   type: 'sequence' | 'triplet';
@@ -15,6 +16,14 @@ export interface ScoreOptions {
   dealer?: boolean;
   /** 'ron' for winning off a discard, 'tsumo' for self draw */
   win?: 'ron' | 'tsumo';
+  /** Dora indicator tiles to count bonus han */
+  doraIndicators?: Tile[];
+  /** Adds one han if the player declared riichi */
+  riichi?: boolean;
+  /** Player's seat wind. Used for yakuhai detection */
+  seatWind?: Wind;
+  /** Current round wind. Used for yakuhai detection */
+  roundWind?: Wind;
 }
 
 export interface ScoreResult {
@@ -89,10 +98,48 @@ export function detectSevenPairs(hand: Tile[]): boolean {
 }
 
 /**
+ * Detects the "iipeikou" yaku (two identical sequences).
+ * Sequences are identified using {@link analyzeHand} results.
+ */
+export function detectIipeikou(hand: Tile[]): boolean {
+  if (detectSevenPairs(hand)) return false;
+  const analysis = analyzeHand(hand);
+  if (!analysis) return false;
+  const sequences = analysis.melds
+    .filter(m => m.type === 'sequence')
+    .map(m => m.tiles.map(t => t.toString()).join(','));
+  const counts = new Map<string, number>();
+  for (const seq of sequences) {
+    counts.set(seq, (counts.get(seq) ?? 0) + 1);
+  }
+  return [...counts.values()].some(c => c >= 2);
+}
+
+/**
+ * Detects the "pinfu" yaku (all sequences with no extra fu). This simplified
+ * version only checks that the hand is composed entirely of sequences, the pair
+ * is not an honor tile and that fu calculation yields the base 20 fu. Wait
+ * shapes are not analysed in detail.
+ */
+export function detectPinfu(hand: Tile[]): boolean {
+  if (detectSevenPairs(hand)) return false;
+  const analysis = analyzeHand(hand);
+  if (!analysis) return false;
+  if (!analysis.melds.every(m => m.type === 'sequence')) return false;
+  const pairTile = analysis.pair[0];
+  if (pairTile.suit === 'wind' || pairTile.suit === 'dragon') return false;
+  return calculateFu(hand) === 20;
+}
+
+/**
  * Detects triplets of honor tiles (winds or dragons).
  * Returns an array of yakuhai names for each qualifying triplet.
  */
-export function detectYakuhai(hand: Tile[]): string[] {
+export function detectYakuhai(
+  hand: Tile[],
+  seatWind?: Wind,
+  roundWind?: Wind
+): string[] {
   const counts = new Map<string, { tile: Tile; count: number }>();
   for (const tile of hand) {
     const key = tile.toString();
@@ -106,15 +153,50 @@ export function detectYakuhai(hand: Tile[]): string[] {
 
   const result: string[] = [];
   for (const { tile, count } of counts.values()) {
-    if (count >= 3 && (tile.suit === 'wind' || tile.suit === 'dragon')) {
+    if (count < 3) continue;
+    if (tile.suit === 'dragon') {
+      result.push(`yakuhai-${tile.value}`);
+    } else if (
+      tile.suit === 'wind' &&
+      (tile.value === seatWind || tile.value === roundWind)
+    ) {
       result.push(`yakuhai-${tile.value}`);
     }
   }
   return result;
 }
 
+function doraFromIndicator(tile: Tile): string {
+  if (tile.suit === 'man' || tile.suit === 'pin' || tile.suit === 'sou') {
+    const value = tile.value as number;
+    const next = value === 9 ? 1 : (value + 1) as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+    return `${tile.suit}-${next}`;
+  }
+  if (tile.suit === 'wind') {
+    const order: Wind[] = ['east', 'south', 'west', 'north'];
+    const idx = order.indexOf(tile.value as Wind);
+    return `wind-${order[(idx + 1) % order.length]}`;
+  }
+  const dragons: Dragon[] = ['white', 'green', 'red'];
+  const idx = dragons.indexOf(tile.value as Dragon);
+  return `dragon-${dragons[(idx + 1) % dragons.length]}`;
+}
+
+function countDora(hand: Tile[], indicators: Tile[]): number {
+  if (indicators.length === 0) return 0;
+  const doraKeys = indicators.map(doraFromIndicator);
+  return hand.filter(t => doraKeys.includes(t.toString())).length;
+}
+
 export function calculateScore(hand: Tile[], options: ScoreOptions = {}): ScoreResult {
-  const { dealer = false, win = 'ron' } = options;
+  const {
+    dealer = false,
+    win = 'ron',
+    doraIndicators = [],
+    riichi = false,
+    seatWind,
+    roundWind,
+  } = options;
   const yaku: string[] = [];
   let han = 0;
   if (detectTanyao(hand)) {
@@ -125,7 +207,7 @@ export function calculateScore(hand: Tile[], options: ScoreOptions = {}): ScoreR
     yaku.push('chiitoitsu');
     han += 2;
   }
-  const yakuhai = detectYakuhai(hand);
+  const yakuhai = detectYakuhai(hand, seatWind, roundWind);
   if (yakuhai.length > 0) {
     yaku.push(...yakuhai);
     han += yakuhai.length;
@@ -133,6 +215,25 @@ export function calculateScore(hand: Tile[], options: ScoreOptions = {}): ScoreR
   if (detectToitoi(hand)) {
     yaku.push('toitoi');
     han += 2;
+  }
+  if (detectIipeikou(hand)) {
+    yaku.push('iipeikou');
+    han += 1;
+  }
+  if (detectPinfu(hand)) {
+    yaku.push('pinfu');
+    han += 1;
+  }
+  if (doraIndicators.length > 0) {
+    const doraCount = countDora(hand, doraIndicators);
+    for (let i = 0; i < doraCount; i++) {
+      yaku.push('dora');
+    }
+    han += doraCount;
+  }
+  if (riichi) {
+    yaku.push('riichi');
+    han += 1;
   }
   const rawFu = calculateFu(hand);
   const fu = Math.ceil(rawFu / 10) * 10;

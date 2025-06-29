@@ -78,7 +78,7 @@ npm run dev -w web
 
 Then open `http://localhost:5173` in your browser.
 
-The board layout places each player's area around the center. At this stage only
+The board layout places each player's area around the center. Discards are displayed as a traditional 河 with tiles aligned per seat. At this stage only
 the bottom player shows the actual hand and discard pile. Further layout details
 are described in [docs/board-layout.md](docs/board-layout.md).
 
@@ -112,19 +112,21 @@ status and a suggested roadmap for extending the rules.
   - `tanyao` (all simples)
   - `chiitoitsu` (seven pairs)
   - `yakuhai` triplets of winds or dragons
-- Seat wind assignment and dealer rotation
-
--**Not Yet Implemented**
-
+  - `iipeikou` (two identical sequences)
+  - `dora` bonus tiles from indicators
+  - `riichi` declaration
+  - Seat wind assignment and dealer rotation
 - Round progression with changing round winds
+
+**Not Yet Implemented**
+
 - Additional yaku and detailed fu/han scoring
-- Riichi, dora indicators and other advanced rules
+- Other advanced rules (kan-based yaku, etc.)
 
 **Recommended Next Steps**
 
 1. Expand the scoring system with more yaku and fu calculations
-2. Introduce round progression with seat winds and dealer rotation
-3. Track riichi state and dora indicators to enable more advanced rules
+2. Add support for advanced rules beyond riichi
 
 
 ### Run Tests
