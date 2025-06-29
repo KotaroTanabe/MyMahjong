@@ -19,6 +19,7 @@ test('style.css includes height and overflow rules', async () => {
   assert.match(css, /\.player-area\.right[^}]*min-height:\s*6rem/);
   assert.match(css, /\.discards[^}]*overflow-y:\s*auto/);
   assert.match(css, /\.discards[^}]*min-height:/);
+  assert.match(css, /\.discard-pile[^}]*min-height:/);
   assert.match(css, /\.melds[^}]*overflow-y:\s*auto/);
 });
 
@@ -41,4 +42,5 @@ test('discard pile layout rules exist', async () => {
   assert.match(css, /\.discard-pile\.bottom[^}]*grid-area:\s*bottom/);
   assert.match(css, /\.discard-pile\.left[^}]*grid-area:\s*left/);
   assert.match(css, /\.discard-pile\.right[^}]*grid-area:\s*right/);
+  assert.match(css, /\.discard-pile\s+\.discard-row[^}]*display:\s*flex/);
 });

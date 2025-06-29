@@ -12,9 +12,9 @@ export function DiscardPile({ tiles, position }: DiscardPileProps): JSX.Element 
     rows.push(tiles.slice(i, i + 6));
   }
   return (
-    <div className={`discard-pile${position ? ` ${position}` : ''}`}> 
+    <div className={`discard-pile${position ? ` ${position}` : ''}`}>
       {rows.map((row, rowIndex) => (
-        <ul key={rowIndex}>
+        <ul key={rowIndex} className="discard-row">
           {row.map((t, i) => (
             <li key={i}>
               <TileImage tile={t} />
