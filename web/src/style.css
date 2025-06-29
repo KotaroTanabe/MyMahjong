@@ -23,8 +23,8 @@ body {
   justify-content: center;
   flex-wrap: wrap;
   overflow-y: auto;
-  /* Reserve space so the hand does not shift when the first row appears */
-  min-height: calc(2rem + 0.5rem);
+  /* Reserve space for up to four rows (24 tiles) so the hand stays in place */
+  min-height: calc(8rem + 1.75rem);
 }
 
 .discard-pile {
@@ -32,8 +32,8 @@ body {
   grid-template-columns: repeat(6, auto);
   gap: 0.25rem;
   justify-content: center;
-  /* Reserve space so the hand does not shift when the first row appears */
-  min-height: calc(2rem + 0.5rem);
+  /* Reserve space for up to four rows (24 tiles) so the hand stays in place */
+  min-height: calc(8rem + 1.75rem);
 }
 .discard-pile .discard-row {
   display: flex;
