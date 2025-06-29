@@ -112,19 +112,19 @@ status and a suggested roadmap for extending the rules.
   - `tanyao` (all simples)
   - `chiitoitsu` (seven pairs)
   - `yakuhai` triplets of winds or dragons
+  - `iipeikou` (two identical sequences)
 - Seat wind assignment and dealer rotation
-
--**Not Yet Implemented**
-
 - Round progression with changing round winds
+
+**Not Yet Implemented**
+
 - Additional yaku and detailed fu/han scoring
 - Riichi, dora indicators and other advanced rules
 
 **Recommended Next Steps**
 
 1. Expand the scoring system with more yaku and fu calculations
-2. Introduce round progression with seat winds and dealer rotation
-3. Track riichi state and dora indicators to enable more advanced rules
+2. Add riichi declarations and dora indicators for advanced rules
 
 
 ### Run Tests

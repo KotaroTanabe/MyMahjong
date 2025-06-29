@@ -132,3 +132,30 @@ test('toitoi detection and fu calculation', () => {
   assert.strictEqual(result.fu, 40);
   assert.strictEqual(result.points, 5200);
 });
+
+test('iipeikou detection and scoring', () => {
+  const hand = [
+    // identical sequences
+    new Tile({ suit: 'man', value: 2 }),
+    new Tile({ suit: 'man', value: 3 }),
+    new Tile({ suit: 'man', value: 4 }),
+    new Tile({ suit: 'man', value: 2 }),
+    new Tile({ suit: 'man', value: 3 }),
+    new Tile({ suit: 'man', value: 4 }),
+    // additional sequences
+    new Tile({ suit: 'pin', value: 3 }),
+    new Tile({ suit: 'pin', value: 4 }),
+    new Tile({ suit: 'pin', value: 5 }),
+    new Tile({ suit: 'sou', value: 7 }),
+    new Tile({ suit: 'sou', value: 8 }),
+    new Tile({ suit: 'sou', value: 9 }),
+    // pair
+    new Tile({ suit: 'dragon', value: 'green' }),
+    new Tile({ suit: 'dragon', value: 'green' }),
+  ];
+  const result = calculateScore(hand);
+  assert.ok(result.yaku.includes('iipeikou'));
+  assert.strictEqual(result.han, 1);
+  assert.strictEqual(result.fu, 30);
+  assert.strictEqual(result.points, 1000);
+});
