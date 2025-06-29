@@ -18,7 +18,7 @@ export interface GameBoardProps {
   onRon?: (fromIndex: number) => void;
 }
 
-export function GameBoard({ currentHand, playerDiscards, currentMelds = [], currentMelds = [], onDiscard, onPon, onChi, onKan, onRon }: GameBoardProps): JSX.Element {
+export function GameBoard({ currentHand, playerDiscards, centerTiles = [], currentMelds = [], onDiscard, onPon, onChi, onKan, onRon }: GameBoardProps): JSX.Element {
   return (
     <div className="board">
       <div className="player-area top">

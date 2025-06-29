@@ -15,7 +15,7 @@ function createTiles(n: number): Tile[] {
 test('DiscardPile groups tiles into rows of six', () => {
   const tiles = createTiles(8);
   const html = renderToStaticMarkup(<DiscardPile tiles={tiles} />);
-  const rowCount = (html.match(/<ul>/g) || []).length;
+  const rowCount = (html.match(/<ul class=\"discard-row\">/g) || []).length;
   assert.strictEqual(rowCount, 2);
   const firstRow = html.split('</ul>')[0];
   const imgCount = (firstRow.match(/<img/g) || []).length;
@@ -26,4 +26,10 @@ test('position prop adds orientation class', () => {
   const tiles = createTiles(1);
   const html = renderToStaticMarkup(<DiscardPile tiles={tiles} position="top" />);
   assert.ok(html.includes('class="discard-pile top"'));
+});
+
+test('rows use discard-row class for horizontal layout', () => {
+  const tiles = createTiles(4);
+  const html = renderToStaticMarkup(<DiscardPile tiles={tiles} />);
+  assert.ok(html.includes('class="discard-row"'));
 });
