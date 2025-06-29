@@ -106,25 +106,23 @@ status and a suggested roadmap for extending the rules.
 - Dealing, drawing and discarding tiles
 - Basic win detection for standard hands
 - Win by ron (claiming another player's discard)
-- Ability to call pon (triplet melds)
+- Ability to call pon, chi and kan (melds)
 - Scoring for:
   - `tanyao` (all simples)
   - `chiitoitsu` (seven pairs)
   - `yakuhai` triplets of winds or dragons
 
-**Not Yet Implemented**
+-**Not Yet Implemented**
 
-- Meld calls such as chi and kan
 - Round and seat wind tracking or dealer rotation
 - Additional yaku and detailed fu/han scoring
 - Riichi, dora indicators and other advanced rules
 
 **Recommended Next Steps**
 
-1. Add remaining calls (chi/kan) and polish ron handling
-2. Expand the scoring system with more yaku and fu calculations
-3. Introduce round progression with seat winds and dealer rotation
-4. Track riichi state and dora indicators to enable more advanced rules
+1. Expand the scoring system with more yaku and fu calculations
+2. Introduce round progression with seat winds and dealer rotation
+3. Track riichi state and dora indicators to enable more advanced rules
 
 
 ### Run Tests
