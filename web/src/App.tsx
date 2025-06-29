@@ -11,11 +11,7 @@ export default function App(): JSX.Element {
       {score.han > 0 && (
         <p className="score">{`${score.yaku.join(', ')}: ${score.points} points`}</p>
       )}
-      <GameBoard currentHand={hand} onDiscard={discard} />
-      <h2>Discards</h2>
-      <ul className="discards">
-        {discards.map((t, i) => <li key={i}>{t.toString()}</li>)}
-      </ul>
+      <GameBoard currentHand={hand} currentDiscards={discards} onDiscard={discard} />
     </div>
   );
 }

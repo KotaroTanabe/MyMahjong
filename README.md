@@ -78,6 +78,9 @@ npm run dev -w web
 
 Then open `http://localhost:5173` in your browser.
 
+The board layout places each player's area around the center. At this stage only
+the bottom player shows the actual hand and discard pile.
+
 ### Custom Game Setup
 
 The `useGame` hook accepts an optional `Game` instance. This is handy for tests
