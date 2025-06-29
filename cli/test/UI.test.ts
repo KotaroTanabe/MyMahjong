@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
 import { Tile } from '@mymahjong/core';
-import { renderHand, renderDiscards } from '../src/UI.js';
+import { renderHand, renderDiscards, tileStrings } from '../src/UI.js';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -25,5 +25,11 @@ test('renderDiscards joins tiles', () => {
 test('renderDiscards handles empty list', () => {
   const result = renderDiscards([]);
   assert.strictEqual(result, '(none)');
+});
+
+test('tileStrings maps tiles to strings', () => {
+  const tiles = ['man-1', 'pin-2'].map(makeTile);
+  const result = tileStrings(tiles);
+  assert.deepStrictEqual(result, ['man-1', 'pin-2']);
 });
 
