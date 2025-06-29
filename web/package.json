@@ -8,7 +8,7 @@
     "dev": "vite",
     "build": "vite build && tsc -b",
     "preview": "vite preview",
-    "test": "node --test dist/test",
+    "test": "node --test dist/test/*.js",
     "lint": "eslint ."
   },
   "dependencies": {
