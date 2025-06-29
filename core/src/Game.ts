@@ -134,6 +134,7 @@ export class Game {
       player.seatWind = winds[i];
       this.seatWinds[(this.dealerIndex + i) % this.players.length] = winds[i];
     }
+    this.currentIndex = this.dealerIndex;
   }
 
   /**
