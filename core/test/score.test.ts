@@ -97,13 +97,35 @@ test('multiple yakuhai triplets each add han', () => {
     new Tile({ suit: 'pin', value: 2 }),
     new Tile({ suit: 'pin', value: 2 }),
   ];
-  const result = calculateScore(hand);
+  const result = calculateScore(hand, { seatWind: 'east', roundWind: 'south' });
   assert.ok(result.yaku.includes('yakuhai-green'));
   assert.ok(result.yaku.includes('yakuhai-east'));
   assert.strictEqual(result.han, 2);
   assert.strictEqual(result.rawFu, 28);
   assert.strictEqual(result.fu, 30);
   assert.strictEqual(result.points, 2000);
+});
+
+test('wind triplet not matching seat or round wind gives no yakuhai', () => {
+  const hand = [
+    // non-yakuhai wind triplet
+    new Tile({ suit: 'wind', value: 'west' }),
+    new Tile({ suit: 'wind', value: 'west' }),
+    new Tile({ suit: 'wind', value: 'west' }),
+    // sequences
+    new Tile({ suit: 'man', value: 1 }),
+    new Tile({ suit: 'man', value: 2 }),
+    new Tile({ suit: 'man', value: 3 }),
+    new Tile({ suit: 'man', value: 4 }),
+    new Tile({ suit: 'man', value: 5 }),
+    new Tile({ suit: 'man', value: 6 }),
+    // pair
+    new Tile({ suit: 'pin', value: 2 }),
+    new Tile({ suit: 'pin', value: 2 }),
+  ];
+  const result = calculateScore(hand, { seatWind: 'east', roundWind: 'south' });
+  assert.strictEqual(result.han, 0);
+  assert.ok(!result.yaku.includes('yakuhai-west'));
 });
 
 test('toitoi detection and fu calculation', () => {
