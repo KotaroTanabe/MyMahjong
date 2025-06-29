@@ -11,4 +11,5 @@ test('Hand renders tile strings', () => {
     <Hand tiles={tiles} onDiscard={() => {}} />
   );
   assert.ok(html.includes('man-1'));
+  assert.ok(html.includes('aria-label="Discard"'));
 });

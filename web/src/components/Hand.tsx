@@ -11,7 +11,7 @@ export function Hand({ tiles, onDiscard }: HandProps): JSX.Element {
       {tiles.map((tile, i) => (
         <li key={i}>
           {tile.toString()}
-          <button onClick={() => onDiscard(i)}>Discard</button>
+          <button aria-label="Discard" onClick={() => onDiscard(i)}>🗑️</button>
         </li>
       ))}
     </ul>
