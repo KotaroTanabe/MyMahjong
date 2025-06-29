@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import React, { forwardRef, useImperativeHandle } from 'react';
 import { create, act } from 'react-test-renderer';
 import { useGame } from '../src/hooks/useGame.js';
+import { Game, Wall, Tile } from '@mymahjong/core';
 
 interface GameHandle {
   hand: ReturnType<typeof useGame>['hand'];
@@ -12,8 +13,16 @@ interface GameHandle {
   discard: (index: number) => unknown;
 }
 
+function createFixedGame(): Game {
+  const tiles = Array.from({ length: 20 }, () => new Tile({ suit: 'man', value: 2 }));
+  const wall = new Wall(tiles);
+  const g = new Game(1, wall);
+  g.deal();
+  return g;
+}
+
 const GameHarness = forwardRef<GameHandle>((_props, ref) => {
-  const state = useGame();
+  const state = useGame(createFixedGame());
   useImperativeHandle(ref, () => state);
   return null;
 });

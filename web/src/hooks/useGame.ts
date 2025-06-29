@@ -8,40 +8,42 @@ interface GameState {
   score: ScoreResult;
 }
 
-export function useGame(): GameState & {
+export function useGame(game?: Game): GameState & {
   draw: () => Tile;
   discard: (index: number) => Tile;
 } {
-  const [game] = useState(() => {
-    const g = new Game(1);
-    g.deal();
+  const [gameInstance] = useState(() => {
+    const g = game ?? new Game(1);
+    if (g.players[0].hand.length === 0) {
+      g.deal();
+    }
     return g;
   });
 
   const [state, setState] = useState<GameState>(() => ({
-    hand: [...game.players[0].hand],
-    discards: [...game.players[0].discards],
-    wallCount: game.wall.count,
-    score: game.calculateScore(0),
+    hand: [...gameInstance.players[0].hand],
+    discards: [...gameInstance.players[0].discards],
+    wallCount: gameInstance.wall.count,
+    score: gameInstance.calculateScore(0),
   }));
 
   const sync = () => {
     setState({
-      hand: [...game.players[0].hand],
-      discards: [...game.players[0].discards],
-      wallCount: game.wall.count,
-      score: game.calculateScore(0),
+      hand: [...gameInstance.players[0].hand],
+      discards: [...gameInstance.players[0].discards],
+      wallCount: gameInstance.wall.count,
+      score: gameInstance.calculateScore(0),
     });
   };
 
   const draw = () => {
-    const tile = game.drawCurrent();
+    const tile = gameInstance.drawCurrent();
     sync();
     return tile;
   };
 
   const discard = (index: number) => {
-    const tile = game.discardCurrent(index);
+    const tile = gameInstance.discardCurrent(index);
     sync();
     return tile;
   };
