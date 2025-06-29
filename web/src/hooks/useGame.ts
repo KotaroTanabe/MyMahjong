@@ -12,6 +12,7 @@ interface GameState {
   wallCount: number;
   doraIndicators: Tile[];
   score: ScoreResult;
+  scoreboard: { wind: import('@mymahjong/core').Wind; points: number }[];
 }
 
 export function useGame(game?: Game): GameState & {
@@ -33,6 +34,10 @@ export function useGame(game?: Game): GameState & {
     wallCount: gameInstance.wall.count,
     doraIndicators: [...gameInstance.doraIndicators],
     score: gameInstance.calculateScore(0),
+    scoreboard: gameInstance.players.map((p, i) => ({
+      wind: p.seatWind!,
+      points: gameInstance.calculateScore(i).points,
+    })),
   }));
 
   const sync = () => {
@@ -43,6 +48,10 @@ export function useGame(game?: Game): GameState & {
       wallCount: gameInstance.wall.count,
       doraIndicators: [...gameInstance.doraIndicators],
       score: gameInstance.calculateScore(0),
+      scoreboard: gameInstance.players.map((p, i) => ({
+        wind: p.seatWind!,
+        points: gameInstance.calculateScore(i).points,
+      })),
     });
   };
 
