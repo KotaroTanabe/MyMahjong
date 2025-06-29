@@ -78,6 +78,12 @@ npm run dev -w web
 
 Then open `http://localhost:5173` in your browser.
 
+### Custom Game Setup
+
+The `useGame` hook accepts an optional `Game` instance. This is handy for tests
+or when you want to provide a pre-configured wall of tiles. If no game is
+provided, `useGame` creates a new one and deals the first player.
+
 ### Scoring
 
 After each discard the game now evaluates your hand for the simple `tanyao` yaku
