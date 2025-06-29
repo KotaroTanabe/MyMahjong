@@ -10,6 +10,7 @@ interface GameState {
    */
   playerDiscards: Tile[][];
   wallCount: number;
+  doraIndicators: Tile[];
   score: ScoreResult;
 }
 
@@ -30,6 +31,7 @@ export function useGame(game?: Game): GameState & {
     discards: [...gameInstance.players[0].discards],
     playerDiscards: gameInstance.players.map(p => [...p.discards]),
     wallCount: gameInstance.wall.count,
+    doraIndicators: [...gameInstance.doraIndicators],
     score: gameInstance.calculateScore(0),
   }));
 
@@ -39,6 +41,7 @@ export function useGame(game?: Game): GameState & {
       discards: [...gameInstance.players[0].discards],
       playerDiscards: gameInstance.players.map(p => [...p.discards]),
       wallCount: gameInstance.wall.count,
+      doraIndicators: [...gameInstance.doraIndicators],
       score: gameInstance.calculateScore(0),
     });
   };
