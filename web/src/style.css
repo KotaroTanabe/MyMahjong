@@ -74,3 +74,15 @@ button {
   display: flex;
   gap: 0.25rem;
 }
+
+@media (max-width: 600px) {
+  .board {
+    grid-template-areas:
+      'top'
+      'left'
+      'right'
+      'center'
+      'bottom';
+    grid-template-columns: 1fr;
+  }
+}
