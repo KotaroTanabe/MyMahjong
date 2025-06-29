@@ -55,12 +55,12 @@ test('yakuhai detection for dragon triplet', () => {
     new Tile({ suit: 'man', value: 1 }),
     new Tile({ suit: 'man', value: 2 }),
     new Tile({ suit: 'man', value: 3 }),
-    new Tile({ suit: 'man', value: 4 }),
-    new Tile({ suit: 'man', value: 5 }),
-    new Tile({ suit: 'man', value: 6 }),
-    new Tile({ suit: 'man', value: 7 }),
-    new Tile({ suit: 'man', value: 8 }),
-    new Tile({ suit: 'man', value: 9 }),
+    new Tile({ suit: 'pin', value: 4 }),
+    new Tile({ suit: 'pin', value: 5 }),
+    new Tile({ suit: 'pin', value: 6 }),
+    new Tile({ suit: 'sou', value: 7 }),
+    new Tile({ suit: 'sou', value: 8 }),
+    new Tile({ suit: 'sou', value: 9 }),
     // dragon triplet
     new Tile({ suit: 'dragon', value: 'white' }),
     new Tile({ suit: 'dragon', value: 'white' }),
@@ -254,4 +254,30 @@ test('riichi adds han', () => {
   assert.ok(result.yaku.includes('tanyao'));
   assert.ok(result.yaku.includes('pinfu'));
   assert.strictEqual(result.han, 3); // tanyao + pinfu + riichi
+});
+
+test('ittsu detection and scoring', () => {
+  const hand = [
+    // 1-9 straight in manzu
+    new Tile({ suit: 'man', value: 1 }),
+    new Tile({ suit: 'man', value: 2 }),
+    new Tile({ suit: 'man', value: 3 }),
+    new Tile({ suit: 'man', value: 4 }),
+    new Tile({ suit: 'man', value: 5 }),
+    new Tile({ suit: 'man', value: 6 }),
+    new Tile({ suit: 'man', value: 7 }),
+    new Tile({ suit: 'man', value: 8 }),
+    new Tile({ suit: 'man', value: 9 }),
+    // triplet and pair
+    new Tile({ suit: 'pin', value: 1 }),
+    new Tile({ suit: 'pin', value: 1 }),
+    new Tile({ suit: 'pin', value: 1 }),
+    new Tile({ suit: 'sou', value: 2 }),
+    new Tile({ suit: 'sou', value: 2 }),
+  ];
+  const result = calculateScore(hand);
+  assert.ok(result.yaku.includes('ittsu'));
+  assert.strictEqual(result.han, 1);
+  assert.strictEqual(result.fu, 30);
+  assert.strictEqual(result.points, 1000);
 });

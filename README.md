@@ -113,6 +113,7 @@ status and a suggested roadmap for extending the rules.
   - `chiitoitsu` (seven pairs)
   - `yakuhai` triplets of winds or dragons
   - `iipeikou` (two identical sequences)
+  - `ittsu` (straight 1-9 in one suit)
   - `dora` bonus tiles from indicators
   - `riichi` declaration
   - Seat wind assignment and dealer rotation
