@@ -18,6 +18,8 @@ export interface ScoreOptions {
   win?: 'ron' | 'tsumo';
   /** Dora indicator tiles to count bonus han */
   doraIndicators?: Tile[];
+  /** Adds one han if the player declared riichi */
+  riichi?: boolean;
 }
 
 export interface ScoreResult {
@@ -157,7 +159,7 @@ function countDora(hand: Tile[], indicators: Tile[]): number {
 }
 
 export function calculateScore(hand: Tile[], options: ScoreOptions = {}): ScoreResult {
-  const { dealer = false, win = 'ron', doraIndicators = [] } = options;
+  const { dealer = false, win = 'ron', doraIndicators = [], riichi = false } = options;
   const yaku: string[] = [];
   let han = 0;
   if (detectTanyao(hand)) {
@@ -187,6 +189,10 @@ export function calculateScore(hand: Tile[], options: ScoreOptions = {}): ScoreR
       yaku.push('dora');
     }
     han += doraCount;
+  }
+  if (riichi) {
+    yaku.push('riichi');
+    han += 1;
   }
   const rawFu = calculateFu(hand);
   const fu = Math.ceil(rawFu / 10) * 10;
