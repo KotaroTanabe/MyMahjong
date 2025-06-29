@@ -7,7 +7,6 @@ export default function App(): JSX.Element {
   return (
     <div className="app">
       <h1>My Mahjong</h1>
-      <p>Wall tiles left: {wallCount}</p>
       <button onClick={draw} disabled={wallCount === 0} aria-label="Draw">🀄</button>
       {score.han > 0 && (
         <p className="score">{`${score.yaku.join(', ')}: ${score.points} points`}</p>
@@ -17,6 +16,7 @@ export default function App(): JSX.Element {
         currentHand={hand}
         playerDiscards={playerDiscards}
         centerTiles={doraIndicators}
+        wallCount={wallCount}
         currentMelds={melds}
         onDiscard={discard}
         onPon={pon}

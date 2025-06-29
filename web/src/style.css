@@ -127,6 +127,14 @@ button {
   grid-area: center;
   text-align: center;
 }
+.center .dora-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 0.25rem;
+}
+.center .wall-count {
+  margin-top: 0.25rem;
+}
 
 .meld-discard {
   display: flex;
