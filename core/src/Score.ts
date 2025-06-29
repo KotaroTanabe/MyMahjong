@@ -10,11 +10,28 @@ export interface HandAnalysis {
   melds: Meld[];
 }
 
+export interface ScoreOptions {
+  /** True if the winner is the dealer (oya) */
+  dealer?: boolean;
+  /** 'ron' for winning off a discard, 'tsumo' for self draw */
+  win?: 'ron' | 'tsumo';
+}
+
 export interface ScoreResult {
+  /** Names of all detected yaku */
   yaku: string[];
+  /** Total han value */
   han: number;
+  /** Fu after rounding up to the next 10 */
   fu: number;
+  /** Fu before rounding */
+  rawFu: number;
+  /** Base points before any multipliers */
+  basePoints: number;
+  /** Final points after applying multipliers and rounding */
   points: number;
+  /** Points before rounding to the nearest hundred */
+  rawPoints: number;
 }
 
 /**
@@ -96,7 +113,8 @@ export function detectYakuhai(hand: Tile[]): string[] {
   return result;
 }
 
-export function calculateScore(hand: Tile[]): ScoreResult {
+export function calculateScore(hand: Tile[], options: ScoreOptions = {}): ScoreResult {
+  const { dealer = false, win = 'ron' } = options;
   const yaku: string[] = [];
   let han = 0;
   if (detectTanyao(hand)) {
@@ -116,9 +134,29 @@ export function calculateScore(hand: Tile[]): ScoreResult {
     yaku.push('toitoi');
     han += 2;
   }
-  const fu = calculateFu(hand);
-  const points = han * fu;
-  return { yaku, han, fu, points };
+  const rawFu = calculateFu(hand);
+  const fu = Math.ceil(rawFu / 10) * 10;
+  const basePoints = fu * 2 ** (han + 2);
+
+  let rawPoints: number;
+  let points: number;
+  if (win === 'ron') {
+    rawPoints = basePoints * (dealer ? 6 : 4);
+    points = Math.ceil(rawPoints / 100) * 100;
+  } else {
+    if (dealer) {
+      const share = Math.ceil((basePoints * 2) / 100) * 100;
+      rawPoints = basePoints * 6;
+      points = share * 3;
+    } else {
+      const fromDealer = Math.ceil((basePoints * 2) / 100) * 100;
+      const fromNonDealer = Math.ceil(basePoints / 100) * 100;
+      rawPoints = basePoints * 4;
+      points = fromDealer + fromNonDealer * 2;
+    }
+  }
+
+  return { yaku, han, fu, rawFu, basePoints, rawPoints, points };
 }
 
 

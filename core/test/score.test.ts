@@ -20,7 +20,10 @@ test('tanyao detection and scoring', () => {
     new Tile({ suit: 'pin', value: 6 }),
   ];
   const result = calculateScore(hand);
-  assert.deepStrictEqual(result, { yaku: ['tanyao'], han: 1, fu: 20, points: 20 });
+  assert.deepStrictEqual(result.yaku, ['tanyao']);
+  assert.strictEqual(result.han, 1);
+  assert.strictEqual(result.fu, 20);
+  assert.strictEqual(result.points, 700);
 });
 
 test('chiitoitsu detection and scoring', () => {
@@ -32,7 +35,7 @@ test('chiitoitsu detection and scoring', () => {
   const result = calculateScore(hand);
   assert.ok(result.yaku.includes('chiitoitsu'));
   assert.strictEqual(result.han, 2);
-  assert.strictEqual(result.points, 40);
+  assert.strictEqual(result.points, 1300);
 });
 
 test('hand with honors scores zero', () => {
@@ -68,8 +71,9 @@ test('yakuhai detection for dragon triplet', () => {
   const result = calculateScore(hand);
   assert.ok(result.yaku.includes('yakuhai-white'));
   assert.strictEqual(result.han, 1);
-  assert.strictEqual(result.fu, 24);
-  assert.strictEqual(result.points, 24);
+  assert.strictEqual(result.rawFu, 24);
+  assert.strictEqual(result.fu, 30);
+  assert.strictEqual(result.points, 1000);
 });
 
 test('multiple yakuhai triplets each add han', () => {
@@ -97,8 +101,9 @@ test('multiple yakuhai triplets each add han', () => {
   assert.ok(result.yaku.includes('yakuhai-green'));
   assert.ok(result.yaku.includes('yakuhai-east'));
   assert.strictEqual(result.han, 2);
-  assert.strictEqual(result.fu, 28);
-  assert.strictEqual(result.points, 56);
+  assert.strictEqual(result.rawFu, 28);
+  assert.strictEqual(result.fu, 30);
+  assert.strictEqual(result.points, 2000);
 });
 
 test('toitoi detection and fu calculation', () => {
@@ -123,6 +128,7 @@ test('toitoi detection and fu calculation', () => {
   assert.ok(result.yaku.includes('yakuhai-red'));
   assert.strictEqual(result.han, 3);
   // pair of east winds adds fu, plus three simple triplets and one honor triplet
-  assert.strictEqual(result.fu, 32);
-  assert.strictEqual(result.points, 96);
+  assert.strictEqual(result.rawFu, 32);
+  assert.strictEqual(result.fu, 40);
+  assert.strictEqual(result.points, 5200);
 });
