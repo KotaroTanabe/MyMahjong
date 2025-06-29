@@ -8,6 +8,7 @@ import { Game, Wall, Tile } from '@mymahjong/core';
 interface GameHandle {
   hand: ReturnType<typeof useGame>['hand'];
   discards: ReturnType<typeof useGame>['discards'];
+  playerDiscards: ReturnType<typeof useGame>['playerDiscards'];
   score: ReturnType<typeof useGame>['score'];
   draw: () => unknown;
   discard: (index: number) => unknown;
@@ -35,6 +36,7 @@ test('draw and discard update state', () => {
   assert.ok(ref.current);
   const initialHand = ref.current!.hand.length;
   const initialDiscards = ref.current!.discards.length;
+  const initialPlayerDiscards = ref.current!.playerDiscards.map(d => d.length);
   const initialPoints = ref.current!.score.points;
 
   act(() => {
@@ -49,6 +51,10 @@ test('draw and discard update state', () => {
   });
   assert.strictEqual(ref.current!.hand.length, initialHand);
   assert.strictEqual(ref.current!.discards.length, initialDiscards + 1);
+  assert.strictEqual(
+    ref.current!.playerDiscards[0].length,
+    initialPlayerDiscards[0] + 1
+  );
 
   renderer.unmount();
 });

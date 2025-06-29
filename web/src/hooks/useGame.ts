@@ -4,6 +4,11 @@ import { Game, Tile, ScoreResult } from '@mymahjong/core';
 interface GameState {
   hand: Tile[];
   discards: Tile[];
+  /**
+   * Discards for every player in the order they appear in the Game instance.
+   * The first entry corresponds to the local player.
+   */
+  playerDiscards: Tile[][];
   wallCount: number;
   score: ScoreResult;
 }
@@ -23,6 +28,7 @@ export function useGame(game?: Game): GameState & {
   const [state, setState] = useState<GameState>(() => ({
     hand: [...gameInstance.players[0].hand],
     discards: [...gameInstance.players[0].discards],
+    playerDiscards: gameInstance.players.map(p => [...p.discards]),
     wallCount: gameInstance.wall.count,
     score: gameInstance.calculateScore(0),
   }));
@@ -31,6 +37,7 @@ export function useGame(game?: Game): GameState & {
     setState({
       hand: [...gameInstance.players[0].hand],
       discards: [...gameInstance.players[0].discards],
+      playerDiscards: gameInstance.players.map(p => [...p.discards]),
       wallCount: gameInstance.wall.count,
       score: gameInstance.calculateScore(0),
     });
