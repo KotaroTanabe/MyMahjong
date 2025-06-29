@@ -9,6 +9,13 @@ body {
   padding: 0;
 }
 
+.discards {
+  display: flex;
+  gap: 0.25rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
 .hand li,
 .discards li {
   margin-bottom: 0.25rem;
