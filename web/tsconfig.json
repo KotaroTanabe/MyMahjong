@@ -15,7 +15,10 @@
     },
     "baseUrl": ".",
     "moduleResolution": "node",
-    "types": ["node"],
+    "types": [
+      "node",
+      "vite/client"
+    ],
     "jsx": "react-jsx"
   },
   "references": [

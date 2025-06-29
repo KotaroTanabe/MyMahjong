@@ -12,7 +12,8 @@ test('Melds renders sets of tiles', () => {
     new Tile({ suit: 'man', value: 3 }),
   ]];
   const html = renderToStaticMarkup(<Melds melds={melds} />);
-  assert.ok(html.includes('man-1'));
-  assert.ok(html.includes('man-2'));
-  assert.ok(html.includes('man-3'));
+  assert.ok(html.includes('<img'));
+  assert.ok(html.includes('man-1.svg'));
+  assert.ok(html.includes('man-2.svg'));
+  assert.ok(html.includes('man-3.svg'));
 });

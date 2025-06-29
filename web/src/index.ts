@@ -4,3 +4,4 @@ export { Hand } from './components/Hand.js';
 export { GameBoard } from './components/GameBoard.js';
 export { Discards } from './components/Discards.js';
 export { Melds } from './components/Melds.js';
+export { TileImage } from './components/TileImage.js';
