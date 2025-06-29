@@ -44,3 +44,8 @@ test('discard pile layout rules exist', async () => {
   assert.match(css, /\.discard-pile\.right[^}]*grid-area:\s*right/);
   assert.match(css, /\.discard-pile\s+\.discard-row[^}]*display:\s*flex/);
 });
+
+test('icon-button style exists', async () => {
+  const css = await readCss();
+  assert.match(css, /\.icon-button[^}]*font-size:\s*1\.25rem/);
+});

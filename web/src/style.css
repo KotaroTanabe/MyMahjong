@@ -78,6 +78,14 @@ button {
   cursor: pointer;
 }
 
+.icon-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 1.25rem;
+}
+
 .tile-image,
 .tile-fallback {
   width: 2rem;

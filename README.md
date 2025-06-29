@@ -56,9 +56,10 @@ to expand the rules or presentation layer to suit your needs.
 
 - [x] Board layout with dora indicators and wall display
 - [x] Interactive hand for the bottom player with responsive layout
+- [x] Icon buttons for calls (Pon/Chi/Kan/Ron)
 - [ ] Richer graphics
 - [ ] Full interaction for all players
-- [ ] Features described in `docs/gui-design.md`
+- [ ] Remaining tasks from `docs/gui-design.md`
 
 ## Getting Started
 
