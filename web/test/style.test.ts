@@ -31,3 +31,13 @@ test('font sizes are reduced for small screens', async () => {
   assert.match(css, /body[^}]*font-size:\s*0\.875rem/);
   assert.match(css, /\.app h1[^}]*font-size:\s*1\.25rem/);
 });
+
+test('discard pile layout rules exist', async () => {
+  const css = await readCss();
+  assert.match(css, /\.discard-pile[^}]*display:\s*grid/);
+  assert.match(css, /\.discard-pile[^}]*grid-template-columns:\s*repeat\(6/);
+  assert.match(css, /\.discard-pile\.top[^}]*grid-area:\s*top/);
+  assert.match(css, /\.discard-pile\.bottom[^}]*grid-area:\s*bottom/);
+  assert.match(css, /\.discard-pile\.left[^}]*grid-area:\s*left/);
+  assert.match(css, /\.discard-pile\.right[^}]*grid-area:\s*right/);
+});
