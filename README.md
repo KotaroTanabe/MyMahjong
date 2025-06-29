@@ -157,6 +157,29 @@ status and a suggested roadmap for extending the rules.
 1. Expand the scoring system with more yaku and fu calculations
 2. Add support for advanced rules beyond riichi
 
+## Implementation Plan: Full Game Loop
+
+Below is a high-level roadmap for integrating the **core** package with the
+web GUI so that one complete game can be played:
+
+1. **Expand the Game Loop** – create a round/hand sequence using
+   `Game.nextHand()` and `Game.rotateDealer()`.
+   Update the `useGame` hook to start new hands and advance the round.
+2. **Handle Multiple Players** – implement lightweight AI logic for the other
+   seats. Expose each hand and meld area in `GameBoard`, keeping opponents'
+   tiles hidden.
+3. **Win Conditions and Scoring** – after every action check
+   `Game.isWinningHand()` or `Game.declareRon()` and display results in
+   `ScoreBoard` before rotating to the next dealer or round.
+4. **UI Enhancements** – follow `docs/board-layout.md` for a stable table and
+   tackle the items in `docs/gui-design.md` such as icon controls and responsive
+   units.
+5. **State Synchronization** – ensure `useGame` refreshes state after each draw,
+   discard or call so React consistently re-renders, and keep the scoreboard in
+   sync.
+6. **Testing** – extend the existing `useGame` tests to cover the new game loop
+   and AI decisions.
+
 
 ### Run Tests
 
