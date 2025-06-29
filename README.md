@@ -114,18 +114,19 @@ status and a suggested roadmap for extending the rules.
   - `yakuhai` triplets of winds or dragons
   - `iipeikou` (two identical sequences)
   - `dora` bonus tiles from indicators
-- Seat wind assignment and dealer rotation
+  - `riichi` declaration
+  - Seat wind assignment and dealer rotation
 - Round progression with changing round winds
 
 **Not Yet Implemented**
 
 - Additional yaku and detailed fu/han scoring
-- Riichi and other advanced rules
+- Other advanced rules (kan-based yaku, etc.)
 
 **Recommended Next Steps**
 
 1. Expand the scoring system with more yaku and fu calculations
-2. Add riichi declarations for advanced rules
+2. Add support for advanced rules beyond riichi
 
 
 ### Run Tests

@@ -182,3 +182,25 @@ test('dora indicators add han', () => {
   assert.ok(result.yaku.includes('dora'));
   assert.strictEqual(result.han, 2); // tanyao + 1 dora
 });
+
+test('riichi adds han', () => {
+  const hand = [
+    new Tile({ suit: 'man', value: 2 }),
+    new Tile({ suit: 'man', value: 3 }),
+    new Tile({ suit: 'man', value: 4 }),
+    new Tile({ suit: 'pin', value: 2 }),
+    new Tile({ suit: 'pin', value: 3 }),
+    new Tile({ suit: 'pin', value: 4 }),
+    new Tile({ suit: 'sou', value: 2 }),
+    new Tile({ suit: 'sou', value: 3 }),
+    new Tile({ suit: 'sou', value: 4 }),
+    new Tile({ suit: 'man', value: 5 }),
+    new Tile({ suit: 'man', value: 6 }),
+    new Tile({ suit: 'man', value: 7 }),
+    new Tile({ suit: 'pin', value: 6 }),
+    new Tile({ suit: 'pin', value: 6 }),
+  ];
+  const result = calculateScore(hand, { riichi: true });
+  assert.ok(result.yaku.includes('riichi'));
+  assert.strictEqual(result.han, 2); // tanyao + riichi
+});

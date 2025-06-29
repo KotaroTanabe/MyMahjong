@@ -15,6 +15,7 @@ Currently implemented yaku detection includes:
 - Toitoi (all triplets)
 - Iipeikou (two identical sequences)
 - Dora (bonus tiles from indicators)
+- Riichi (declaring ready hand)
 
 Fu is calculated using a simplified model based on meld composition and honor
 tiles. See `Score.ts` for details.
