@@ -4,16 +4,23 @@ import { Tile } from './Tile.js';
 import { calculateScore, ScoreResult, isWinningHand } from './Score.js';
 import type { Wind } from './types.js';
 
+const winds: Wind[] = ['east', 'south', 'west', 'north'];
+
 export class Game {
   readonly wall: Wall;
   readonly players: Player[];
   private currentIndex = 0;
   private dealerIndex = 0;
+  private roundWindIndex = 0;
 
   /**
    * Seat winds assigned to each player in the same order as `players`.
    */
   readonly seatWinds: Wind[] = [];
+
+  get roundWind(): Wind {
+    return winds[this.roundWindIndex];
+  }
 
   constructor(playerCount = 4, wall: Wall = Wall.createShuffled()) {
     this.wall = wall;
@@ -22,7 +29,6 @@ export class Game {
   }
 
   private assignSeatWinds(): void {
-    const winds: Wind[] = ['east', 'south', 'west', 'north'];
     for (let i = 0; i < this.players.length; i++) {
       const wind = winds[i % winds.length];
       this.players[i].seatWind = wind;
@@ -123,11 +129,21 @@ export class Game {
    */
   rotateDealer(): void {
     this.dealerIndex = (this.dealerIndex + 1) % this.players.length;
-    const winds: Wind[] = ['east', 'south', 'west', 'north'];
     for (let i = 0; i < this.players.length; i++) {
       const player = this.players[(this.dealerIndex + i) % this.players.length];
       player.seatWind = winds[i];
       this.seatWinds[(this.dealerIndex + i) % this.players.length] = winds[i];
+    }
+  }
+
+  /**
+   * Advance to the next hand. The dealer rotates and after every full
+   * rotation the round wind progresses.
+   */
+  nextHand(): void {
+    this.rotateDealer();
+    if (this.dealerIndex === 0) {
+      this.roundWindIndex = (this.roundWindIndex + 1) % winds.length;
     }
   }
 }
