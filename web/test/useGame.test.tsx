@@ -9,6 +9,7 @@ interface GameHandle {
   hand: ReturnType<typeof useGame>['hand'];
   discards: ReturnType<typeof useGame>['discards'];
   playerDiscards: ReturnType<typeof useGame>['playerDiscards'];
+  doraIndicators: ReturnType<typeof useGame>['doraIndicators'];
   score: ReturnType<typeof useGame>['score'];
   scoreboard: ReturnType<typeof useGame>['scoreboard'];
   draw: () => unknown;
@@ -35,6 +36,7 @@ test('draw and discard update state', () => {
   const ref = React.createRef<GameHandle>();
   const renderer = create(<GameHarness ref={ref} />);
   assert.ok(ref.current);
+  assert.ok(ref.current!.doraIndicators.length >= 0);
   const initialHand = ref.current!.hand.length;
   const initialDiscards = ref.current!.discards.length;
   const initialPlayerDiscards = ref.current!.playerDiscards.map(d => d.length);

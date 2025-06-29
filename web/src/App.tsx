@@ -3,7 +3,7 @@ import { ScoreBoard } from './components/ScoreBoard.js';
 import { useGame } from './hooks/useGame.js';
 
 export default function App(): JSX.Element {
-  const { hand, playerDiscards, wallCount, draw, discard, score, scoreboard } = useGame();
+  const { hand, playerDiscards, wallCount, doraIndicators, draw, discard, score, scoreboard } = useGame();
   return (
     <div className="app">
       <h1>My Mahjong</h1>
@@ -13,7 +13,12 @@ export default function App(): JSX.Element {
         <p className="score">{`${score.yaku.join(', ')}: ${score.points} points`}</p>
       )}
       <ScoreBoard scores={scoreboard} />
-      <GameBoard currentHand={hand} playerDiscards={playerDiscards} onDiscard={discard} />
+      <GameBoard
+        currentHand={hand}
+        playerDiscards={playerDiscards}
+        centerTiles={doraIndicators}
+        onDiscard={discard}
+      />
     </div>
   );
 }
