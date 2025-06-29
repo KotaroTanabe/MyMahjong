@@ -40,7 +40,7 @@ button {
 
 .player-area {
   padding: 0.5rem;
-  border: 1px solid #ccc;
+  border: 0.0625rem solid #ccc;
 }
 
 .player-area.top {
@@ -81,7 +81,7 @@ button {
   overflow-y: auto;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 37.5rem) {
   .board {
     grid-template-areas:
       'top'
