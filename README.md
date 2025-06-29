@@ -39,29 +39,26 @@ to expand the rules or presentation layer to suit your needs.
 
 ### core
 
-Implemented features include tile generation, basic drawing and discarding, win
-detection and a small scoring system.  The scorer detects yaku such as `tanyao`,
-`chiitoitsu`, `yakuhai`, `toitoi`, `iipeikou`, `ittsu`, `pinfu`, `dora` bonuses
-and `riichi` declaration.  Dealer rotation and round wind progression are also
-handled.
-
-Not yet implemented are many additional yaku, detailed fu/han calculations and
-other advanced rules.
+- [x] Tile generation, drawing, discarding and win detection
+- [x] Scoring for yaku: `tanyao`, `chiitoitsu`, `yakuhai`, `toitoi`, `iipeikou`, `ittsu`, `pinfu`, `dora`, `riichi`
+- [x] Dealer rotation and round wind progression
+- [ ] Additional yaku and detailed fu/han calculations
+- [ ] Other advanced rules
 
 ### cli
 
-The CLI runs a single-player demo where you draw and discard tiles while seeing
-possible yaku from the core engine.  It lacks niceties like colored output or
-Unicode tile graphics and does not implement a full game flow.
+- [x] Single-player demo showing possible yaku
+- [ ] Colored output
+- [ ] Unicode tile graphics
+- [ ] Full game flow
 
 ### web (gui)
 
-The React front end renders the board with each player's area arranged around a
-center display showing dora indicators and remaining wall tiles.  Only the
-bottom player's hand is interactive.  CSS includes a simple responsive layout.
-
-Future work includes richer graphics, full interaction for all players and other
-enhancements described in `docs/gui-design.md`.
+- [x] Board layout with dora indicators and wall display
+- [x] Interactive hand for the bottom player with responsive layout
+- [ ] Richer graphics
+- [ ] Full interaction for all players
+- [ ] Features described in `docs/gui-design.md`
 
 ## Getting Started
 
@@ -131,29 +128,29 @@ status and a suggested roadmap for extending the rules.
 
 **Implemented**
 
-- Generation of all 136 tiles and shuffled wall
-- Dealing, drawing and discarding tiles
-- Basic win detection for standard hands
-- Win by ron (claiming another player's discard)
-- Ability to call pon, chi and kan (melds)
-- Replacement tile draw and extra dora indicator after kan
-- Scoring for:
-  - `tanyao` (all simples)
-  - `chiitoitsu` (seven pairs)
-  - `yakuhai` triplets of winds or dragons
-  - `toitoi` (all triplets)
-  - `iipeikou` (two identical sequences)
-  - `ittsu` (straight 1-9 in one suit)
-  - `pinfu` (all sequences with no extra fu)
-  - `dora` bonus tiles from indicators
-  - `riichi` declaration
-  - Seat wind assignment and dealer rotation
-- Round progression with changing round winds
+- [x] Generation of all 136 tiles and shuffled wall
+- [x] Dealing, drawing and discarding tiles
+- [x] Basic win detection for standard hands
+- [x] Win by ron (claiming another player's discard)
+- [x] Ability to call pon, chi and kan (melds)
+- [x] Replacement tile draw and extra dora indicator after kan
+- [x] Scoring for:
+  - [x] `tanyao` (all simples)
+  - [x] `chiitoitsu` (seven pairs)
+  - [x] `yakuhai` triplets of winds or dragons
+  - [x] `toitoi` (all triplets)
+  - [x] `iipeikou` (two identical sequences)
+  - [x] `ittsu` (straight 1-9 in one suit)
+  - [x] `pinfu` (all sequences with no extra fu)
+  - [x] `dora` bonus tiles from indicators
+  - [x] `riichi` declaration
+  - [x] Seat wind assignment and dealer rotation
+- [x] Round progression with changing round winds
 
 **Not Yet Implemented**
 
-- Additional yaku and detailed fu/han scoring
-- Other advanced rules (kan-based yaku, etc.)
+- [ ] Additional yaku and detailed fu/han scoring
+- [ ] Other advanced rules (kan-based yaku, etc.)
 
 **Recommended Next Steps**
 
