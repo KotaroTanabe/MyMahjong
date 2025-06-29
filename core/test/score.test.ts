@@ -159,3 +159,26 @@ test('iipeikou detection and scoring', () => {
   assert.strictEqual(result.fu, 30);
   assert.strictEqual(result.points, 1000);
 });
+
+test('dora indicators add han', () => {
+  const hand = [
+    new Tile({ suit: 'man', value: 2 }),
+    new Tile({ suit: 'man', value: 3 }),
+    new Tile({ suit: 'man', value: 4 }),
+    new Tile({ suit: 'pin', value: 2 }),
+    new Tile({ suit: 'pin', value: 3 }),
+    new Tile({ suit: 'pin', value: 4 }),
+    new Tile({ suit: 'sou', value: 2 }),
+    new Tile({ suit: 'sou', value: 3 }),
+    new Tile({ suit: 'sou', value: 4 }),
+    new Tile({ suit: 'man', value: 5 }),
+    new Tile({ suit: 'man', value: 6 }),
+    new Tile({ suit: 'man', value: 7 }),
+    new Tile({ suit: 'pin', value: 6 }),
+    new Tile({ suit: 'pin', value: 6 }),
+  ];
+  const indicators = [new Tile({ suit: 'pin', value: 2 })];
+  const result = calculateScore(hand, { doraIndicators: indicators });
+  assert.ok(result.yaku.includes('dora'));
+  assert.strictEqual(result.han, 2); // tanyao + 1 dora
+});
