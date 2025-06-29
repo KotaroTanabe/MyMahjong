@@ -1,6 +1,12 @@
 body {
   font-family: sans-serif;
   padding: 1rem;
+  font-size: 0.875rem;
+}
+
+.app h1 {
+  font-size: 1.25rem;
+  margin: 0 0 0.5rem;
 }
 
 .hand,
@@ -9,12 +15,20 @@ body {
   padding: 0;
 }
 
+
 .discards {
   display: flex;
   gap: 0.25rem;
   justify-content: center;
   flex-wrap: wrap;
   overflow-y: auto;
+}
+
+.hand {
+  display: flex;
+  gap: 0.25rem;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .hand li,
