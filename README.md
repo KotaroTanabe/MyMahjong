@@ -78,7 +78,7 @@ npm run dev -w web
 
 Then open `http://localhost:5173` in your browser.
 
-The board layout places each player's area around the center. At this stage only
+The board layout places each player's area around the center. Discards are displayed as a traditional 河 with tiles aligned per seat. At this stage only
 the bottom player shows the actual hand and discard pile. Further layout details
 are described in [docs/board-layout.md](docs/board-layout.md).
 
