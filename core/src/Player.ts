@@ -1,4 +1,5 @@
 import { Tile } from './Tile.js';
+import type { Wind } from './types.js';
 
 export class Player {
   readonly hand: Tile[] = [];
@@ -8,6 +9,12 @@ export class Player {
    * Each meld is an array of tiles in the order they were claimed.
    */
   readonly melds: Tile[][] = [];
+
+  /**
+   * The player's current seat wind. This is assigned by the Game
+   * instance when a round begins and rotates after each hand.
+   */
+  seatWind?: Wind;
 
   draw(tile: Tile): void {
     this.hand.push(tile);
