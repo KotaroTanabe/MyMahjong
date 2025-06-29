@@ -9,10 +9,10 @@ const scores = [
   { wind: 'south' as const, points: 24000 },
 ];
 
-test('ScoreBoard lists winds and points', () => {
+test('ScoreBoard lists winds as icons and points', () => {
   const html = renderToStaticMarkup(<ScoreBoard scores={scores} />);
-  assert.ok(html.includes('east'));
+  assert.ok(html.includes('wind-east.svg'));
   assert.ok(html.includes('25000'));
-  assert.ok(html.includes('south'));
+  assert.ok(html.includes('wind-south.svg'));
   assert.ok(html.includes('24000'));
 });
