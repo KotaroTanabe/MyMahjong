@@ -104,6 +104,7 @@ status and a suggested roadmap for extending the rules.
 
 - Generation of all 136 tiles and shuffled wall
 - Dealing, drawing and discarding tiles
+- Basic win detection for standard hands
 - Scoring for:
   - `tanyao` (all simples)
   - `chiitoitsu` (seven pairs)

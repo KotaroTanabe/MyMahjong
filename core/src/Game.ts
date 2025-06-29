@@ -1,7 +1,7 @@
 import { Player } from './Player.js';
 import { Wall } from './Wall.js';
 import { Tile } from './Tile.js';
-import { calculateScore, ScoreResult } from './Score.js';
+import { calculateScore, ScoreResult, isWinningHand } from './Score.js';
 
 export class Game {
   readonly wall: Wall;
@@ -38,5 +38,9 @@ export class Game {
 
   calculateScore(playerIndex = this.currentIndex): ScoreResult {
     return calculateScore(this.players[playerIndex].hand);
+  }
+
+  isWinningHand(playerIndex = this.currentIndex): boolean {
+    return isWinningHand(this.players[playerIndex].hand);
   }
 }
