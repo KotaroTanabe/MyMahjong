@@ -17,6 +17,39 @@ export interface ScoreResult {
   points: number;
 }
 
+/**
+ * Returns true if the hand consists entirely of triplets (or quads) and a pair.
+ * The function assumes a complete 14 tile hand.
+ */
+export function detectToitoi(hand: Tile[]): boolean {
+  const analysis = analyzeHand(hand);
+  return analysis !== null && analysis.melds.every(m => m.type === 'triplet');
+}
+
+/**
+ * Very small fu calculation used for score examples.
+ * - Base fu: 20
+ * - +2 fu if the pair is an honor tile
+ * - +2 fu for each triplet of simples, +4 fu for each triplet of honors
+ */
+export function calculateFu(hand: Tile[]): number {
+  const analysis = analyzeHand(hand);
+  if (!analysis) return 0;
+  let fu = 20;
+  const pairTile = analysis.pair[0];
+  if (pairTile.suit === 'wind' || pairTile.suit === 'dragon') {
+    fu += 2;
+  }
+  for (const meld of analysis.melds) {
+    if (meld.type === 'triplet') {
+      const tile = meld.tiles[0];
+      const isHonor = tile.suit === 'wind' || tile.suit === 'dragon';
+      fu += isHonor ? 4 : 2;
+    }
+  }
+  return fu;
+}
+
 export function detectTanyao(hand: Tile[]): boolean {
   return hand.every(t => {
     if (t.suit === 'wind' || t.suit === 'dragon') return false;
@@ -79,7 +112,11 @@ export function calculateScore(hand: Tile[]): ScoreResult {
     yaku.push(...yakuhai);
     han += yakuhai.length;
   }
-  const fu = 20;
+  if (detectToitoi(hand)) {
+    yaku.push('toitoi');
+    han += 2;
+  }
+  const fu = calculateFu(hand);
   const points = han * fu;
   return { yaku, han, fu, points };
 }
