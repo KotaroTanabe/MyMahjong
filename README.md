@@ -105,6 +105,8 @@ status and a suggested roadmap for extending the rules.
 - Generation of all 136 tiles and shuffled wall
 - Dealing, drawing and discarding tiles
 - Basic win detection for standard hands
+- Win by ron (claiming another player's discard)
+- Ability to call pon (triplet melds)
 - Scoring for:
   - `tanyao` (all simples)
   - `chiitoitsu` (seven pairs)
@@ -112,14 +114,14 @@ status and a suggested roadmap for extending the rules.
 
 **Not Yet Implemented**
 
-- Meld calls such as chi, pon, kan and winning declarations
+- Meld calls such as chi and kan
 - Round and seat wind tracking or dealer rotation
 - Additional yaku and detailed fu/han scoring
 - Riichi, dora indicators and other advanced rules
 
 **Recommended Next Steps**
 
-1. Add win detection and calls (chi/pon/kan/ron)
+1. Add remaining calls (chi/kan) and polish ron handling
 2. Expand the scoring system with more yaku and fu calculations
 3. Introduce round progression with seat winds and dealer rotation
 4. Track riichi state and dora indicators to enable more advanced rules
