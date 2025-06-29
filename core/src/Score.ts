@@ -89,6 +89,24 @@ export function detectSevenPairs(hand: Tile[]): boolean {
 }
 
 /**
+ * Detects the "iipeikou" yaku (two identical sequences).
+ * Sequences are identified using {@link analyzeHand} results.
+ */
+export function detectIipeikou(hand: Tile[]): boolean {
+  if (detectSevenPairs(hand)) return false;
+  const analysis = analyzeHand(hand);
+  if (!analysis) return false;
+  const sequences = analysis.melds
+    .filter(m => m.type === 'sequence')
+    .map(m => m.tiles.map(t => t.toString()).join(','));
+  const counts = new Map<string, number>();
+  for (const seq of sequences) {
+    counts.set(seq, (counts.get(seq) ?? 0) + 1);
+  }
+  return [...counts.values()].some(c => c >= 2);
+}
+
+/**
  * Detects triplets of honor tiles (winds or dragons).
  * Returns an array of yakuhai names for each qualifying triplet.
  */
@@ -133,6 +151,10 @@ export function calculateScore(hand: Tile[], options: ScoreOptions = {}): ScoreR
   if (detectToitoi(hand)) {
     yaku.push('toitoi');
     han += 2;
+  }
+  if (detectIipeikou(hand)) {
+    yaku.push('iipeikou');
+    han += 1;
   }
   const rawFu = calculateFu(hand);
   const fu = Math.ceil(rawFu / 10) * 10;
