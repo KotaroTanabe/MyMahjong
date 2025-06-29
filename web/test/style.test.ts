@@ -19,4 +19,7 @@ test('style.css includes height and overflow rules', async () => {
   assert.match(css, /\.player-area\.right[^}]*min-height:\s*6rem/);
   assert.match(css, /\.discards[^}]*overflow-y:\s*auto/);
   assert.match(css, /\.melds[^}]*overflow-y:\s*auto/);
+  assert.match(css, /\.discard-pile[^}]*grid-template-columns/);
+  assert.match(css, /\.discard-pile\.left/);
+  assert.match(css, /\.discard-pile\.right/);
 });

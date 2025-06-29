@@ -4,7 +4,8 @@ body {
 }
 
 .hand,
-.discards {
+.discards,
+.discard-pile {
   list-style: none;
   padding: 0;
 }
@@ -17,8 +18,36 @@ body {
   overflow-y: auto;
 }
 
+.discard-pile {
+  display: grid;
+  grid-template-columns: repeat(6, auto);
+  gap: 0.25rem;
+  justify-content: center;
+  overflow-y: auto;
+}
+
+.discard-pile.left,
+.discard-pile.right {
+  grid-template-columns: none;
+  grid-template-rows: repeat(6, auto);
+  grid-auto-flow: column;
+}
+
+.discard-pile.top img {
+  transform: rotate(180deg);
+}
+
+.discard-pile.left img {
+  transform: rotate(90deg);
+}
+
+.discard-pile.right img {
+  transform: rotate(-90deg);
+}
+
 .hand li,
-.discards li {
+.discards li,
+.discard-pile li {
   margin-bottom: 0.25rem;
 }
 
