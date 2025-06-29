@@ -49,11 +49,44 @@ export class Game {
     this.currentIndex = playerIndex;
   }
 
+  callChi(playerIndex: number, fromIndex: number): void {
+    const from = this.players[fromIndex];
+    const tile = from.discards.pop();
+    if (!tile) throw new Error('No discard to claim');
+    const player = this.players[playerIndex];
+    if (!player.canChi(tile)) {
+      from.discards.push(tile);
+      throw new Error('Player cannot chi this tile');
+    }
+    player.chi(tile);
+    this.currentIndex = playerIndex;
+  }
+
+  callKan(playerIndex: number, fromIndex: number): void {
+    const from = this.players[fromIndex];
+    const tile = from.discards.pop();
+    if (!tile) throw new Error('No discard to claim');
+    const player = this.players[playerIndex];
+    if (!player.canKan(tile)) {
+      from.discards.push(tile);
+      throw new Error('Player cannot kan this tile');
+    }
+    player.kan(tile);
+    this.currentIndex = playerIndex;
+  }
+
   declareRon(playerIndex: number, fromIndex: number): boolean {
-    const tile = this.players[fromIndex].discards.at(-1);
+    const from = this.players[fromIndex];
+    const tile = from.discards.at(-1);
     if (!tile) throw new Error('No discard to claim');
     const hand = [...this.players[playerIndex].hand, tile];
-    return isWinningHand(hand);
+    if (isWinningHand(hand)) {
+      from.discards.pop();
+      this.players[playerIndex].hand.push(tile);
+      this.currentIndex = playerIndex;
+      return true;
+    }
+    return false;
   }
 
   calculateScore(playerIndex = this.currentIndex): ScoreResult {

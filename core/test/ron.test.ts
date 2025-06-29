@@ -29,4 +29,6 @@ test('declareRon detects win with discard', () => {
   game.players[0].hand.push(winningTile);
   game.players[0].discard(0);
   assert.ok(game.declareRon(1, 0));
+  assert.strictEqual(game.players[0].discards.length, 0);
+  assert.strictEqual(game.players[1].hand.length, 14);
 });
