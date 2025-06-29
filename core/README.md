@@ -14,6 +14,7 @@ Currently implemented yaku detection includes:
 - Yakuhai (triplets of dragons or winds)
 - Toitoi (all triplets)
 - Iipeikou (two identical sequences)
+- Dora (bonus tiles from indicators)
 
 Fu is calculated using a simplified model based on meld composition and honor
 tiles. See `Score.ts` for details.

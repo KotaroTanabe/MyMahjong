@@ -1,4 +1,5 @@
 import { Tile } from './Tile.js';
+import type { Wind, Dragon } from './types.js';
 
 export interface Meld {
   type: 'sequence' | 'triplet';
@@ -15,6 +16,8 @@ export interface ScoreOptions {
   dealer?: boolean;
   /** 'ron' for winning off a discard, 'tsumo' for self draw */
   win?: 'ron' | 'tsumo';
+  /** Dora indicator tiles to count bonus han */
+  doraIndicators?: Tile[];
 }
 
 export interface ScoreResult {
@@ -131,8 +134,30 @@ export function detectYakuhai(hand: Tile[]): string[] {
   return result;
 }
 
+function doraFromIndicator(tile: Tile): string {
+  if (tile.suit === 'man' || tile.suit === 'pin' || tile.suit === 'sou') {
+    const value = tile.value as number;
+    const next = value === 9 ? 1 : (value + 1) as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+    return `${tile.suit}-${next}`;
+  }
+  if (tile.suit === 'wind') {
+    const order: Wind[] = ['east', 'south', 'west', 'north'];
+    const idx = order.indexOf(tile.value as Wind);
+    return `wind-${order[(idx + 1) % order.length]}`;
+  }
+  const dragons: Dragon[] = ['white', 'green', 'red'];
+  const idx = dragons.indexOf(tile.value as Dragon);
+  return `dragon-${dragons[(idx + 1) % dragons.length]}`;
+}
+
+function countDora(hand: Tile[], indicators: Tile[]): number {
+  if (indicators.length === 0) return 0;
+  const doraKeys = indicators.map(doraFromIndicator);
+  return hand.filter(t => doraKeys.includes(t.toString())).length;
+}
+
 export function calculateScore(hand: Tile[], options: ScoreOptions = {}): ScoreResult {
-  const { dealer = false, win = 'ron' } = options;
+  const { dealer = false, win = 'ron', doraIndicators = [] } = options;
   const yaku: string[] = [];
   let han = 0;
   if (detectTanyao(hand)) {
@@ -155,6 +180,13 @@ export function calculateScore(hand: Tile[], options: ScoreOptions = {}): ScoreR
   if (detectIipeikou(hand)) {
     yaku.push('iipeikou');
     han += 1;
+  }
+  if (doraIndicators.length > 0) {
+    const doraCount = countDora(hand, doraIndicators);
+    for (let i = 0; i < doraCount; i++) {
+      yaku.push('dora');
+    }
+    han += doraCount;
   }
   const rawFu = calculateFu(hand);
   const fu = Math.ceil(rawFu / 10) * 10;
