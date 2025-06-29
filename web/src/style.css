@@ -10,7 +10,8 @@ body {
 }
 
 .hand,
-.discards {
+.discards,
+.discard-pile ul {
   list-style: none;
   padding: 0;
 }
@@ -24,6 +25,26 @@ body {
   overflow-y: auto;
 }
 
+.discard-pile {
+  display: grid;
+  grid-template-columns: repeat(6, auto);
+  gap: 0.25rem;
+  justify-content: center;
+}
+
+.discard-pile.top {
+  grid-area: top;
+}
+.discard-pile.bottom {
+  grid-area: bottom;
+}
+.discard-pile.left {
+  grid-area: left;
+}
+.discard-pile.right {
+  grid-area: right;
+}
+
 .hand {
   display: flex;
   gap: 0.25rem;
@@ -32,7 +53,8 @@ body {
 }
 
 .hand li,
-.discards li {
+.discards li,
+.discard-pile li {
   margin-bottom: 0.25rem;
 }
 
