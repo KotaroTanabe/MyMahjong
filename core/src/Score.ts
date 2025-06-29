@@ -20,6 +20,10 @@ export interface ScoreOptions {
   doraIndicators?: Tile[];
   /** Adds one han if the player declared riichi */
   riichi?: boolean;
+  /** Player's seat wind. Used for yakuhai detection */
+  seatWind?: Wind;
+  /** Current round wind. Used for yakuhai detection */
+  roundWind?: Wind;
 }
 
 export interface ScoreResult {
@@ -115,7 +119,11 @@ export function detectIipeikou(hand: Tile[]): boolean {
  * Detects triplets of honor tiles (winds or dragons).
  * Returns an array of yakuhai names for each qualifying triplet.
  */
-export function detectYakuhai(hand: Tile[]): string[] {
+export function detectYakuhai(
+  hand: Tile[],
+  seatWind?: Wind,
+  roundWind?: Wind
+): string[] {
   const counts = new Map<string, { tile: Tile; count: number }>();
   for (const tile of hand) {
     const key = tile.toString();
@@ -129,7 +137,13 @@ export function detectYakuhai(hand: Tile[]): string[] {
 
   const result: string[] = [];
   for (const { tile, count } of counts.values()) {
-    if (count >= 3 && (tile.suit === 'wind' || tile.suit === 'dragon')) {
+    if (count < 3) continue;
+    if (tile.suit === 'dragon') {
+      result.push(`yakuhai-${tile.value}`);
+    } else if (
+      tile.suit === 'wind' &&
+      (tile.value === seatWind || tile.value === roundWind)
+    ) {
       result.push(`yakuhai-${tile.value}`);
     }
   }
@@ -159,7 +173,14 @@ function countDora(hand: Tile[], indicators: Tile[]): number {
 }
 
 export function calculateScore(hand: Tile[], options: ScoreOptions = {}): ScoreResult {
-  const { dealer = false, win = 'ron', doraIndicators = [], riichi = false } = options;
+  const {
+    dealer = false,
+    win = 'ron',
+    doraIndicators = [],
+    riichi = false,
+    seatWind,
+    roundWind,
+  } = options;
   const yaku: string[] = [];
   let han = 0;
   if (detectTanyao(hand)) {
@@ -170,7 +191,7 @@ export function calculateScore(hand: Tile[], options: ScoreOptions = {}): ScoreR
     yaku.push('chiitoitsu');
     han += 2;
   }
-  const yakuhai = detectYakuhai(hand);
+  const yakuhai = detectYakuhai(hand, seatWind, roundWind);
   if (yakuhai.length > 0) {
     yaku.push(...yakuhai);
     han += yakuhai.length;

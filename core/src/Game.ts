@@ -116,7 +116,12 @@ export class Game {
     playerIndex = this.currentIndex,
     options: import('./Score.js').ScoreOptions = {}
   ): ScoreResult {
-    return calculateScore(this.players[playerIndex].hand, options);
+    const player = this.players[playerIndex];
+    return calculateScore(this.players[playerIndex].hand, {
+      seatWind: player.seatWind,
+      roundWind: this.roundWind,
+      ...options,
+    });
   }
 
   isWinningHand(playerIndex = this.currentIndex): boolean {
