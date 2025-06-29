@@ -99,6 +99,11 @@ export class Game {
     }
     player.kan(tile);
     this.currentIndex = playerIndex;
+    const indicator = this.wall.peek(this.doraIndicators.length);
+    if (indicator) this.doraIndicators.push(indicator);
+    const drawn = this.wall.draw();
+    if (!drawn) throw new Error('Wall exhausted');
+    player.draw(drawn);
   }
 
   declareRon(playerIndex: number, fromIndex: number): boolean {
