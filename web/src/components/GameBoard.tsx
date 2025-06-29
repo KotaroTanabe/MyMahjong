@@ -43,10 +43,34 @@ export function GameBoard({ currentHand, playerDiscards, centerTiles = [], wallC
         </div>
         <Hand tiles={currentHand} onDiscard={onDiscard} />
         <div className="meld-buttons">
-          <button onClick={() => onPon?.(3)}>Pon</button>
-          <button onClick={() => onChi?.(3)}>Chi</button>
-          <button onClick={() => onKan?.(3)}>Kan</button>
-          <button onClick={() => onRon?.(3)}>Ron</button>
+          <button
+            className="icon-button"
+            aria-label="Pon"
+            onClick={() => onPon?.(3)}
+          >
+            📣
+          </button>
+          <button
+            className="icon-button"
+            aria-label="Chi"
+            onClick={() => onChi?.(3)}
+          >
+            ➡️
+          </button>
+          <button
+            className="icon-button"
+            aria-label="Kan"
+            onClick={() => onKan?.(3)}
+          >
+            ➕
+          </button>
+          <button
+            className="icon-button"
+            aria-label="Ron"
+            onClick={() => onRon?.(3)}
+          >
+            🚩
+          </button>
         </div>
       </div>
     </div>

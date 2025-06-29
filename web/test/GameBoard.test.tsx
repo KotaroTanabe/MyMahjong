@@ -29,3 +29,24 @@ test('GameBoard renders hand, discards, melds and center tiles', () => {
   assert.ok(html.includes('wind-east.svg'));
   assert.ok(html.includes('50'));
 });
+
+test('GameBoard action buttons use icons with aria-labels', () => {
+  const tiles = [new Tile({ suit: 'man', value: 1 })];
+  const discardsByPlayer = [[], [], [], []];
+  const html = renderToStaticMarkup(
+    <GameBoard
+      currentHand={tiles}
+      playerDiscards={discardsByPlayer}
+      wallCount={50}
+      onDiscard={() => {}}
+      onPon={() => {}}
+      onChi={() => {}}
+      onKan={() => {}}
+      onRon={() => {}}
+    />
+  );
+  const labels = ['Pon', 'Chi', 'Kan', 'Ron'];
+  for (const label of labels) {
+    assert.ok(html.includes(`aria-label="${label}"`));
+  }
+});
