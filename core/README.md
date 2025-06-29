@@ -14,6 +14,7 @@ Currently implemented yaku detection includes:
 - Yakuhai (triplets of dragons or winds)
 - Toitoi (all triplets)
 - Iipeikou (two identical sequences)
+- Ittsu (straight 1-9 in one suit)
 - Pinfu (all sequences with no extra fu)
 - Dora (bonus tiles from indicators)
 - Riichi (declaring ready hand)

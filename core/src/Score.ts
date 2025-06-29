@@ -116,6 +116,33 @@ export function detectIipeikou(hand: Tile[]): boolean {
 }
 
 /**
+ * Detects the "ittsu" yaku (straight 1-9 in one suit).
+ * The check uses {@link analyzeHand} results so only one valid arrangement
+ * of the hand is considered.
+ */
+export function detectIttsu(hand: Tile[]): boolean {
+  if (detectSevenPairs(hand)) return false;
+  const analysis = analyzeHand(hand);
+  if (!analysis) return false;
+  const startMap = new Map<'man' | 'pin' | 'sou', Set<number>>();
+  for (const suit of ['man', 'pin', 'sou'] as const) {
+    startMap.set(suit, new Set());
+  }
+  for (const meld of analysis.melds) {
+    if (meld.type !== 'sequence') continue;
+    const [first] = meld.tiles;
+    if (first.suit === 'man' || first.suit === 'pin' || first.suit === 'sou') {
+      startMap.get(first.suit)!.add(first.value as number);
+    }
+  }
+  for (const suit of ['man', 'pin', 'sou'] as const) {
+    const starts = startMap.get(suit)!;
+    if (starts.has(1) && starts.has(4) && starts.has(7)) return true;
+  }
+  return false;
+}
+
+/**
  * Detects the "pinfu" yaku (all sequences with no extra fu). This simplified
  * version only checks that the hand is composed entirely of sequences, the pair
  * is not an honor tile and that fu calculation yields the base 20 fu. Wait
@@ -218,6 +245,10 @@ export function calculateScore(hand: Tile[], options: ScoreOptions = {}): ScoreR
   }
   if (detectIipeikou(hand)) {
     yaku.push('iipeikou');
+    han += 1;
+  }
+  if (detectIttsu(hand)) {
+    yaku.push('ittsu');
     han += 1;
   }
   if (detectPinfu(hand)) {
