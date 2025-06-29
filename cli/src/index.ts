@@ -3,7 +3,6 @@ import { stdin as input, stdout as output } from 'node:process';
 import { Game, ScoreResult } from '@mymahjong/core';
 import { renderHand, renderDiscards, prompt } from './UI.js';
 import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
 
 export async function run(
   game: Game = new Game(1),
@@ -41,7 +40,6 @@ export async function run(
 }
 
 const thisFile = fileURLToPath(import.meta.url);
-dirname(thisFile);
 if (process.argv[1] === thisFile) {
   run();
 }
