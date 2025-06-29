@@ -18,8 +18,8 @@ test('style.css includes height and overflow rules', async () => {
   assert.match(css, /\.player-area\.left[^}]*min-height:\s*6rem/);
   assert.match(css, /\.player-area\.right[^}]*min-height:\s*6rem/);
   assert.match(css, /\.discards[^}]*overflow-y:\s*auto/);
-  assert.match(css, /\.discards[^}]*min-height:/);
-  assert.match(css, /\.discard-pile[^}]*min-height:/);
+  assert.match(css, /\.discards[^}]*min-height:\s*calc\(8rem \+ 1\.75rem\)/);
+  assert.match(css, /\.discard-pile[^}]*min-height:\s*calc\(8rem \+ 1\.75rem\)/);
   assert.match(css, /\.melds[^}]*overflow-y:\s*auto/);
 });
 

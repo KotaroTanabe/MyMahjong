@@ -14,8 +14,8 @@ This document outlines how the Mahjong board is arranged in the web UI. The desi
 ## Digital Considerations
 
 To conserve screen space the interface avoids lengthy text and uses small buttons or icons. The layout reserves fixed regions for each player so elements do not jump as the game progresses. Media queries can stack the side players vertically when the viewport becomes narrow, ensuring controls remain accessible on phones.
-The discard areas maintain a minimum height so a player's hand does not shift when the first tile is thrown.
-This is enforced via the `.discard-pile` CSS rule which reserves enough space for one row of tiles.
+The discard areas maintain a minimum height so a player's hand does not shift even when no tiles have been discarded.
+This is enforced via the `.discard-pile` CSS rule which now reserves enough space for four rows (24 tiles).
 
 ### Meld Buttons
 
