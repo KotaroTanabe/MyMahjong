@@ -16,3 +16,9 @@ test('nextHand rotates dealer and round wind', () => {
   assert.strictEqual(game.roundWind, 'south');
   assert.deepStrictEqual(game.seatWinds, winds);
 });
+
+test('nextHand sets current player to dealer', () => {
+  const game = new Game();
+  game.nextHand();
+  assert.strictEqual(game['currentIndex'], game['dealerIndex']);
+});

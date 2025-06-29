@@ -12,6 +12,7 @@ export class Game {
   private currentIndex = 0;
   private dealerIndex = 0;
   private roundWindIndex = 0;
+  readonly doraIndicators: Tile[] = [];
 
   /**
    * Seat winds assigned to each player in the same order as `players`.
@@ -26,6 +27,8 @@ export class Game {
     this.wall = wall;
     this.players = Array.from({ length: playerCount }, () => new Player());
     this.assignSeatWinds();
+    const indicator = this.wall.peek();
+    if (indicator) this.doraIndicators.push(indicator);
   }
 
   private assignSeatWinds(): void {
@@ -120,6 +123,7 @@ export class Game {
     return calculateScore(this.players[playerIndex].hand, {
       seatWind: player.seatWind,
       roundWind: this.roundWind,
+      doraIndicators: this.doraIndicators,
       ...options,
     });
   }
@@ -139,6 +143,7 @@ export class Game {
       player.seatWind = winds[i];
       this.seatWinds[(this.dealerIndex + i) % this.players.length] = winds[i];
     }
+    this.currentIndex = this.dealerIndex;
   }
 
   /**

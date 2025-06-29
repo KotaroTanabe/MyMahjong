@@ -56,6 +56,11 @@ export class Wall {
     return this.tiles.pop();
   }
 
+  /** Peek at a tile without removing it. 0 refers to the next tile to be drawn. */
+  peek(index = 0): Tile | undefined {
+    return this.tiles[this.tiles.length - 1 - index];
+  }
+
   get count(): number {
     return this.tiles.length;
   }

@@ -155,3 +155,7 @@ button {
     grid-template-columns: 1fr;
   }
 }
+
+.scoreboard { margin-top: 0.5rem; border-collapse: collapse; }
+.scoreboard th, .scoreboard td { padding: 0.25rem 0.5rem; border: 1px solid #ccc; }
+

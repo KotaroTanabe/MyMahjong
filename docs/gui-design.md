@@ -18,5 +18,6 @@ This document summarizes the ongoing discussion about how to present the Mahjong
 3. Add media queries that reorganize the grid on small screens (e.g. stacking side players above the center).
 4. Replace textual control labels with icons and add appropriate `aria-label` attributes.
 5. Ensure the layout uses flexible units so it remains usable on both desktops and phones.
+6. Show dora indicators and remaining wall tiles in the center display.
 
 These tasks will gradually evolve the prototype toward a more intuitive and responsive interface.
