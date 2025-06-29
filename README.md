@@ -35,6 +35,34 @@ package provides a simple terminal interface for a few demonstration turns, and
 the **web** package shows how the same logic can drive a React app.  Feel free
 to expand the rules or presentation layer to suit your needs.
 
+## Implementation Status
+
+### core
+
+Implemented features include tile generation, basic drawing and discarding, win
+detection and a small scoring system.  The scorer detects yaku such as `tanyao`,
+`chiitoitsu`, `yakuhai`, `toitoi`, `iipeikou`, `ittsu`, `pinfu`, `dora` bonuses
+and `riichi` declaration.  Dealer rotation and round wind progression are also
+handled.
+
+Not yet implemented are many additional yaku, detailed fu/han calculations and
+other advanced rules.
+
+### cli
+
+The CLI runs a single-player demo where you draw and discard tiles while seeing
+possible yaku from the core engine.  It lacks niceties like colored output or
+Unicode tile graphics and does not implement a full game flow.
+
+### web (gui)
+
+The React front end renders the board with each player's area arranged around a
+center display showing dora indicators and remaining wall tiles.  Only the
+bottom player's hand is interactive.  CSS includes a simple responsive layout.
+
+Future work includes richer graphics, full interaction for all players and other
+enhancements described in `docs/gui-design.md`.
+
 ## Getting Started
 
 ### Install Dependencies
@@ -113,8 +141,10 @@ status and a suggested roadmap for extending the rules.
   - `tanyao` (all simples)
   - `chiitoitsu` (seven pairs)
   - `yakuhai` triplets of winds or dragons
+  - `toitoi` (all triplets)
   - `iipeikou` (two identical sequences)
   - `ittsu` (straight 1-9 in one suit)
+  - `pinfu` (all sequences with no extra fu)
   - `dora` bonus tiles from indicators
   - `riichi` declaration
   - Seat wind assignment and dealer rotation
