@@ -17,6 +17,7 @@ test('GameBoard renders hand, discards, melds and center tiles', () => {
       playerDiscards={discardsByPlayer}
       currentMelds={melds}
       centerTiles={center}
+      wallCount={50}
       onDiscard={() => {}}
     />
   );
@@ -26,4 +27,5 @@ test('GameBoard renders hand, discards, melds and center tiles', () => {
   assert.ok(html.includes('pin-2.svg'));
   assert.ok(html.includes('sou-3.svg'));
   assert.ok(html.includes('wind-east.svg'));
+  assert.ok(html.includes('50'));
 });

@@ -2,7 +2,7 @@ import type { Tile } from '@mymahjong/core';
 import { Hand } from './Hand.js';
 import { DiscardPile } from './DiscardPile.js';
 import { Melds } from './Melds.js';
-import { TileImage } from './TileImage.js';
+import { CenterDisplay } from './CenterDisplay.js';
 
 export interface GameBoardProps {
   currentHand: Tile[];
@@ -10,6 +10,8 @@ export interface GameBoardProps {
   playerDiscards: Tile[][];
   /** Tiles shown in the center such as dora indicators. */
   centerTiles?: Tile[];
+  /** Number of tiles remaining in the wall. */
+  wallCount: number;
   currentMelds?: Tile[][];
   onDiscard: (index: number) => void;
   onPon?: (fromIndex: number) => void;
@@ -18,7 +20,7 @@ export interface GameBoardProps {
   onRon?: (fromIndex: number) => void;
 }
 
-export function GameBoard({ currentHand, playerDiscards, centerTiles = [], currentMelds = [], onDiscard, onPon, onChi, onKan, onRon }: GameBoardProps): JSX.Element {
+export function GameBoard({ currentHand, playerDiscards, centerTiles = [], wallCount, currentMelds = [], onDiscard, onPon, onChi, onKan, onRon }: GameBoardProps): JSX.Element {
   return (
     <div className="board">
       <div className="player-area top">
@@ -29,11 +31,7 @@ export function GameBoard({ currentHand, playerDiscards, centerTiles = [], curre
         <p>Player 3</p>
         <DiscardPile tiles={playerDiscards[2] ?? []} position="left" />
       </div>
-      <div className="center">
-        {centerTiles.map((t, i) => (
-          <TileImage key={i} tile={t} />
-        ))}
-      </div>
+      <CenterDisplay tiles={centerTiles} wallCount={wallCount} />
       <div className="player-area right">
         <p>Player 4</p>
         <DiscardPile tiles={playerDiscards[3] ?? []} position="right" />
