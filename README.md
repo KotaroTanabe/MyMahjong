@@ -95,6 +95,34 @@ triplets of winds or dragons.
 When applicable, the CLI and web UI display the possible yaku, the number of han
 and total points.
 
+### Rule Coverage
+
+The core engine implements only a small slice of Mahjong. Below is the current
+status and a suggested roadmap for extending the rules.
+
+**Implemented**
+
+- Generation of all 136 tiles and shuffled wall
+- Dealing, drawing and discarding tiles
+- Scoring for:
+  - `tanyao` (all simples)
+  - `chiitoitsu` (seven pairs)
+  - `yakuhai` triplets of winds or dragons
+
+**Not Yet Implemented**
+
+- Meld calls such as chi, pon, kan and winning declarations
+- Round and seat wind tracking or dealer rotation
+- Additional yaku and detailed fu/han scoring
+- Riichi, dora indicators and other advanced rules
+
+**Recommended Next Steps**
+
+1. Add win detection and calls (chi/pon/kan/ron)
+2. Expand the scoring system with more yaku and fu calculations
+3. Introduce round progression with seat winds and dealer rotation
+4. Track riichi state and dora indicators to enable more advanced rules
+
 
 ### Run Tests
 
