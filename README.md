@@ -44,6 +44,8 @@ published yet.
 7. **Set up GitHub Actions** – lint, type check, run tests and deploy the built
    web front-end to GitHub Pages.
 
+See `docs/detailed-design.md` for an overview of the planned architecture.
+
 ## Deployed to
 
 https://kotarotanabe.github.io/MyMahjong/
