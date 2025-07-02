@@ -6,6 +6,44 @@ MyMahjong is a simple TypeScript monorepo for experimenting with a Mahjong game 
 - **cli** – a command line interface for playing the game in the terminal
 - **web** – a minimal web layer that demonstrates using the core package
 
+## Implementation status
+
+The repository currently contains documentation only. No source code has been
+published yet.
+
+### Packages
+
+- [ ] **core** – Python game engine built on top of the `mahjong` library
+- [ ] **cli** – command line interface using Click
+- [ ] **web** – FastAPI backend and React front-end
+
+### Features
+
+- [ ] Mortal AI integration
+- [ ] MJAI protocol support
+- [ ] Local single-player play via CLI
+- [ ] REST + WebSocket API
+- [ ] Web GUI served through GitHub Pages
+- [ ] Continuous integration workflow
+
+## Implementation plan
+
+1. **Create the game engine** – wrap the Python `mahjong` library and expose
+   methods for drawing, discarding and scoring.
+2. **Integrate Mortal AI** – add a module that uses the
+   [MJAI high level API](https://mjai.app/docs/highlevel-api) to communicate with
+   the AI process and execute its moves.
+3. **Build CLI** – provide commands for starting a local game against the AI and
+   for connecting to remote games.
+4. **Implement FastAPI server** – expose REST and WebSocket endpoints for game
+   management and real-time play.
+5. **Develop React front-end** – consume the API and present a board based on the
+   `docs/board-layout.md` design.
+6. **Implement MJAI adapter** – translate game state to and from
+   `docs/mjai-ai-integration.md` so AI engines can connect via the protocol.
+7. **Set up GitHub Actions** – lint, type check, run tests and deploy the built
+   web front-end to GitHub Pages.
+
 ## Deployed to
 
 https://kotarotanabe.github.io/MyMahjong/
