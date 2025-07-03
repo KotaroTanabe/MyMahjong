@@ -55,6 +55,15 @@ https://kotarotanabe.github.io/MyMahjong/
 GitHub Actions run linting, type checking, build and tests for every pull request.
 Once these checks succeed, the workflow automatically approves and merges the PR.
 
+## Running tests
+
+Install the core package in editable mode and execute `pytest`:
+
+```bash
+pip install -e ./core
+pytest -q
+```
+
 ## Contributing
 
 This repository is provided as a demonstration of Codex. We are not accepting
