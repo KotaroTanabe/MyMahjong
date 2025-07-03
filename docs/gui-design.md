@@ -2,6 +2,8 @@
 
 This document summarizes the ongoing discussion about how to present the Mahjong board in a clear and intuitive manner. The goal is a layout that stays within typical desktop resolutions and also adapts to phone screens in landscape mode.
 
+For a detailed overview of how each player area and discard river is arranged, including an ASCII layout diagram and rotation guidelines, see [board-layout.md](./board-layout.md).
+
 ## Key Ideas
 
 - **Minimal text** – Use tile images or simple icons instead of words wherever possible so players understand the state at a glance.
