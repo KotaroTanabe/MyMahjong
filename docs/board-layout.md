@@ -10,21 +10,25 @@ This document outlines how the Mahjong board is arranged in the web UI. The desi
 - Discards are grouped into rows of six to form a compact river. The `DiscardPile` component adds orientation classes so each seat's river aligns toward the center of the table.
 - Melded tiles (calls such as chi or pon) are displayed at the four corners of the table so discard piles remain clearly separated.
 - Opponents occupy the top, left and right edges, surrounding a central area used for wall tiles or indicators.
+- Each opponent's concealed hand is drawn just outside their discard pile so the river remains visible.
+- Each seat's discard pile and meld area is rotated with CSS so tiles face the center.
+  `.seat-east` rotates 90deg, `.seat-north` 180deg and `.seat-west` -90deg.
+- Melds are drawn in dedicated areas separate from discard piles so rivers remain intact.
 
 ### Layout Example
 
-The following ASCII diagram shows the relative placement of each player's discard pile (河)
-and open melds (鳴). Melds sit in the four corners while the wall and dora indicators occupy
-the center:
+The following ASCII diagram shows where each discard pile (河) and meld area (鳴) is placed.
+Each seat has one meld zone. The North player's hand is drawn just above the river for clarity as `🀫x13`. Other opponents keep their hands outside their rivers though they are omitted from this diagram.
 
 ```
-  +---------------+---------------+---------------+
-  | North Fuuro   | North River   | East Fuuro    |
-  +---------------+---------------+---------------+
-  | West River    | Wall & Dora   | East River    |
-  +---------------+---------------+---------------+
-  | West Fuuro    | South River   | South Fuuro   |
-  +---------------+---------------+---------------+
+  🀫x13 (North Hand)
+  +---------------+----------------------+---------------+
+  | North Fuuro   | North River          | East Fuuro    |
+  +---------------+----------------------+---------------+
+  | West River    | Wall / Dora / Round  | East River    |
+  +---------------+----------------------+---------------+
+  | West Fuuro    | South River          | South Fuuro   |
+  +---------------+----------------------+---------------+
 ```
 
 Discard piles surround the center while each player's opened sets cluster in the
