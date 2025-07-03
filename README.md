@@ -24,7 +24,7 @@ package. Future work will expand these components. Other packages remain stubbed
 - [ ] Local single-player play via CLI
 - [ ] REST + WebSocket API
 - [ ] Web GUI served through GitHub Pages
-- [ ] Continuous integration workflow
+- [x] Continuous integration workflow
 
 ## Implementation plan
 
