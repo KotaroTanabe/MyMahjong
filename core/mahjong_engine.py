@@ -19,3 +19,7 @@ class MahjongEngine:
         tile = self.state.wall.draw_tile()
         self.state.players[player_index].draw(tile)
         return tile
+
+    def discard_tile(self, player_index: int, tile: Tile) -> None:
+        """Discard a tile from the specified player's hand."""
+        self.state.players[player_index].discard(tile)
