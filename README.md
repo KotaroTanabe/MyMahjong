@@ -8,12 +8,12 @@ MyMahjong is a simple TypeScript monorepo for experimenting with a Mahjong game 
 
 ## Implementation status
 
-The repository currently contains documentation only. No source code has been
-published yet.
+The repository currently contains a minimal implementation of the **core**
+package. Other packages remain stubbed.
 
 ### Packages
 
-- [ ] **core** – Python game engine built on top of the `mahjong` library
+- [x] **core** – Python game engine built on top of the `mahjong` library
 - [ ] **cli** – command line interface using Click
 - [ ] **web** – FastAPI backend and React front-end
 

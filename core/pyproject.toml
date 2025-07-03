@@ -1,0 +1,16 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mymahjong-core"
+version = "0.1.0"
+description = "Mahjong game engine built on top of the mahjong library"
+readme = "../README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "mahjong"
+]
+
+[tool.hatch.build]
+packages = ["core"]
