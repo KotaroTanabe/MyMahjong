@@ -8,8 +8,27 @@ This document outlines how the Mahjong board is arranged in the web UI. The desi
 - Tiles within each hand are laid out horizontally, matching a traditional table view.
 - Each player's discard pile (河) sits directly in front of their hand. For the bottom player this means discards appear above the hand.
 - Discards are grouped into rows of six to form a compact river. The `DiscardPile` component adds orientation classes so each seat's river aligns toward the center of the table.
-- Melded tiles (calls such as chi or pon) align to the right of that player's discard pile. This keeps the main hand centered while revealing open sets.
+- Melded tiles (calls such as chi or pon) are displayed at the four corners of the table so discard piles remain clearly separated.
 - Opponents occupy the top, left and right edges, surrounding a central area used for wall tiles or indicators.
+
+### Layout Example
+
+The following ASCII diagram shows the relative placement of each player's discard pile (河)
+and open melds (鳴). Melds sit in the four corners while the wall and dora indicators occupy
+the center:
+
+```
+  +---------------+---------------+---------------+
+  | NW Fuuro      | North River    | NE Fuuro      |
+  +---------------+---------------+---------------+
+  | West River    | Wall & Dora    | East River    |
+  +---------------+---------------+---------------+
+  | SW Fuuro      | South River    | SE Fuuro      |
+  +---------------+---------------+---------------+
+```
+
+Discard piles surround the center while each player's opened sets cluster in the
+corners. The central area holds the remaining wall tiles and dora indicator display.
 
 ## Digital Considerations
 
