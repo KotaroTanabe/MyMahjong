@@ -19,11 +19,11 @@ the center:
 
 ```
   +---------------+---------------+---------------+
-  | NW Fuuro      | North River    | NE Fuuro      |
+  | North Fuuro   | North River   | East Fuuro    |
   +---------------+---------------+---------------+
-  | West River    | Wall & Dora    | East River    |
+  | West River    | Wall & Dora   | East River    |
   +---------------+---------------+---------------+
-  | SW Fuuro      | South River    | SE Fuuro      |
+  | West Fuuro    | South River   | South Fuuro   |
   +---------------+---------------+---------------+
 ```
 
