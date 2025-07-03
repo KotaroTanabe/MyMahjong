@@ -26,6 +26,12 @@ package. Future work will expand these components. Other packages remain stubbed
 - [ ] Web GUI served through GitHub Pages
 - [x] Continuous integration workflow
 
+### Core engine capabilities
+
+- [x] draw_tile
+- [x] discard_tile
+- [ ] scoring
+
 ## Implementation plan
 
 1. **Create the game engine** – wrap the Python `mahjong` library and expose

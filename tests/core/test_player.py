@@ -9,3 +9,4 @@ def test_player_draw_and_discard() -> None:
     assert tile in player.hand.tiles
     player.discard(tile)
     assert tile not in player.hand.tiles
+    assert tile in player.river
