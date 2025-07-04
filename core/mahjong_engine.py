@@ -25,7 +25,9 @@ class MahjongEngine:
         """Discard a tile from the specified player's hand."""
         self.state.players[player_index].discard(tile)
 
-    def calculate_score(self, player_index: int, win_tile: Tile) -> HandResponse:
+    def calculate_score(
+        self, player_index: int, win_tile: Tile
+    ) -> HandResponse:
         """Return scoring information for the winning hand."""
         from mahjong.tile import TilesConverter
         from mahjong.hand_calculating.hand import HandCalculator
