@@ -23,7 +23,7 @@ package. Future work will expand these components. Other packages remain stubbed
 - [ ] MJAI protocol support
 - [ ] Local single-player play via CLI
 - [ ] REST + WebSocket API
-- [ ] Web GUI served through GitHub Pages
+- [x] Web GUI served through GitHub Pages
 - [x] Continuous integration workflow
 - [x] Core <-> interface API documented
 - [x] GUI design documented
@@ -59,23 +59,11 @@ See `docs/detailed-design.md` for an overview of the planned architecture.
 
 ## Deployed to
 
+The static web GUI in the `web_gui` directory is built and deployed via GitHub Pages:
+
 https://kotarotanabe.github.io/MyMahjong/
 
 ## Continuous Integration
 
 GitHub Actions run linting, type checking, build and tests for every pull request.
 Once these checks succeed, the workflow automatically approves and merges the PR.
-
-## Running tests
-
-Install the core package in editable mode and execute `pytest`:
-
-```bash
-pip install -e ./core
-pytest -q
-```
-
-## Contributing
-
-This repository is provided as a demonstration of Codex. We are not accepting
-external pull requests or commits.

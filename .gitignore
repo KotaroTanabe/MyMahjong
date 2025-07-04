@@ -13,3 +13,7 @@ dist/
 # Others
 *.egg-info/
 
+# Node
+node_modules/
+web_gui/node_modules/
+web_gui/dist/
