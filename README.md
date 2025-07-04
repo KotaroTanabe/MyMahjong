@@ -28,6 +28,7 @@ package. Future work will expand these components. Other packages remain stubbed
 - [x] Basic REST endpoints (create game, fetch game, health)
 - [x] Web GUI served through GitHub Pages
 - [x] Basic GUI status display
+- [x] React front-end skeleton
 - [x] Continuous integration workflow
 - [x] Core <-> interface API documented
 - [x] GUI design documented
