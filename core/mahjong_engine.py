@@ -14,6 +14,12 @@ class MahjongEngine:
         self.state = GameState(wall=Wall())
         self.state.players = [Player(name=f"Player {i}") for i in range(4)]
 
+    @property
+    def remaining_tiles(self) -> int:
+        """Number of tiles left in the wall."""
+        assert self.state.wall is not None
+        return self.state.wall.remaining_tiles
+
     def draw_tile(self, player_index: int) -> Tile:
         """Draw a tile for the specified player."""
         assert self.state.wall is not None
