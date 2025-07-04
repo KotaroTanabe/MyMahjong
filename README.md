@@ -30,7 +30,7 @@ package. Future work will expand these components. Other packages remain stubbed
 
 - [x] draw_tile
 - [x] discard_tile
-- [ ] scoring
+- [x] scoring
 
 ## Implementation plan
 
