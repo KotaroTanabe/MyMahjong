@@ -16,6 +16,7 @@ package. Future work will expand these components. Other packages remain stubbed
  - [x] core
  - [ ] cli
  - [x] web
+ - [x] web_gui
 
 ### Features
 
@@ -25,6 +26,7 @@ package. Future work will expand these components. Other packages remain stubbed
 - [ ] Local single-player play via CLI
 - [ ] REST + WebSocket API
 - [x] Web GUI served through GitHub Pages
+- [x] Basic GUI status display
 - [x] Continuous integration workflow
 - [x] Core <-> interface API documented
 - [x] GUI design documented
