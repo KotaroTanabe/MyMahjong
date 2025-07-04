@@ -25,6 +25,7 @@ package. Future work will expand these components. Other packages remain stubbed
 - [ ] REST + WebSocket API
 - [ ] Web GUI served through GitHub Pages
 - [x] Continuous integration workflow
+- [x] Core <-> interface API documented
 
 ### Core engine capabilities
 
