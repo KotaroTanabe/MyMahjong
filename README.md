@@ -26,6 +26,7 @@ package. Future work will expand these components. Other packages remain stubbed
 - [ ] Web GUI served through GitHub Pages
 - [x] Continuous integration workflow
 - [x] Core <-> interface API documented
+- [x] GUI design documented
 
 ### Core engine capabilities
 
@@ -52,6 +53,7 @@ package. Future work will expand these components. Other packages remain stubbed
    web front-end to GitHub Pages.
 
 See `docs/detailed-design.md` for an overview of the planned architecture.
+`docs/web-gui-architecture.md` provides more details about the planned React GUI.
 
 ## Deployed to
 
