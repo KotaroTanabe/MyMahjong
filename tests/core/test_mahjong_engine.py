@@ -67,3 +67,10 @@ def test_end_game_resets_state() -> None:
     finished = engine.end_game()
     assert finished is old_state
     assert engine.state is not old_state
+
+
+def test_remaining_tiles_property() -> None:
+    engine = MahjongEngine()
+    remaining = engine.remaining_tiles
+    engine.draw_tile(0)
+    assert engine.remaining_tiles == remaining - 1

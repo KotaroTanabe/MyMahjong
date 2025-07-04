@@ -46,6 +46,7 @@ package. Future work will expand these components. Other packages remain stubbed
 - [x] declare_ron
 - [x] skip
 - [x] end_game
+- [x] standard wall initialization
 
 ## Implementation plan
 
