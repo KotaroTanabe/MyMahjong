@@ -29,8 +29,10 @@ package. Future work will expand these components. Other packages remain stubbed
 
 ### Core engine capabilities
 
+- [x] start_game
 - [x] draw_tile
 - [x] discard_tile
+- [x] get_state
 - [x] scoring
 
 ## Implementation plan
