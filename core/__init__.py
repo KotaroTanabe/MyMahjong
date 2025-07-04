@@ -8,5 +8,6 @@ __all__ = [
     "player",
     "wall",
     "ai_adapter",
+    "api",
     "models",
 ]
