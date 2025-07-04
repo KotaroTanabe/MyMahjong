@@ -20,6 +20,7 @@ package. Future work will expand these components. Other packages remain stubbed
 ### Features
 
 - [ ] Mortal AI integration
+- [x] Mortal backend integration design
 - [ ] MJAI protocol support
 - [ ] Local single-player play via CLI
 - [ ] REST + WebSocket API

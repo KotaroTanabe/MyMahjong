@@ -8,6 +8,7 @@ __all__ = [
     "player",
     "wall",
     "ai_adapter",
+    "mortal_runner",
     "api",
     "models",
 ]
