@@ -49,3 +49,21 @@ def test_calculate_score_returns_value() -> None:
     player.hand.tiles = tiles.copy()
     result = engine.calculate_score(0, tiles[-1])
     assert result.han is not None and result.han > 0
+
+
+def test_call_pon_adds_meld() -> None:
+    engine = MahjongEngine()
+    tiles = [Tile("man", 1) for _ in range(3)]
+    player = engine.state.players[0]
+    player.hand.tiles.extend(tiles[:2])
+    engine.call_pon(0, tiles)
+    assert len(player.hand.melds) == 1
+    assert player.hand.melds[0].type == "pon"
+
+
+def test_end_game_resets_state() -> None:
+    engine = MahjongEngine()
+    old_state = engine.state
+    finished = engine.end_game()
+    assert finished is old_state
+    assert engine.state is not old_state

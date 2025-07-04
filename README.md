@@ -35,6 +35,13 @@ package. Future work will expand these components. Other packages remain stubbed
 - [x] discard_tile
 - [x] get_state
 - [x] scoring
+- [x] call_chi
+- [x] call_pon
+- [x] call_kan
+- [x] declare_tsumo
+- [x] declare_ron
+- [x] skip
+- [x] end_game
 
 ## Implementation plan
 
