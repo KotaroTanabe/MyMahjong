@@ -21,3 +21,21 @@ def test_draw_and_discard() -> None:
 def test_get_state() -> None:
     state = api.start_game(["A", "B", "C", "D"])
     assert api.get_state() is state
+
+
+def test_call_pon() -> None:
+    state = api.start_game(["A", "B", "C", "D"])
+    tiles = [models.Tile("pin", 1) for _ in range(3)]
+    player = state.players[0]
+    player.hand.tiles.extend(tiles[:2])
+    api.call_pon(0, tiles)
+    assert len(player.hand.melds) == 1
+    assert player.hand.melds[0].type == "pon"
+
+
+def test_end_game_creates_new_state() -> None:
+    state = api.start_game(["A", "B", "C", "D"])
+    finished = api.end_game()
+    assert finished is state
+    new_state = api.start_game(["E", "F", "G", "H"])
+    assert new_state is not state
