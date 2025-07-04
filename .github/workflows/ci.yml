@@ -20,7 +20,7 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install build
-      - run: pip install -e ./core
+      - run: pip install -e ./core -e ./web
       - run: python -m build core
 
   test:
@@ -31,10 +31,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: pip install -e ./core
+      - run: pip install -e ./core -e ./web
       - run: pip install flake8 mypy pytest
       - run: flake8
-      - run: mypy core
+      - run: mypy core web
       - run: pytest -q
 
   deploy:

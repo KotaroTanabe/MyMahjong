@@ -13,9 +13,9 @@ package. Future work will expand these components. Other packages remain stubbed
 
 ### Packages
 
-- [x] core
-- [ ] cli
-- [ ] web
+ - [x] core
+ - [ ] cli
+ - [x] web
 
 ### Features
 
