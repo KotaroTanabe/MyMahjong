@@ -11,7 +11,12 @@ def test_health_endpoint() -> None:
     assert response.json() == {"status": "ok"}
 
 
-def test_get_game_endpoint() -> None:
+def test_create_and_get_game() -> None:
+    create = client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    assert create.status_code == 200
+    data = create.json()
+    assert len(data["players"]) == 4
+
     response = client.get("/games/1")
     assert response.status_code == 200
     data = response.json()

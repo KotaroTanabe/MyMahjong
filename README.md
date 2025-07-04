@@ -24,6 +24,7 @@ package. Future work will expand these components. Other packages remain stubbed
 - [ ] MJAI protocol support
 - [ ] Local single-player play via CLI
 - [ ] REST + WebSocket API
+- [x] Basic REST endpoints (create game, fetch game, health)
 - [x] Web GUI served through GitHub Pages
 - [x] Continuous integration workflow
 - [x] Core <-> interface API documented
