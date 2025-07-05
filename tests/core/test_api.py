@@ -9,8 +9,10 @@ def test_start_game() -> None:
 
 def test_start_game_deals_hands() -> None:
     state = api.start_game(["A", "B", "C", "D"])
+    dealer = state.dealer
     counts = [len(p.hand.tiles) for p in state.players]
-    assert all(c == 13 for c in counts)
+    assert counts[dealer] == 14
+    assert all(counts[i] == 13 for i in range(4) if i != dealer)
 
 
 def test_draw_and_discard() -> None:

@@ -12,9 +12,11 @@ def test_engine_initialization() -> None:
 
 def test_initial_hands_dealt() -> None:
     engine = MahjongEngine()
+    dealer = engine.state.dealer
     counts = [len(p.hand.tiles) for p in engine.state.players]
-    assert all(c == 13 for c in counts)
-    assert engine.remaining_tiles == 136 - 13 * 4
+    assert counts[dealer] == 14
+    assert all(counts[i] == 13 for i in range(4) if i != dealer)
+    assert engine.remaining_tiles == 136 - (14 + 13 * 3)
 
 
 def test_draw_tile_updates_state() -> None:
