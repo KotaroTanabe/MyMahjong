@@ -80,6 +80,31 @@ Future work will expand these components.
 See `docs/detailed-design.md` for an overview of the planned architecture.
 `docs/web-gui-architecture.md` provides more details about the planned React GUI.
 
+## Running locally
+
+### Start the FastAPI server
+
+The API server depends on the **core** package. Install the editable packages
+and run `uvicorn`:
+
+```bash
+pip install -e ./core -e ./web
+uvicorn web.server:app --reload
+```
+
+### Start the web GUI
+
+The front-end is a small React app built with Vite. Start the development server
+from the `web_gui` directory:
+
+```bash
+cd web_gui
+npm install
+npx vite --open
+```
+
+The GUI will automatically connect to the local FastAPI server's REST endpoints.
+
 ## Deployed to
 
 The static web GUI in the `web_gui` directory is built and deployed via GitHub Pages:
