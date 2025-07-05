@@ -31,6 +31,7 @@ Future work will expand these components.
 - [x] Basic GUI status display
 - [x] React front-end skeleton
 - [x] Basic board layout
+- [x] Hand & River components
 - [x] Continuous integration workflow
 - [x] Core <-> interface API documented
 - [x] GUI design documented

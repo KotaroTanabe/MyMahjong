@@ -26,6 +26,16 @@ def test_game_board_exists() -> None:
     assert board.is_file(), 'GameBoard.jsx missing'
 
 
+def test_hand_component_exists() -> None:
+    hand = Path('web_gui/Hand.jsx')
+    assert hand.is_file(), 'Hand.jsx missing'
+
+
+def test_river_component_exists() -> None:
+    river = Path('web_gui/River.jsx')
+    assert river.is_file(), 'River.jsx missing'
+
+
 def test_style_css_exists() -> None:
     css = Path('web_gui/style.css')
     assert css.is_file(), 'style.css missing'
