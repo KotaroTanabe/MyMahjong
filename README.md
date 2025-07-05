@@ -84,11 +84,11 @@ See `docs/detailed-design.md` for an overview of the planned architecture.
 
 ### Start the FastAPI server
 
-The API server depends on the **core** package. Install the editable packages
-and run `uvicorn`:
+The API server depends on the **core** package. Install the [**uv**](https://github.com/astral-sh/uv) tool and use it to install the editable packages before running `uvicorn`:
 
 ```bash
-pip install -e ./core -e ./web
+curl -Ls https://astral.sh/uv/install.sh | sh
+uv pip install -e ./core -e ./web
 uvicorn web.server:app --reload
 ```
 
