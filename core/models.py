@@ -44,3 +44,13 @@ class GameEvent:
 
     name: str
     payload: dict[str, Any]
+
+
+@dataclass
+class GameAction:
+    """Action issued by a player or AI."""
+
+    type: str
+    player_index: int | None = None
+    tile: Tile | None = None
+    tiles: list[Tile] | None = None
