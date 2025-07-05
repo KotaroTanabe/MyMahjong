@@ -101,9 +101,9 @@ def test_hand_supports_discard() -> None:
     assert 'onDiscard' in text
 
 
-def test_hand_uses_tile_to_image() -> None:
+def test_hand_uses_tile_to_emoji() -> None:
     text = Path('web_gui/Hand.jsx').read_text()
-    assert 'tileToImage' in text
+    assert 'tileToEmoji' in text
 
 
 def test_app_handles_websocket_events() -> None:
