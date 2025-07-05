@@ -94,7 +94,18 @@ def test_hand_supports_discard() -> None:
     assert 'onDiscard' in text
 
 
+def test_hand_uses_tile_to_emoji() -> None:
+    text = Path('web_gui/Hand.jsx').read_text()
+    assert 'tileToEmoji' in text
+
+
 def test_app_handles_websocket_events() -> None:
     text = Path('web_gui/App.jsx').read_text()
     assert 'handleMessage' in text
     assert 'event-log' in text
+
+
+def test_game_board_displays_melds_and_remaining() -> None:
+    text = Path('web_gui/GameBoard.jsx').read_text()
+    assert 'northMelds' in text
+    assert 'remaining={remaining}' in text

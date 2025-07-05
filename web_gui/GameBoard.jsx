@@ -19,7 +19,13 @@ export default function GameBoard({ state, server }) {
   const northHand = north?.hand?.tiles.map(tileLabel) ?? defaultHand;
   const westHand = west?.hand?.tiles.map(tileLabel) ?? defaultHand;
   const eastHand = east?.hand?.tiles.map(tileLabel) ?? defaultHand;
-  const southHand = south?.hand?.tiles ?? defaultHand;
+  const southHand = south?.hand?.tiles.map(tileLabel) ?? defaultHand;
+  const northMelds = north?.hand?.melds.map((m) => m.tiles.map(tileLabel)) ?? [];
+  const westMelds = west?.hand?.melds.map((m) => m.tiles.map(tileLabel)) ?? [];
+  const eastMelds = east?.hand?.melds.map((m) => m.tiles.map(tileLabel)) ?? [];
+  const southMelds = south?.hand?.melds.map((m) => m.tiles.map(tileLabel)) ?? [];
+  const remaining = state?.wall?.tiles?.length ?? 0;
+  const dora = state?.wall?.tiles?.[0] ? [tileLabel(state.wall.tiles[0])] : [];
 
   async function discard(tile) {
     try {
@@ -37,22 +43,22 @@ export default function GameBoard({ state, server }) {
     <div className="board-grid">
       <div className="north seat">
         <div>{north?.name ?? 'North'}</div>
-        <MeldArea melds={[]} />
+        <MeldArea melds={northMelds} />
         <River tiles={(north?.river ?? []).map(tileLabel)} />
         <Hand tiles={northHand} />
       </div>
       <div className="west seat">
         <div>{west?.name ?? 'West'}</div>
-        <MeldArea melds={[]} />
+        <MeldArea melds={westMelds} />
         <River tiles={(west?.river ?? []).map(tileLabel)} />
         <Hand tiles={westHand} />
       </div>
       <div className="center">
-        <CenterDisplay />
+        <CenterDisplay remaining={remaining} dora={dora} />
       </div>
       <div className="east seat">
         <div>{east?.name ?? 'East'}</div>
-        <MeldArea melds={[]} />
+        <MeldArea melds={eastMelds} />
         <River tiles={(east?.river ?? []).map(tileLabel)} />
         <Hand tiles={eastHand} />
       </div>
@@ -61,7 +67,7 @@ export default function GameBoard({ state, server }) {
         <River tiles={(south?.river ?? []).map(tileLabel)} />
         <Hand tiles={southHand} onDiscard={discard} />
         <Controls server={server} />
-        <MeldArea melds={[]} />
+        <MeldArea melds={southMelds} />
       </div>
     </div>
   );
