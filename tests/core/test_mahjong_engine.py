@@ -66,12 +66,16 @@ def test_calculate_score_returns_value() -> None:
 
 def test_call_pon_adds_meld() -> None:
     engine = MahjongEngine()
-    tiles = [Tile("man", 1) for _ in range(3)]
-    player = engine.state.players[0]
-    player.hand.tiles.extend(tiles[:2])
-    engine.call_pon(0, tiles)
-    assert len(player.hand.melds) == 1
-    assert player.hand.melds[0].type == "pon"
+    tile = Tile("man", 1)
+    discarder = engine.state.players[0]
+    caller = engine.state.players[1]
+    discarder.hand.tiles.append(tile)
+    engine.discard_tile(0, tile)
+    caller.hand.tiles.extend([Tile("man", 1), Tile("man", 1)])
+    engine.call_pon(1, [Tile("man", 1), Tile("man", 1), tile])
+    assert len(caller.hand.melds) == 1
+    assert caller.hand.melds[0].type == "pon"
+    assert tile not in discarder.river
 
 
 def test_end_game_resets_state() -> None:
