@@ -18,3 +18,13 @@ def get_game(server: str, game_id: int) -> dict:
     resp = requests.get(url)
     resp.raise_for_status()
     return resp.json()
+
+
+def draw_tile(server: str, game_id: int, player_index: int) -> dict:
+    """Draw a tile for ``player_index`` in ``game_id`` and return the tile."""
+    url = f"{server.rstrip('/')}/games/{game_id}/action"
+    resp = requests.post(
+        url, json={"player_index": player_index, "action": "draw"}
+    )
+    resp.raise_for_status()
+    return resp.json()

@@ -28,6 +28,8 @@ Future work will expand these components.
 - [x] RuleSet interface for scoring
 - [x] Local single-player play via CLI
 - [x] Basic remote game creation via CLI
+- [x] Join remote games via CLI
+- [x] Draw tile in remote games via CLI
 - [ ] REST + WebSocket API
 - [x] Basic REST endpoints (create game, fetch game, health)
 - [x] Web GUI served through GitHub Pages
