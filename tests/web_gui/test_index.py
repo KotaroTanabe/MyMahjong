@@ -155,3 +155,14 @@ def test_game_board_marks_riichi() -> None:
 def test_style_defines_tile_font_size() -> None:
     css = Path('web_gui/style.css').read_text()
     assert '--tile-font-size' in css
+
+
+def test_practice_component_exists() -> None:
+    practice = Path('web_gui/Practice.jsx')
+    assert practice.is_file(), 'Practice.jsx missing'
+
+
+def test_app_has_mode_select() -> None:
+    text = Path('web_gui/App.jsx').read_text()
+    assert 'Mode:' in text
+    assert 'Practice' in text

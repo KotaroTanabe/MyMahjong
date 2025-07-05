@@ -58,10 +58,10 @@ Future work will expand these components.
 - [x] Core <-> interface API documented
 - [x] GUI design documented
 - [x] Corrected seat orientation (shimocha right side)
-- [ ] 何切る問題 mode
+- [x] 何切る問題 mode
   - [x] CLI practice command
   - [x] AI recommendation
-  - [ ] Web UI support
+  - [x] Web UI support
 
 ### Core engine capabilities
 
@@ -117,7 +117,7 @@ Future work will expand these components.
   adapter with an interface that later swaps in Mortal.
 - [ ] **12. Write end-to-end tests** – cover REST routes, WebSocket updates and basic
   GUI interactions.
-- [ ] **13. Add `何切る問題` mode** – offer a practice scenario with a random seat wind
+ - [x] **13. Add `何切る問題` mode** – offer a practice scenario with a random seat wind
   and dora where the user picks a discard and the AI suggests a move.
 
 ### Remaining tasks
@@ -129,7 +129,6 @@ The following plan steps are not yet implemented:
 - Step 8 – Add full action endpoints.
 - Step 11 – Provide a mock AI.
 - Step 12 – Write end-to-end tests.
-- Step 13 – Add `何切る問題` mode.
 
 See `docs/detailed-design.md` for an overview of the planned architecture.
 `docs/web-gui-architecture.md` provides more details about the planned React GUI.

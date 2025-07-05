@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import GameBoard from './GameBoard.jsx';
+import Practice from './Practice.jsx';
 import { applyEvent } from './applyEvent.js';
 import './style.css';
 
@@ -10,6 +11,7 @@ export default function App() {
   const [gameId, setGameId] = useState(() => localStorage.getItem('gameId') || '');
   const [gameState, setGameState] = useState(null);
   const [events, setEvents] = useState([]);
+  const [mode, setMode] = useState('game');
   const wsRef = useRef(null);
 
   async function fetchStatus() {
@@ -168,6 +170,15 @@ export default function App() {
       </div>
       <div>
         <label>
+          Mode:
+          <select value={mode} onChange={(e) => setMode(e.target.value)}>
+            <option value="game">Game</option>
+            <option value="practice">Practice</option>
+          </select>
+        </label>
+      </div>
+      <div>
+        <label>
           Players:
           <input
             value={players}
@@ -190,15 +201,21 @@ export default function App() {
           Join Game
         </button>
       </div>
-      <GameBoard state={gameState} server={server} gameId={gameId} />
-      <div className="event-log">
-        <h2>Events</h2>
-        <ul>
-          {events.map((e, i) => (
-            <li key={i}>{e}</li>
-          ))}
-        </ul>
-      </div>
+      {mode === 'game' ? (
+        <GameBoard state={gameState} server={server} gameId={gameId} />
+      ) : (
+        <Practice server={server} />
+      )}
+      {mode === 'game' && (
+        <div className="event-log">
+          <h2>Events</h2>
+          <ul>
+            {events.map((e, i) => (
+              <li key={i}>{e}</li>
+            ))}
+          </ul>
+        </div>
+      )}
       <p>{status}</p>
     </>
   );
