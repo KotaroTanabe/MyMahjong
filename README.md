@@ -50,6 +50,8 @@ Future work will expand these components.
 - [x] Discard tiles via GUI
 - [x] Meld and win actions via GUI
 - [x] Start game via GUI
+- [x] Join game by ID via GUI
+- [x] Reconnect to running game after reload
 - [x] Continuous integration workflow
 - [x] Web GUI unit tests
 - [x] Core <-> interface API documented
