@@ -66,6 +66,7 @@ Future work will expand these components.
 - [x] standard wall initialization
 - [x] configurable ruleset
 - [x] event log
+- [x] current player tracking
 
 ## Implementation plan progress
 
