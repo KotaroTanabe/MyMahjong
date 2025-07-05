@@ -51,6 +51,8 @@ Future work will expand these components.
 - [x] Meld and win actions via GUI
 - [x] Start game via GUI
 - [x] Handle start_kyoku event in GUI
+- [x] Join game by ID via GUI
+- [x] Reconnect to running game after reload
 - [x] Continuous integration workflow
 - [x] Web GUI unit tests
 - [x] Core <-> interface API documented
@@ -80,6 +82,7 @@ Future work will expand these components.
 - [x] start_kyoku
 - [x] ryukyoku detection
 - [x] standard wall initialization
+- [x] dead wall & dora indicator tracking
 - [x] wanpai separation and yama remaining count
 - [x] configurable ruleset
 - [x] event log
