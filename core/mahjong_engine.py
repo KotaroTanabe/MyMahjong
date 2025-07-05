@@ -40,6 +40,12 @@ class MahjongEngine:
             p.hand.melds.clear()
             p.river.clear()
             p.riichi = False
+        winds = ["east", "south", "west", "north"]
+        self.state.seat_winds = []
+        for i, p in enumerate(self.state.players):
+            wind = winds[(i - dealer) % 4]
+            p.seat_wind = wind
+            self.state.seat_winds.append(wind)
         self.state.dealer = dealer
         self.state.round_number = round_number
         self.state.current_player = dealer
@@ -66,6 +72,12 @@ class MahjongEngine:
         """Number of tiles left in the wall."""
         assert self.state.wall is not None
         return self.state.wall.remaining_tiles
+
+    @property
+    def remaining_yama_tiles(self) -> int:
+        """Number of drawable tiles left this hand."""
+        assert self.state.wall is not None
+        return self.state.wall.remaining_yama_tiles
 
     def draw_tile(self, player_index: int) -> Tile:
         """Draw a tile for the specified player."""
@@ -163,4 +175,5 @@ class MahjongEngine:
         self.state.dead_wall = wall.dead_wall.copy()
         self.state.players = [Player(name=f"Player {i}") for i in range(4)]
         self.state.current_player = 0
+        self.state.seat_winds = []
         return final_state

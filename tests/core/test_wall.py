@@ -34,3 +34,13 @@ def test_wall_sets_dead_wall_and_dora() -> None:
     assert len(wall.dead_wall) == 14
     assert len(wall.dora_indicators) == 1
     assert wall.dora_indicators[0] in wall.dead_wall
+
+
+def test_remaining_yama_tiles_excludes_wanpai() -> None:
+    wall = Wall()
+    assert wall.remaining_yama_tiles == 136 - wall.wanpai_size
+    wall.draw_tile()
+    assert wall.remaining_yama_tiles == 136 - wall.wanpai_size - 1
+    # Remove all drawable tiles
+    wall.tiles = wall.tiles[-wall.wanpai_size:]
+    assert wall.remaining_yama_tiles == 0

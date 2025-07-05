@@ -8,6 +8,7 @@ def test_engine_initialization() -> None:
     engine = MahjongEngine()
     assert len(engine.state.players) == 4
     assert engine.state.wall is not None
+    assert engine.state.seat_winds == ["east", "south", "west", "north"]
 
 
 def test_initial_hands_dealt() -> None:
@@ -88,6 +89,13 @@ def test_remaining_tiles_property() -> None:
     assert engine.remaining_tiles == remaining - 1
 
 
+def test_remaining_yama_tiles_property() -> None:
+    engine = MahjongEngine()
+    yama_remaining = engine.remaining_yama_tiles
+    engine.draw_tile(0)
+    assert engine.remaining_yama_tiles == yama_remaining - 1
+
+
 def test_declare_riichi() -> None:
     engine = MahjongEngine()
     player = engine.state.players[0]
@@ -150,6 +158,14 @@ def test_start_kyoku_resets_state_and_emits_event() -> None:
     assert engine.state.dora_indicators[0] in engine.state.dead_wall
     events = engine.pop_events()
     assert events and events[0].name == "start_kyoku"
+
+
+def test_start_kyoku_assigns_seat_winds() -> None:
+    engine = MahjongEngine()
+    engine.pop_events()
+    engine.start_kyoku(dealer=1, round_number=1)
+    winds = [p.seat_wind for p in engine.state.players]
+    assert winds == ["north", "east", "south", "west"]
 
 
 def test_ryukyoku_event_on_wall_empty() -> None:
