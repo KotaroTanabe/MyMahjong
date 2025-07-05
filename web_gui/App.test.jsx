@@ -11,6 +11,7 @@ function mockFetch() {
     }
     if (url.endsWith('/games')) {
       return Promise.resolve({ ok: true, json: () => Promise.resolve({
+        id: 1,
         players: new Array(4).fill(0).map(() => ({ name: '', hand: { tiles: [], melds: [] }, river: [] })),
         wall: { tiles: [{ suit: 'man', value: 1 }, { suit: 'man', value: 2 }] }
       }) });
