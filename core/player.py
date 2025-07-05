@@ -15,6 +15,7 @@ class Player:
     score: int = 25000
     river: list[Tile] = field(default_factory=list)
     riichi: bool = False
+    seat_wind: str = "east"
 
     def draw(self, tile: Tile) -> None:
         """Add a tile to the player's hand."""

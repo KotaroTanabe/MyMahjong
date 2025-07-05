@@ -63,6 +63,7 @@ def test_start_kyoku_api() -> None:
     state = api.start_kyoku(2, 3)
     assert state.dealer == 2
     assert state.round_number == 3
+    assert state.seat_winds == ["west", "north", "east", "south"]
 
 
 def test_practice_api_functions(monkeypatch) -> None:
