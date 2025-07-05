@@ -36,6 +36,7 @@ Future work will expand these components.
 - [x] Basic board layout
 - [x] Hand & River components
 - [x] Meld area component
+- [x] Center display (dora & wall count)
 - [x] Continuous integration workflow
 - [x] Core <-> interface API documented
 - [x] GUI design documented

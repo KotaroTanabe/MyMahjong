@@ -2,6 +2,7 @@ import React from 'react';
 import Hand from './Hand.jsx';
 import River from './River.jsx';
 import MeldArea from './MeldArea.jsx';
+import CenterDisplay from './CenterDisplay.jsx';
 
 export default function GameBoard() {
   const hand = Array(13).fill('🀫');
@@ -17,7 +18,9 @@ export default function GameBoard() {
         <River tiles={[]} />
         <Hand tiles={hand} />
       </div>
-      <div className="center">Board</div>
+      <div className="center">
+        <CenterDisplay />
+      </div>
       <div className="east seat">
         <MeldArea melds={[]} />
         <River tiles={[]} />
