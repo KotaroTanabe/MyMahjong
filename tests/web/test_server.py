@@ -75,3 +75,15 @@ def test_websocket_streams_events() -> None:
         )
         data = ws.receive_json()
         assert data["name"] == "draw_tile"
+
+
+def test_practice_endpoints() -> None:
+    prob = client.get("/practice")
+    assert prob.status_code == 200
+    data = prob.json()
+    assert "hand" in data and "dora_indicator" in data
+
+    resp = client.post("/practice/suggest", json={"hand": data["hand"]})
+    assert resp.status_code == 200
+    tile = resp.json()
+    assert "suit" in tile and "value" in tile

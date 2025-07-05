@@ -124,3 +124,8 @@ def test_south_hand_displays_emojis() -> None:
 def test_app_updates_wall_on_draw() -> None:
     text = Path('web_gui/App.jsx').read_text()
     assert 'wall.tiles.pop()' in text
+
+
+def test_style_defines_tile_font_size() -> None:
+    css = Path('web_gui/style.css').read_text()
+    assert '--tile-font-size' in css
