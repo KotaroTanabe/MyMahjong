@@ -24,9 +24,12 @@ def create_standard_wall() -> list[Tile]:
 
 @dataclass
 class Wall:
-    """Represents the tile wall and dora indicators."""
+    """Represents the live wall plus dead wall, wanpai, and dora indicators."""
 
     tiles: List[Tile] = field(default_factory=list)
+    dead_wall: List[Tile] = field(default_factory=list)
+    dora_indicators: List[Tile] = field(default_factory=list)
+    wanpai_size: int = 14
 
     def __post_init__(self) -> None:
         if not self.tiles:
@@ -35,6 +38,21 @@ class Wall:
     def reset(self) -> None:
         """Fill the wall with a freshly shuffled standard tile set."""
         self.tiles = create_standard_wall()
+        # Reserve the last 14 tiles as the dead wall
+        self.dead_wall = [self.tiles.pop() for _ in range(14)]
+        # Reveal the 5th tile from the end of the dead wall as the
+        # dora indicator
+        if len(self.dead_wall) >= 5:
+            self.dora_indicators = [self.dead_wall[-5]]
+        else:
+            self.dora_indicators = []
+
+    @property
+    def remaining_yama_tiles(self) -> int:
+        """Tiles left that can still be drawn this hand."""
+        if len(self.dead_wall) == self.wanpai_size:
+            return len(self.tiles) if len(self.tiles) > self.wanpai_size else 0
+        return max(len(self.tiles) - self.wanpai_size, 0)
 
     @property
     def remaining_tiles(self) -> int:

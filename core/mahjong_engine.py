@@ -31,11 +31,21 @@ class MahjongEngine:
     def start_kyoku(self, dealer: int, round_number: int) -> None:
         """Begin a new hand with fresh tiles."""
         self.state.wall = Wall()
+        wall = self.state.wall
+        assert wall is not None
+        self.state.dora_indicators = wall.dora_indicators.copy()
+        self.state.dead_wall = wall.dead_wall.copy()
         for p in self.state.players:
             p.hand.tiles.clear()
             p.hand.melds.clear()
             p.river.clear()
             p.riichi = False
+        winds = ["east", "south", "west", "north"]
+        self.state.seat_winds = []
+        for i, p in enumerate(self.state.players):
+            wind = winds[(i - dealer) % 4]
+            p.seat_wind = wind
+            self.state.seat_winds.append(wind)
         self.state.dealer = dealer
         self.state.round_number = round_number
         self.state.current_player = dealer
@@ -46,17 +56,28 @@ class MahjongEngine:
         )
 
     def deal_initial_hands(self) -> None:
-        """Deal 13 tiles to each player at the start of the game."""
+        """Deal initial tiles: 14 for the dealer and 13 for others."""
         assert self.state.wall is not None
+        # everyone starts with 13 tiles
         for _ in range(13):
             for player in self.state.players:
                 player.draw(self.state.wall.draw_tile())
+
+        # dealer gets one extra tile to begin their first turn
+        dealer_index = self.state.dealer
+        self.state.players[dealer_index].draw(self.state.wall.draw_tile())
 
     @property
     def remaining_tiles(self) -> int:
         """Number of tiles left in the wall."""
         assert self.state.wall is not None
         return self.state.wall.remaining_tiles
+
+    @property
+    def remaining_yama_tiles(self) -> int:
+        """Number of drawable tiles left this hand."""
+        assert self.state.wall is not None
+        return self.state.wall.remaining_yama_tiles
 
     def draw_tile(self, player_index: int) -> Tile:
         """Draw a tile for the specified player."""
@@ -148,6 +169,11 @@ class MahjongEngine:
         scores = [p.score for p in final_state.players]
         self._emit("end_game", {"scores": scores})
         self.state = GameState(wall=Wall())
+        wall = self.state.wall
+        assert wall is not None
+        self.state.dora_indicators = wall.dora_indicators.copy()
+        self.state.dead_wall = wall.dead_wall.copy()
         self.state.players = [Player(name=f"Player {i}") for i in range(4)]
         self.state.current_player = 0
+        self.state.seat_winds = []
         return final_state

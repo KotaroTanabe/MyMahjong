@@ -6,7 +6,7 @@
   display: grid;
   grid-template-areas:
     '. north .'
-    'west center east'
+    'east center west'
     '. south .';
   grid-template-columns: 1fr 2fr 1fr;
   grid-template-rows: auto auto auto;

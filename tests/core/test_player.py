@@ -29,3 +29,8 @@ def test_discard_removes_specific_instance() -> None:
     player.discard(tile2)
     assert all(t is not tile2 for t in player.hand.tiles)
     assert tile1 in player.hand.tiles
+
+
+def test_player_has_seat_wind() -> None:
+    player = Player(name="Test")
+    assert player.seat_wind == "east"

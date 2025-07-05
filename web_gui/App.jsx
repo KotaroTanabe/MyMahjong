@@ -7,6 +7,7 @@ export default function App() {
   const [server, setServer] = useState('http://localhost:8000');
   const [status, setStatus] = useState('Contacting server...');
   const [players, setPlayers] = useState('A,B,C,D');
+  const [gameId, setGameId] = useState(() => localStorage.getItem('gameId') || '');
   const [gameState, setGameState] = useState(null);
   const [events, setEvents] = useState([]);
   const wsRef = useRef(null);
@@ -36,8 +37,10 @@ export default function App() {
       if (resp.ok) {
         const data = await resp.json();
         setGameState(data);
+        setGameId(String(data.id));
+        localStorage.setItem('gameId', String(data.id));
         setStatus('Game started');
-        openWebSocket();
+        openWebSocket(data.id);
       } else {
         setStatus(`Failed to start game (${resp.status})`);
       }
@@ -46,9 +49,10 @@ export default function App() {
     }
   }
 
-  async function fetchGameState() {
+  async function fetchGameState(id = gameId) {
     try {
-      const resp = await fetch(`${server.replace(/\/$/, '')}/games/1`);
+      if (!id) return;
+      const resp = await fetch(`${server.replace(/\/$/, '')}/games/${id}`);
       if (resp.ok) {
         setGameState(await resp.json());
       }
@@ -57,6 +61,65 @@ export default function App() {
     }
   }
 
+  function applyEvent(state, event) {
+    if (!state) return state;
+    const newState = JSON.parse(JSON.stringify(state));
+    switch (event.name) {
+      case 'start_game':
+        return event.payload.state;
+      case 'start_kyoku':
+        return event.payload.state;
+      case 'draw_tile': {
+        const p = newState.players[event.payload.player_index];
+        if (p) p.hand.tiles.push(event.payload.tile);
+        if (newState.wall?.tiles?.length) newState.wall.tiles.pop();
+        break;
+      }
+      case 'discard': {
+        const p = newState.players[event.payload.player_index];
+        if (p) {
+          const { tile } = event.payload;
+          const idx = p.hand.tiles.findIndex(
+            (t) => t.suit === tile.suit && t.value === tile.value,
+          );
+          if (idx !== -1) p.hand.tiles.splice(idx, 1);
+          p.river.push(tile);
+        }
+        break;
+      }
+      case 'meld': {
+        const p = newState.players[event.payload.player_index];
+        if (p) {
+          event.payload.meld.tiles.forEach((m) => {
+            const idx = p.hand.tiles.findIndex(
+              (t) => t.suit === m.suit && t.value === m.value,
+            );
+            if (idx !== -1) p.hand.tiles.splice(idx, 1);
+          });
+          p.hand.melds.push(event.payload.meld);
+        }
+        break;
+      }
+      case 'riichi': {
+        const p = newState.players[event.payload.player_index];
+        if (p) p.riichi = true;
+        break;
+      }
+      case 'tsumo':
+      case 'ron': {
+        newState.result = event.payload;
+        break;
+      }
+      case 'skip': {
+        const next = (event.payload.player_index + 1) % newState.players.length;
+        newState.current_player = next;
+        break;
+      }
+      default:
+        break;
+    }
+    return newState;
+  }
 
   function handleMessage(e) {
     try {
@@ -68,8 +131,9 @@ export default function App() {
     }
   }
 
-  function openWebSocket() {
-    const url = `${server.replace(/\/$/, '').replace('http', 'ws')}/ws/1`;
+  function openWebSocket(id = gameId) {
+    if (!id) return;
+    const url = `${server.replace(/\/$/, '').replace('http', 'ws')}/ws/${id}`;
     const ws = new WebSocket(url);
     ws.onopen = () => setStatus('WebSocket connected');
     ws.onmessage = handleMessage;
@@ -78,6 +142,10 @@ export default function App() {
 
   useEffect(() => {
     fetchStatus();
+    if (gameId) {
+      fetchGameState(gameId);
+      openWebSocket(gameId);
+    }
     return () => {
       wsRef.current?.close();
     };
@@ -109,7 +177,20 @@ export default function App() {
         </label>
         <button onClick={startGame}>Start Game</button>
       </div>
-      <GameBoard state={gameState} server={server} />
+      <div>
+        <label>
+          Game ID:
+          <input
+            value={gameId}
+            onChange={(e) => setGameId(e.target.value)}
+            style={{ width: '5em' }}
+          />
+        </label>
+        <button onClick={() => { fetchGameState(); openWebSocket(); }}>
+          Join Game
+        </button>
+      </div>
+      <GameBoard state={gameState} server={server} gameId={gameId} />
       <div className="event-log">
         <h2>Events</h2>
         <ul>

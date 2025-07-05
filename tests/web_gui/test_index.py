@@ -78,15 +78,22 @@ def test_app_can_start_game() -> None:
     assert '/games' in text
 
 
+def test_app_has_game_id_input() -> None:
+    text = Path('web_gui/App.jsx').read_text()
+    assert 'Game ID:' in text
+    assert 'Join Game' in text
+    assert 'localStorage' in text
+
+
 def test_app_opens_websocket() -> None:
     text = Path('web_gui/App.jsx').read_text()
-    assert '/ws/1' in text
+    assert '/ws/${' in text
 
 
 def test_controls_use_server_prop() -> None:
     text = Path('web_gui/Controls.jsx').read_text()
     assert 'server' in text
-    assert '/games/1/action' in text
+    assert '/games/${' in text
 
 
 def test_hand_supports_discard() -> None:
@@ -126,6 +133,23 @@ def test_app_updates_wall_on_draw() -> None:
     assert 'applyEvent' in app
     logic = Path('web_gui/applyEvent.js').read_text()
     assert 'wall.tiles.pop()' in logic
+
+
+def test_controls_include_extra_actions() -> None:
+    text = Path('web_gui/Controls.jsx').read_text()
+    for action in ['chi', 'pon', 'kan', 'riichi', 'tsumo', 'ron', 'skip']:
+        assert action in text
+
+
+def test_app_handles_new_events() -> None:
+    text = Path('web_gui/App.jsx').read_text()
+    for evt in ['meld', 'riichi', 'tsumo', 'ron', 'skip']:
+        assert evt in text
+
+
+def test_game_board_marks_riichi() -> None:
+    text = Path('web_gui/GameBoard.jsx').read_text()
+    assert 'Riichi' in text
 
 
 def test_style_defines_tile_font_size() -> None:
