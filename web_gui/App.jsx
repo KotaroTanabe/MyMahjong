@@ -5,7 +5,9 @@ import { applyEvent } from './applyEvent.js';
 import './style.css';
 
 export default function App() {
-  const [server, setServer] = useState('http://localhost:8000');
+  const [server, setServer] = useState(
+    () => localStorage.getItem('serverUrl') || 'http://localhost:8000',
+  );
   const [status, setStatus] = useState('Contacting server...');
   const [players, setPlayers] = useState('A,B,C,D');
   const [gameId, setGameId] = useState(() => localStorage.getItem('gameId') || '');
@@ -14,6 +16,14 @@ export default function App() {
   const [mode, setMode] = useState('game');
   const [peek, setPeek] = useState(false);
   const wsRef = useRef(null);
+
+  useEffect(() => {
+    localStorage.setItem('serverUrl', server);
+  }, [server]);
+
+  useEffect(() => {
+    if (gameId) localStorage.setItem('gameId', gameId);
+  }, [gameId]);
 
   async function fetchStatus() {
     setStatus('Contacting server...');

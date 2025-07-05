@@ -1,8 +1,13 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Server } from 'mock-socket';
-import { describe, it, vi, expect } from 'vitest';
+import { describe, it, vi, expect, afterEach } from 'vitest';
 import App from './App.jsx';
+
+afterEach(() => {
+  cleanup();
+  localStorage.clear();
+});
 
 function mockFetch() {
   return vi.fn((url) => {
@@ -66,5 +71,31 @@ describe('App practice mode', () => {
     await userEvent.selectOptions(modeSelect, 'practice');
     const element = await screen.findByText('Seat wind: east');
     expect(element).toBeTruthy();
+  });
+});
+
+describe('App reload', () => {
+  it('restores server and game id from localStorage', async () => {
+    localStorage.setItem('serverUrl', 'http://localhost:5678');
+    localStorage.setItem('gameId', '1');
+    global.fetch = vi.fn((url) => {
+      if (url.endsWith('/health')) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({ status: 'ok' }) });
+      }
+      if (url.endsWith('/games/1')) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({
+          players: [],
+          wall: { tiles: [] }
+        }) });
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
+    });
+
+    const server = new Server('ws://localhost:5678/ws/1');
+    render(<App />);
+    await screen.findByText('WebSocket connected');
+    expect(screen.getByLabelText('Server:').value).toBe('http://localhost:5678');
+    expect(screen.getByLabelText('Game ID:').value).toBe('1');
+    server.stop();
   });
 });
