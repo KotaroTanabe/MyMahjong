@@ -36,6 +36,11 @@ def test_river_component_exists() -> None:
     assert river.is_file(), 'River.jsx missing'
 
 
+def test_meld_area_component_exists() -> None:
+    meld = Path('web_gui/MeldArea.jsx')
+    assert meld.is_file(), 'MeldArea.jsx missing'
+
+
 def test_style_css_exists() -> None:
     css = Path('web_gui/style.css')
     assert css.is_file(), 'style.css missing'
