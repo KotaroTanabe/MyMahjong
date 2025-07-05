@@ -54,6 +54,7 @@ Future work will expand these components.
 - [x] Handle start_kyoku event in GUI
 - [x] Join game by ID via GUI
 - [x] Reconnect to running game after reload
+- [x] Remember server URL and last game ID
 - [x] Continuous integration workflow
 - [x] Web GUI unit tests
 - [x] Core <-> interface API documented

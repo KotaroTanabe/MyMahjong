@@ -166,3 +166,10 @@ def test_app_has_mode_select() -> None:
     text = Path('web_gui/App.jsx').read_text()
     assert 'Mode:' in text
     assert 'Practice' in text
+
+
+def test_app_uses_local_storage_for_server() -> None:
+    text = Path('web_gui/App.jsx').read_text()
+    assert "localStorage.getItem('serverUrl')" in text
+    assert "localStorage.setItem('serverUrl'" in text
+    assert "localStorage.setItem('gameId'" in text
