@@ -24,6 +24,7 @@ Future work will expand these components.
 - [ ] Mortal AI integration
 - [x] Mortal backend integration design
 - [ ] MJAI protocol support
+- [x] Basic MJAI event serialization
 - [x] GameState JSON serialization
 - [x] RuleSet interface for scoring
 - [x] Local single-player play via CLI
