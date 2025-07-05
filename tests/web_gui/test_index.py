@@ -101,9 +101,9 @@ def test_hand_supports_discard() -> None:
     assert 'onDiscard' in text
 
 
-def test_hand_uses_tile_to_emoji() -> None:
+def test_hand_uses_tile_to_image() -> None:
     text = Path('web_gui/Hand.jsx').read_text()
-    assert 'tileToEmoji' in text
+    assert 'tileToImage' in text
 
 
 def test_app_handles_websocket_events() -> None:
@@ -123,7 +123,7 @@ def test_game_board_passes_remaining_prop() -> None:
     assert 'remaining={' in board
 
 
-def test_south_hand_displays_emojis() -> None:
+def test_south_hand_displays_images() -> None:
     board = Path('web_gui/GameBoard.jsx').read_text()
     assert 'south?.hand?.tiles.map(tileLabel)' in board
 

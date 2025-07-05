@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Hand from './Hand.jsx';
 import Button from './Button.jsx';
-import { tileToEmoji } from './tileUtils.js';
+import { tileToImage, tileDescription } from './tileUtils.js';
 
 export default function Practice({ server }) {
   const [problem, setProblem] = useState(null);
@@ -48,13 +48,25 @@ export default function Practice({ server }) {
   return (
     <div className="practice">
       <div>Seat wind: {problem.seat_wind}</div>
-      <div>Dora indicator: {tileToEmoji(problem.dora_indicator)}</div>
+      <div>
+        Dora indicator:{' '}
+        <img
+          src={tileToImage(problem.dora_indicator)}
+          alt={tileDescription(problem.dora_indicator)}
+        />
+      </div>
       <Hand tiles={problem.hand} onDiscard={choose} />
       {chosen && (
-        <div>You discarded {tileToEmoji(chosen)}</div>
+        <div>
+          You discarded{' '}
+          <img src={tileToImage(chosen)} alt={tileDescription(chosen)} />
+        </div>
       )}
       {suggestion && (
-        <div>AI suggests discarding {tileToEmoji(suggestion)}</div>
+        <div>
+          AI suggests discarding{' '}
+          <img src={tileToImage(suggestion)} alt={tileDescription(suggestion)} />
+        </div>
       )}
       <Button onClick={loadProblem}>Next Problem</Button>
     </div>
