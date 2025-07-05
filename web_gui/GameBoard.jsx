@@ -19,7 +19,9 @@ export default function GameBoard({ state, server }) {
   const northHand = north?.hand?.tiles.map(tileLabel) ?? defaultHand;
   const westHand = west?.hand?.tiles.map(tileLabel) ?? defaultHand;
   const eastHand = east?.hand?.tiles.map(tileLabel) ?? defaultHand;
-  const southHand = south?.hand?.tiles ?? defaultHand;
+  const southHand = south?.hand?.tiles.map(tileLabel) ?? defaultHand;
+
+  const remaining = state?.wall?.tiles?.length ?? 0;
 
   async function discard(tile) {
     try {
@@ -48,7 +50,7 @@ export default function GameBoard({ state, server }) {
         <Hand tiles={westHand} />
       </div>
       <div className="center">
-        <CenterDisplay />
+        <CenterDisplay remaining={remaining} />
       </div>
       <div className="east seat">
         <div>{east?.name ?? 'East'}</div>
