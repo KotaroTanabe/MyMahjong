@@ -132,6 +132,22 @@ The following plan steps are not yet implemented:
 - Step 11 – Provide a mock AI.
 - Step 12 – Write end-to-end tests.
 
+### Core engine missing features
+
+The core package covers the basic turn flow but several important capabilities
+remain to be built:
+
+- [ ] Closed and added kan support with replacement draws and new dora
+  indicators.
+- [ ] Tracking honba and riichi sticks in `GameState`.
+- [ ] Automatic round progression with dealer repeats and hanchan end
+  detection.
+- [ ] Exhaustive draw conditions such as four kans and nine terminals.
+- [ ] Complete MJAI protocol adapter for external AIs.
+- [ ] Mortal AI integration using the adapter.
+
+See `docs/core-tasks.md` for detailed task descriptions.
+
 See `docs/detailed-design.md` for an overview of the planned architecture.
 `docs/web-gui-architecture.md` provides more details about the planned React GUI.
 
