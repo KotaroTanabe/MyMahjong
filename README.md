@@ -48,6 +48,7 @@ Future work will expand these components.
 - [x] Adjustable tile font size (default 1.5x)
 - [x] Basic draw control via REST API
 - [x] Discard tiles via GUI
+- [x] Meld and win actions via GUI
 - [x] Start game via GUI
 - [x] Continuous integration workflow
 - [x] Web GUI unit tests
@@ -99,7 +100,7 @@ Future work will expand these components.
   `docs/mjai-ai-integration.md` so AI engines can connect via the protocol.
 - [x] **7. Set up GitHub Actions** – lint, type check, run tests and deploy the built
   web front-end to GitHub Pages.
-- [ ] **8. Add action endpoints** – implement `POST /games/{id}/action` for draw,
+- [x] **8. Add action endpoints** – implement `POST /games/{id}/action` for draw,
   discard, meld calls and win declarations.
 - [x] **9. Stream events via WebSocket** – create `/ws/{id}` to push engine events so
   the GUI updates instantly.

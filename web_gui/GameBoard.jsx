@@ -15,6 +15,7 @@ export default function GameBoard({ state, server }) {
   const west = players[1];
   const north = players[2];
   const east = players[3];
+  const nameWithRiichi = (p) => (p?.riichi ? `${p.name} (Riichi)` : p?.name);
   const defaultHand = Array(13).fill('🀫');
   const northHand = north?.hand?.tiles.map(tileLabel) ?? defaultHand;
   const westHand = west?.hand?.tiles.map(tileLabel) ?? defaultHand;
@@ -43,13 +44,13 @@ export default function GameBoard({ state, server }) {
   return (
     <div className="board-grid">
       <div className="north seat">
-        <div>{north?.name ?? 'North'}</div>
+        <div>{nameWithRiichi(north) ?? 'North'}</div>
         <MeldArea melds={northMelds} />
         <River tiles={(north?.river ?? []).map(tileLabel)} />
         <Hand tiles={northHand} />
       </div>
       <div className="west seat">
-        <div>{west?.name ?? 'West'}</div>
+        <div>{nameWithRiichi(west) ?? 'West'}</div>
         <MeldArea melds={westMelds} />
         <River tiles={(west?.river ?? []).map(tileLabel)} />
         <Hand tiles={westHand} />
@@ -58,13 +59,13 @@ export default function GameBoard({ state, server }) {
         <CenterDisplay remaining={remaining} dora={dora} />
       </div>
       <div className="east seat">
-        <div>{east?.name ?? 'East'}</div>
+        <div>{nameWithRiichi(east) ?? 'East'}</div>
         <MeldArea melds={eastMelds} />
         <River tiles={(east?.river ?? []).map(tileLabel)} />
         <Hand tiles={eastHand} />
       </div>
       <div className="south seat">
-        <div>{south?.name ?? 'South'}</div>
+        <div>{nameWithRiichi(south) ?? 'South'}</div>
         <River tiles={(south?.river ?? []).map(tileLabel)} />
         <Hand tiles={southHand} onDiscard={discard} />
         <Controls server={server} />

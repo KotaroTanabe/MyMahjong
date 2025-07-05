@@ -80,6 +80,34 @@ export default function App() {
         }
         break;
       }
+      case 'meld': {
+        const p = newState.players[event.payload.player_index];
+        if (p) {
+          event.payload.meld.tiles.forEach((m) => {
+            const idx = p.hand.tiles.findIndex(
+              (t) => t.suit === m.suit && t.value === m.value,
+            );
+            if (idx !== -1) p.hand.tiles.splice(idx, 1);
+          });
+          p.hand.melds.push(event.payload.meld);
+        }
+        break;
+      }
+      case 'riichi': {
+        const p = newState.players[event.payload.player_index];
+        if (p) p.riichi = true;
+        break;
+      }
+      case 'tsumo':
+      case 'ron': {
+        newState.result = event.payload;
+        break;
+      }
+      case 'skip': {
+        const next = (event.payload.player_index + 1) % newState.players.length;
+        newState.current_player = next;
+        break;
+      }
       default:
         break;
     }
