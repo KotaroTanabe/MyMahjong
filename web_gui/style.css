@@ -21,3 +21,30 @@
 .center { grid-area: center; }
 .east { grid-area: east; }
 .south { grid-area: south; }
+
+.hand {
+  display: flex;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+.river {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.25rem;
+  min-height: 24px;
+}
+
+.tile {
+  display: inline-block;
+  width: 24px;
+  height: 32px;
+  background-color: white;
+  border: 1px solid #333;
+  border-radius: 2px;
+}
+
+.east .river { transform: rotate(90deg); }
+.north .river { transform: rotate(180deg); }
+.west .river { transform: rotate(-90deg); }
