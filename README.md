@@ -25,6 +25,7 @@ Future work will expand these components.
 - [x] Mortal backend integration design
 - [ ] MJAI protocol support
 - [x] Local single-player play via CLI
+- [x] Basic remote game creation via CLI
 - [ ] REST + WebSocket API
 - [x] Basic REST endpoints (create game, fetch game, health)
 - [x] Web GUI served through GitHub Pages
