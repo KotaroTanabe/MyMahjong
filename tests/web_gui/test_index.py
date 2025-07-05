@@ -64,3 +64,21 @@ def test_game_board_references_controls() -> None:
 def test_style_css_exists() -> None:
     css = Path('web_gui/style.css')
     assert css.is_file(), 'style.css missing'
+
+
+def test_app_has_server_selection() -> None:
+    text = Path('web_gui/App.jsx').read_text()
+    assert '<input' in text
+    assert 'Retry' in text
+
+
+def test_app_can_start_game() -> None:
+    text = Path('web_gui/App.jsx').read_text()
+    assert 'Start Game' in text
+    assert '/games' in text
+
+
+def test_controls_use_server_prop() -> None:
+    text = Path('web_gui/Controls.jsx').read_text()
+    assert 'server' in text
+    assert '/games/1/action' in text
