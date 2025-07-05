@@ -143,6 +143,6 @@ def test_game_board_marks_riichi() -> None:
     assert 'Riichi' in text
 
 
-    def test_style_defines_tile_font_size() -> None:
+def test_style_defines_tile_font_size() -> None:
     css = Path('web_gui/style.css').read_text()
     assert '--tile-font-size' in css
