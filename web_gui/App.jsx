@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import GameBoard from './GameBoard.jsx';
 import './style.css';
 
@@ -7,6 +7,7 @@ export default function App() {
   const [status, setStatus] = useState('Contacting server...');
   const [players, setPlayers] = useState('A,B,C,D');
   const [gameState, setGameState] = useState(null);
+  const wsRef = useRef(null);
 
   async function fetchStatus() {
     setStatus('Contacting server...');
@@ -34,6 +35,7 @@ export default function App() {
         const data = await resp.json();
         setGameState(data);
         setStatus('Game started');
+        openWebSocket();
       } else {
         setStatus(`Failed to start game (${resp.status})`);
       }
@@ -42,8 +44,30 @@ export default function App() {
     }
   }
 
+  async function fetchGameState() {
+    try {
+      const resp = await fetch(`${server.replace(/\/$/, '')}/games/1`);
+      if (resp.ok) {
+        setGameState(await resp.json());
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  function openWebSocket() {
+    const url = `${server.replace(/\/$/, '').replace('http', 'ws')}/ws/1`;
+    const ws = new WebSocket(url);
+    ws.onopen = () => setStatus('WebSocket connected');
+    ws.onmessage = () => fetchGameState();
+    wsRef.current = ws;
+  }
+
   useEffect(() => {
     fetchStatus();
+    return () => {
+      wsRef.current?.close();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

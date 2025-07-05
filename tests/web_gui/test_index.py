@@ -78,6 +78,11 @@ def test_app_can_start_game() -> None:
     assert '/games' in text
 
 
+def test_app_opens_websocket() -> None:
+    text = Path('web_gui/App.jsx').read_text()
+    assert '/ws/1' in text
+
+
 def test_controls_use_server_prop() -> None:
     text = Path('web_gui/Controls.jsx').read_text()
     assert 'server' in text
