@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from .mahjong_engine import MahjongEngine
-from .models import GameState, Tile
+from .models import GameState, Tile, GameEvent
 from mahjong.hand_calculating.hand_response import HandResponse
 
 # Singleton engine instance used by interfaces
@@ -83,3 +83,9 @@ def end_game() -> GameState:
     """End the current game and reset the engine."""
     assert _engine is not None, "Game not started"
     return _engine.end_game()
+
+
+def pop_events() -> list[GameEvent]:
+    """Retrieve and clear pending engine events."""
+    assert _engine is not None, "Game not started"
+    return _engine.pop_events()

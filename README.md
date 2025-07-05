@@ -58,6 +58,7 @@ Future work will expand these components.
 - [x] end_game
 - [x] standard wall initialization
 - [x] configurable ruleset
+- [x] event log
 
 ## Implementation plan
 

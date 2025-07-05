@@ -1,5 +1,7 @@
 from core.mahjong_engine import MahjongEngine
 from core.models import Tile
+from core.rules import RuleSet
+from mahjong.hand_calculating.hand_response import HandResponse
 
 
 def test_engine_initialization() -> None:
@@ -90,3 +92,28 @@ def test_declare_riichi() -> None:
     engine.declare_riichi(0)
     assert player.riichi
     assert player.score == start_score - 1000
+
+
+class DummyRuleSet(RuleSet):
+    def calculate_score(self, hand_tiles, melds, win_tile, *, is_tsumo=True):
+        return HandResponse(han=1)
+
+
+def test_event_log() -> None:
+    engine = MahjongEngine(ruleset=DummyRuleSet())
+    engine.pop_events()  # clear start_game
+    tile = Tile("man", 1)
+    engine.state.wall.tiles.append(tile)
+    drawn = engine.draw_tile(0)
+    engine.discard_tile(0, drawn)
+    engine.declare_riichi(0)
+    engine.declare_tsumo(0, drawn)
+    engine.end_game()
+    names = [e.name for e in engine.pop_events()]
+    assert names == [
+        "draw_tile",
+        "discard",
+        "riichi",
+        "tsumo",
+        "end_game",
+    ]
