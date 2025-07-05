@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import List, Optional, TYPE_CHECKING
+from typing import Any, List, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover - used for type checking
     from .player import Player
@@ -35,3 +35,11 @@ class GameState:
     """Overall game state placeholder."""
     players: List["Player"] = field(default_factory=list)
     wall: Optional["Wall"] = None
+
+
+@dataclass
+class GameEvent:
+    """Generic event emitted by the Mahjong engine."""
+
+    name: str
+    payload: dict[str, Any]

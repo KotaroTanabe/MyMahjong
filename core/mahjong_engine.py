@@ -1,7 +1,7 @@
 """Mahjong game engine wrapper."""
 from __future__ import annotations
 
-from .models import GameState, Tile, Meld
+from .models import GameState, Tile, Meld, GameEvent
 from .player import Player
 from .wall import Wall
 from .rules import RuleSet, StandardRuleSet
@@ -15,7 +15,17 @@ class MahjongEngine:
         self.ruleset: RuleSet = ruleset or StandardRuleSet()
         self.state = GameState(wall=Wall())
         self.state.players = [Player(name=f"Player {i}") for i in range(4)]
+        self.events: list[GameEvent] = []
         self.deal_initial_hands()
+        self._emit("start_game", {"state": self.state})
+
+    def _emit(self, name: str, payload: dict) -> None:
+        self.events.append(GameEvent(name=name, payload=payload))
+
+    def pop_events(self) -> list[GameEvent]:
+        events = self.events[:]
+        self.events.clear()
+        return events
 
     def deal_initial_hands(self) -> None:
         """Deal 13 tiles to each player at the start of the game."""
@@ -35,16 +45,19 @@ class MahjongEngine:
         assert self.state.wall is not None
         tile = self.state.wall.draw_tile()
         self.state.players[player_index].draw(tile)
+        self._emit("draw_tile", {"player_index": player_index, "tile": tile})
         return tile
 
     def discard_tile(self, player_index: int, tile: Tile) -> None:
         """Discard a tile from the specified player's hand."""
         self.state.players[player_index].discard(tile)
+        self._emit("discard", {"player_index": player_index, "tile": tile})
 
     def declare_riichi(self, player_index: int) -> None:
         """Declare riichi for the given player."""
         player = self.state.players[player_index]
         player.declare_riichi()
+        self._emit("riichi", {"player_index": player_index})
 
     def calculate_score(
         self, player_index: int, win_tile: Tile
@@ -62,7 +75,9 @@ class MahjongEngine:
         for t in tiles:
             if t in player.hand.tiles:
                 player.hand.tiles.remove(t)
-        player.hand.melds.append(Meld(tiles=tiles, type="chi"))
+        meld = Meld(tiles=tiles, type="chi")
+        player.hand.melds.append(meld)
+        self._emit("meld", {"player_index": player_index, "meld": meld})
 
     def call_pon(self, player_index: int, tiles: list[Tile]) -> None:
         """Form a pon meld using the given tiles."""
@@ -71,7 +86,9 @@ class MahjongEngine:
         for t in tiles:
             if t in player.hand.tiles:
                 player.hand.tiles.remove(t)
-        player.hand.melds.append(Meld(tiles=tiles, type="pon"))
+        meld = Meld(tiles=tiles, type="pon")
+        player.hand.melds.append(meld)
+        self._emit("meld", {"player_index": player_index, "meld": meld})
 
     def call_kan(self, player_index: int, tiles: list[Tile]) -> None:
         """Form a kan meld using the given tiles."""
@@ -80,15 +97,21 @@ class MahjongEngine:
         for t in tiles:
             if t in player.hand.tiles:
                 player.hand.tiles.remove(t)
-        player.hand.melds.append(Meld(tiles=tiles, type="kan"))
+        meld = Meld(tiles=tiles, type="kan")
+        player.hand.melds.append(meld)
+        self._emit("meld", {"player_index": player_index, "meld": meld})
 
     def declare_tsumo(self, player_index: int, win_tile: Tile) -> HandResponse:
         """Declare a self-drawn win and return scoring info."""
-        return self.calculate_score(player_index, win_tile)
+        result = self.calculate_score(player_index, win_tile)
+        self._emit("tsumo", {"player_index": player_index, "result": result})
+        return result
 
     def declare_ron(self, player_index: int, win_tile: Tile) -> HandResponse:
         """Declare a win on another player's discard."""
-        return self.calculate_score(player_index, win_tile)
+        result = self.calculate_score(player_index, win_tile)
+        self._emit("ron", {"player_index": player_index, "result": result})
+        return result
 
     def skip(self, player_index: int) -> None:
         """Skip action for the specified player."""
@@ -97,6 +120,8 @@ class MahjongEngine:
     def end_game(self) -> GameState:
         """Reset the engine and return the final state."""
         final_state = self.state
+        scores = [p.score for p in final_state.players]
+        self._emit("end_game", {"scores": scores})
         self.state = GameState(wall=Wall())
         self.state.players = [Player(name=f"Player {i}") for i in range(4)]
         return final_state
