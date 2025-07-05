@@ -40,5 +40,21 @@ def join(game_id: int, server: str) -> None:
     click.echo(f"Joined game {game_id} with players: {names}")
 
 
+@cli.command()
+@click.argument("game_id", type=int)
+@click.argument("player_index", type=int)
+@click.option(
+    "--server",
+    "server",
+    "-s",
+    required=True,
+    help="Base URL of remote server",
+)
+def draw(game_id: int, player_index: int, server: str) -> None:
+    """Draw a tile for PLAYER_INDEX in a remote game."""
+    tile = remote_game.draw_tile(server, game_id, player_index)
+    click.echo(f"Player {player_index} drew {tile['suit']}{tile['value']}")
+
+
 if __name__ == "__main__":
     cli()
