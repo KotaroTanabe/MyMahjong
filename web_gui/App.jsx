@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import GameBoard from './GameBoard.jsx';
 import Practice from './Practice.jsx';
 import { applyEvent } from './applyEvent.js';
+import Button from './Button.jsx';
 import './style.css';
 
 export default function App() {
@@ -177,7 +178,7 @@ export default function App() {
             style={{ width: '20em' }}
           />
         </label>
-        <button onClick={fetchStatus}>Retry</button>
+        <Button onClick={fetchStatus}>Retry</Button>
       </div>
       <div>
         <label>
@@ -207,7 +208,7 @@ export default function App() {
             style={{ width: '20em' }}
           />
         </label>
-        <button onClick={startGame}>Start Game</button>
+        <Button onClick={startGame}>Start Game</Button>
       </div>
       <div>
         <label>
@@ -218,9 +219,9 @@ export default function App() {
             style={{ width: '5em' }}
           />
         </label>
-        <button onClick={() => { fetchGameState(); openWebSocket(); }}>
+        <Button onClick={() => { fetchGameState(); openWebSocket(); }}>
           Join Game
-        </button>
+        </Button>
       </div>
       {mode === 'game' ? (
         <GameBoard state={gameState} server={server} gameId={gameId} peek={peek} />

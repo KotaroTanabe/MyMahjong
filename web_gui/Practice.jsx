@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import Hand from './Hand.jsx';
+import Button from './Button.jsx';
 import { tileToEmoji } from './tileUtils.js';
 
 export default function Practice({ server }) {
@@ -55,7 +56,7 @@ export default function Practice({ server }) {
       {suggestion && (
         <div>AI suggests discarding {tileToEmoji(suggestion)}</div>
       )}
-      <button onClick={loadProblem}>Next Problem</button>
+      <Button onClick={loadProblem}>Next Problem</Button>
     </div>
   );
 }
