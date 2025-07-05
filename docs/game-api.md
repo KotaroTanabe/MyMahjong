@@ -51,8 +51,8 @@ translate them directly.
 | `discard`          | `player_index`, `Tile`                  | Tile placed into the river. |
 | `meld`             | `player_index`, `Meld`                  | Meld call (chi/pon/kan). |
 | `riichi`           | `player_index`                          | Player declares riichi. |
-| `tsumo`            | `player_index`, `HandResponse`          | Self-drawn win. |
-| `ron`              | `player_index`, `HandResponse`          | Win on discard. |
+| `tsumo`            | `player_index`, `HandResponse`, scores  | Self-drawn win. |
+| `ron`              | `player_index`, `HandResponse`, scores  | Win on discard. |
 | `ryukyoku`         | reason                                  | Hand ends in draw. |
 | `end_game`         | final scores                            | Sent after the last hand. |
 
