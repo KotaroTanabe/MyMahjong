@@ -26,6 +26,7 @@ Future work will expand these components.
 - [ ] MJAI protocol support
 - [x] GameState JSON serialization
 - [x] Local single-player play via CLI
+- [x] Basic remote game creation via CLI
 - [ ] REST + WebSocket API
 - [x] Basic REST endpoints (create game, fetch game, health)
 - [x] Web GUI served through GitHub Pages
