@@ -65,33 +65,45 @@ Future work will expand these components.
 - [x] configurable ruleset
 - [x] event log
 
-## Implementation plan
+## Implementation plan progress
 
-1. **Create the game engine** – wrap the Python `mahjong` library and expose
-   methods for drawing, discarding and scoring.
-2. **Integrate Mortal AI** – add a module that uses the
-   [MJAI high level API](https://mjai.app/docs/highlevel-api) to communicate with
-   the AI process and execute its moves.
-3. **Build CLI** – provide commands for starting a local game against the AI and
-   for connecting to remote games.
-4. **Implement FastAPI server** – expose REST endpoints and prepare a WebSocket
-   channel for real-time play.
-5. **Develop React front-end** – consume the API and present a board based on the
-   `docs/board-layout.md` design.
-6. **Implement MJAI adapter** – translate game state to and from
-   `docs/mjai-ai-integration.md` so AI engines can connect via the protocol.
-7. **Set up GitHub Actions** – lint, type check, run tests and deploy the built
-   web front-end to GitHub Pages.
-8. **Add action endpoints** – implement `POST /games/{id}/action` for draw,
-   discard, meld calls and win declarations.
-9. **Stream events via WebSocket** – create `/ws/{id}` to push engine events so
-   the GUI updates instantly.
-10. **Connect GUI state** – update React components to fetch the initial game,
-    handle WebSocket events and send player actions.
-11. **Provide a mock AI** – run a simple MJAI-compatible process through the
-    adapter with an interface that later swaps in Mortal.
-12. **Write end-to-end tests** – cover REST routes, WebSocket updates and basic
-    GUI interactions.
+- [x] **1. Create the game engine** – wrap the Python `mahjong` library and expose
+  methods for drawing, discarding and scoring.
+- [ ] **2. Integrate Mortal AI** – add a module that uses the
+  [MJAI high level API](https://mjai.app/docs/highlevel-api) to communicate with
+  the AI process and execute its moves.
+- [x] **3. Build CLI** – provide commands for starting a local game against the AI and
+  for connecting to remote games.
+- [x] **4. Implement FastAPI server** – expose REST endpoints and prepare a WebSocket
+  channel for real-time play.
+- [x] **5. Develop React front-end** – consume the API and present a board based on the
+  `docs/board-layout.md` design.
+- [ ] **6. Implement MJAI adapter** – translate game state to and from
+  `docs/mjai-ai-integration.md` so AI engines can connect via the protocol.
+- [x] **7. Set up GitHub Actions** – lint, type check, run tests and deploy the built
+  web front-end to GitHub Pages.
+- [ ] **8. Add action endpoints** – implement `POST /games/{id}/action` for draw,
+  discard, meld calls and win declarations.
+- [ ] **9. Stream events via WebSocket** – create `/ws/{id}` to push engine events so
+  the GUI updates instantly.
+- [ ] **10. Connect GUI state** – update React components to fetch the initial game,
+  handle WebSocket events and send player actions.
+- [ ] **11. Provide a mock AI** – run a simple MJAI-compatible process through the
+  adapter with an interface that later swaps in Mortal.
+- [ ] **12. Write end-to-end tests** – cover REST routes, WebSocket updates and basic
+  GUI interactions.
+
+### Remaining tasks
+
+The following plan steps are not yet implemented:
+
+- Step 2 – Integrate Mortal AI.
+- Step 6 – Implement MJAI adapter.
+- Step 8 – Add full action endpoints.
+- Step 9 – Stream events via WebSocket.
+- Step 10 – Connect GUI state to WebSocket updates.
+- Step 11 – Provide a mock AI.
+- Step 12 – Write end-to-end tests.
 
 See `docs/detailed-design.md` for an overview of the planned architecture.
 `docs/web-gui-architecture.md` provides more details about the planned React GUI.
