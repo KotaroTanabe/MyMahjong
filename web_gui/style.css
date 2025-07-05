@@ -94,3 +94,20 @@
 .east .meld-area { transform: rotate(90deg); }
 .north .meld-area { transform: rotate(180deg); }
 .west .meld-area { transform: rotate(-90deg); }
+
+.score-board {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.score-entry {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.seat-wind {
+  font-weight: bold;
+}

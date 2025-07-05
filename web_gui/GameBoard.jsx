@@ -3,6 +3,7 @@ import Hand from './Hand.jsx';
 import River from './River.jsx';
 import MeldArea from './MeldArea.jsx';
 import CenterDisplay from './CenterDisplay.jsx';
+import ScoreBoard from './ScoreBoard.js';
 import Controls from './Controls.jsx';
 import { tileToEmoji } from './tileUtils.js';
 
@@ -56,6 +57,7 @@ export default function GameBoard({ state, server }) {
       </div>
       <div className="center">
         <CenterDisplay remaining={remaining} dora={dora} />
+        <ScoreBoard players={players} />
       </div>
       <div className="east seat">
         <div>{east?.name ?? 'East'}</div>
