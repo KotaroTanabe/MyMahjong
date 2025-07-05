@@ -2,7 +2,7 @@ from dataclasses import asdict
 from fastapi.testclient import TestClient
 
 from web.server import app
-from core import api
+from core import api, models
 
 client = TestClient(app)
 
@@ -55,23 +55,74 @@ def test_discard_action_endpoint() -> None:
 def test_additional_action_endpoints() -> None:
     client.post("/games", json={"players": ["A", "B", "C", "D"]})
     state = api.get_state()
-    tiles = [asdict(t) for t in state.players[0].hand.tiles[:4]]
 
+    # Prepare chi on player 0 discard
+    chi_tile = {"suit": "man", "value": 3}
+    state.players[0].hand.tiles = [models.Tile(**chi_tile)]
+    state.players[1].hand.tiles = []
+    client.post(
+        "/games/1/action",
+        json={"player_index": 0, "action": "discard", "tile": chi_tile},
+    )
+    state.players[1].hand.tiles = [models.Tile("man", 1), models.Tile("man", 2)]
     resp = client.post(
         "/games/1/action",
-        json={"player_index": 0, "action": "chi", "tiles": tiles[:3]},
+        json={
+            "player_index": 1,
+            "action": "chi",
+            "tiles": [
+                {"suit": "man", "value": 1},
+                {"suit": "man", "value": 2},
+                chi_tile,
+            ],
+        },
     )
     assert resp.status_code == 200
 
+    # Prepare pon on new discard
+    pon_tile = {"suit": "pin", "value": 1}
+    state.players[1].hand.tiles = [models.Tile(**pon_tile)]
+    state.players[0].hand.tiles = []
+    client.post(
+        "/games/1/action",
+        json={"player_index": 1, "action": "discard", "tile": pon_tile},
+    )
+    state.players[0].hand.tiles = [models.Tile("pin", 1), models.Tile("pin", 1)]
     resp = client.post(
         "/games/1/action",
-        json={"player_index": 0, "action": "pon", "tiles": tiles[:3]},
+        json={
+            "player_index": 0,
+            "action": "pon",
+            "tiles": [
+                pon_tile,
+                {"suit": "pin", "value": 1},
+                {"suit": "pin", "value": 1},
+            ],
+        },
     )
     assert resp.status_code == 200
 
+    # Prepare kan on another discard
+    kan_tile = {"suit": "sou", "value": 9}
+    state.players[0].hand.tiles = [models.Tile(**kan_tile)]
+    state.players[1].hand.tiles = []
+    client.post(
+        "/games/1/action",
+        json={"player_index": 0, "action": "discard", "tile": kan_tile},
+    )
+    state.players[1].hand.tiles = [models.Tile("sou", 9) for _ in range(3)]
     resp = client.post(
         "/games/1/action",
-        json={"player_index": 0, "action": "kan", "tiles": tiles},
+        json={
+            "player_index": 1,
+            "action": "kan",
+            "tiles": [
+                kan_tile,
+                {"suit": "sou", "value": 9},
+                {"suit": "sou", "value": 9},
+                {"suit": "sou", "value": 9},
+            ],
+        },
     )
     assert resp.status_code == 200
 

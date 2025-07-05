@@ -42,6 +42,8 @@ class GameState:
     dealer: int = 0
     round_number: int = 1
     seat_winds: list[str] = field(default_factory=list)
+    last_discard: Tile | None = None
+    last_discard_player: int | None = None
 
 
 @dataclass

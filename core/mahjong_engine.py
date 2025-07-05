@@ -40,6 +40,8 @@ class MahjongEngine:
             p.hand.melds.clear()
             p.river.clear()
             p.riichi = False
+        self.state.last_discard = None
+        self.state.last_discard_player = None
         winds = ["east", "south", "west", "north"]
         self.state.seat_winds = []
         for i, p in enumerate(self.state.players):
@@ -96,6 +98,8 @@ class MahjongEngine:
         self.state.players[player_index].discard(tile)
         self._emit("discard", {"player_index": player_index, "tile": tile})
         self.state.current_player = (player_index + 1) % len(self.state.players)
+        self.state.last_discard = tile
+        self.state.last_discard_player = player_index
 
     def declare_riichi(self, player_index: int) -> None:
         """Declare riichi for the given player."""
@@ -114,35 +118,140 @@ class MahjongEngine:
 
     def call_chi(self, player_index: int, tiles: list[Tile]) -> None:
         """Form a chi meld using the given tiles."""
-        assert len(tiles) == 3, "Chi requires three tiles"
+        if len(tiles) != 3:
+            raise ValueError("Chi requires three tiles")
+
+        last_tile = self.state.last_discard
+        last_player = self.state.last_discard_player
+        if last_tile is None or last_player is None:
+            raise ValueError("No discard available for chi")
+        if (last_player + 1) % len(self.state.players) != player_index:
+            raise ValueError("Chi must use the previous player's discard")
+        if last_tile not in tiles:
+            raise ValueError("Discarded tile must be included in meld")
+
+        suit = tiles[0].suit
+        if not all(t.suit == suit for t in tiles):
+            raise ValueError("Chi tiles must have the same suit")
+        values = sorted(t.value for t in tiles)
+        if not (values[1] == values[0] + 1 and values[2] == values[0] + 2):
+            raise ValueError("Chi tiles must be sequential")
+
         player = self.state.players[player_index]
-        for t in tiles:
-            if t in player.hand.tiles:
-                player.hand.tiles.remove(t)
+        needed = tiles[:]
+        needed.remove(last_tile)
+        for tile in needed:
+            if tile not in player.hand.tiles:
+                raise ValueError("Player missing required tiles for chi")
+        for tile in needed:
+            idx = next(i for i, t in enumerate(player.hand.tiles) if t == tile)
+            player.hand.tiles.pop(idx)
+
+        discarder = self.state.players[last_player]
+        if not discarder.river or discarder.river[-1] != last_tile:
+            raise ValueError("Discard mismatch")
+        discarder.river.pop()
+
         meld = Meld(tiles=tiles, type="chi")
         player.hand.melds.append(meld)
+        self.state.last_discard = None
+        self.state.last_discard_player = None
         self._emit("meld", {"player_index": player_index, "meld": meld})
 
     def call_pon(self, player_index: int, tiles: list[Tile]) -> None:
         """Form a pon meld using the given tiles."""
-        assert len(tiles) == 3, "Pon requires three tiles"
+        if len(tiles) != 3:
+            raise ValueError("Pon requires three tiles")
+
+        last_tile = self.state.last_discard
+        last_player = self.state.last_discard_player
+        if last_tile is None or last_player is None:
+            raise ValueError("No discard available for pon")
+        if player_index == last_player:
+            raise ValueError("Cannot pon your own discard")
+        if not all(
+            t.suit == tiles[0].suit and t.value == tiles[0].value for t in tiles
+        ):
+            raise ValueError("Pon tiles must be identical")
+        if last_tile.suit != tiles[0].suit or last_tile.value != tiles[0].value:
+            raise ValueError("Discarded tile must match meld tiles")
+
         player = self.state.players[player_index]
-        for t in tiles:
-            if t in player.hand.tiles:
-                player.hand.tiles.remove(t)
+        count = sum(
+            1
+            for t in player.hand.tiles
+            if t.suit == tiles[0].suit and t.value == tiles[0].value
+        )
+        if count < 2:
+            raise ValueError("Player missing tiles for pon")
+        removed = 0
+        for i in range(len(player.hand.tiles) - 1, -1, -1):
+            if (
+                player.hand.tiles[i].suit == tiles[0].suit
+                and player.hand.tiles[i].value == tiles[0].value
+            ):
+                player.hand.tiles.pop(i)
+                removed += 1
+                if removed == 2:
+                    break
+
+        discarder = self.state.players[last_player]
+        if not discarder.river or discarder.river[-1] != last_tile:
+            raise ValueError("Discard mismatch")
+        discarder.river.pop()
+
         meld = Meld(tiles=tiles, type="pon")
         player.hand.melds.append(meld)
+        self.state.last_discard = None
+        self.state.last_discard_player = None
         self._emit("meld", {"player_index": player_index, "meld": meld})
 
     def call_kan(self, player_index: int, tiles: list[Tile]) -> None:
         """Form a kan meld using the given tiles."""
-        assert len(tiles) == 4, "Kan requires four tiles"
+        if len(tiles) != 4:
+            raise ValueError("Kan requires four tiles")
+
+        last_tile = self.state.last_discard
+        last_player = self.state.last_discard_player
+        if last_tile is None or last_player is None:
+            raise ValueError("No discard available for kan")
+        if player_index == last_player:
+            raise ValueError("Cannot kan your own discard")
+        if not all(
+            t.suit == tiles[0].suit and t.value == tiles[0].value for t in tiles
+        ):
+            raise ValueError("Kan tiles must be identical")
+        if last_tile.suit != tiles[0].suit or last_tile.value != tiles[0].value:
+            raise ValueError("Discarded tile must match meld tiles")
+
         player = self.state.players[player_index]
-        for t in tiles:
-            if t in player.hand.tiles:
-                player.hand.tiles.remove(t)
+        count = sum(
+            1
+            for t in player.hand.tiles
+            if t.suit == tiles[0].suit and t.value == tiles[0].value
+        )
+        if count < 3:
+            raise ValueError("Player missing tiles for kan")
+        removed = 0
+        for i in range(len(player.hand.tiles) - 1, -1, -1):
+            if (
+                player.hand.tiles[i].suit == tiles[0].suit
+                and player.hand.tiles[i].value == tiles[0].value
+            ):
+                player.hand.tiles.pop(i)
+                removed += 1
+                if removed == 3:
+                    break
+
+        discarder = self.state.players[last_player]
+        if not discarder.river or discarder.river[-1] != last_tile:
+            raise ValueError("Discard mismatch")
+        discarder.river.pop()
+
         meld = Meld(tiles=tiles, type="kan")
         player.hand.melds.append(meld)
+        self.state.last_discard = None
+        self.state.last_discard_player = None
         self._emit("meld", {"player_index": player_index, "meld": meld})
 
     def declare_tsumo(self, player_index: int, win_tile: Tile) -> HandResponse:
@@ -197,4 +306,6 @@ class MahjongEngine:
         self.state.players = [Player(name=f"Player {i}") for i in range(4)]
         self.state.current_player = 0
         self.state.seat_winds = []
+        self.state.last_discard = None
+        self.state.last_discard_player = None
         return final_state

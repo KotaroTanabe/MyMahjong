@@ -33,12 +33,15 @@ def test_get_state() -> None:
 
 def test_call_pon() -> None:
     state = api.start_game(["A", "B", "C", "D"])
-    tiles = [models.Tile("pin", 1) for _ in range(3)]
-    player = state.players[0]
-    player.hand.tiles.extend(tiles[:2])
-    api.call_pon(0, tiles)
-    assert len(player.hand.melds) == 1
-    assert player.hand.melds[0].type == "pon"
+    tile = models.Tile("pin", 1)
+    discarder = state.players[1]
+    caller = state.players[0]
+    discarder.hand.tiles.append(tile)
+    api.discard_tile(1, tile)
+    caller.hand.tiles.extend([models.Tile("pin", 1), models.Tile("pin", 1)])
+    api.call_pon(0, [models.Tile("pin", 1), models.Tile("pin", 1), tile])
+    assert len(caller.hand.melds) == 1
+    assert caller.hand.melds[0].type == "pon"
 
 
 def test_end_game_creates_new_state() -> None:
