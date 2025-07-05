@@ -46,6 +46,11 @@ def test_center_display_component_exists() -> None:
     assert center.is_file(), 'CenterDisplay.jsx missing'
 
 
+def test_score_board_component_exists() -> None:
+    score = Path('web_gui/ScoreBoard.js')
+    assert score.is_file(), 'ScoreBoard.js missing'
+
+
 def test_controls_component_exists() -> None:
     controls = Path('web_gui/Controls.jsx')
     assert controls.is_file(), 'Controls.jsx missing'
@@ -54,6 +59,11 @@ def test_controls_component_exists() -> None:
 def test_game_board_references_center_display() -> None:
     board = Path('web_gui/GameBoard.jsx').read_text()
     assert 'CenterDisplay' in board
+
+
+def test_game_board_references_score_board() -> None:
+    board = Path('web_gui/GameBoard.jsx').read_text()
+    assert 'ScoreBoard' in board
 
 
 def test_game_board_references_controls() -> None:

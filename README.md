@@ -43,6 +43,7 @@ Future work will expand these components.
 - [x] Hand & River components
 - [x] Meld area component
 - [x] Center display (dora & wall count)
+- [x] Score board showing names, winds & scores
 - [x] Meld display from game state
 - [x] Tile emoji rendering in GUI
 - [x] Adjustable tile font size (default 1.5x)
