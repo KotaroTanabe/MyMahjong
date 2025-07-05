@@ -8,6 +8,13 @@ def test_engine_initialization() -> None:
     assert engine.state.wall is not None
 
 
+def test_initial_hands_dealt() -> None:
+    engine = MahjongEngine()
+    counts = [len(p.hand.tiles) for p in engine.state.players]
+    assert all(c == 13 for c in counts)
+    assert engine.remaining_tiles == 136 - 13 * 4
+
+
 def test_draw_tile_updates_state() -> None:
     engine = MahjongEngine()
     assert engine.state.wall is not None
