@@ -42,3 +42,14 @@ def test_draw_command_remote(monkeypatch) -> None:
     result = runner.invoke(cli, ["draw", "1", "0", "-s", "http://host"])
     assert result.exit_code == 0
     assert "drew m5" in result.output
+
+
+def test_health_command_remote(monkeypatch) -> None:
+    def fake_health(server: str) -> dict:
+        return {"status": "ok"}
+
+    monkeypatch.setattr("cli.remote_game.check_health", fake_health)
+    runner = CliRunner()
+    result = runner.invoke(cli, ["health", "-s", "http://host"])
+    assert result.exit_code == 0
+    assert "Server status: ok" in result.output
