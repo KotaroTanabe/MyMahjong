@@ -9,8 +9,7 @@ import { tileToEmoji } from './tileUtils.js';
 function tileLabel(tile) {
   return tileToEmoji(tile);
 }
-
-export default function GameBoard({ state, server }) {
+export default function GameBoard({ state, server, gameId }) {
   const players = state?.players ?? [];
   const south = players[0];
   const west = players[1];
@@ -35,7 +34,8 @@ export default function GameBoard({ state, server }) {
 
   async function discard(tile) {
     try {
-      await fetch(`${server.replace(/\/$/, '')}/games/1/action`, {
+      if (!gameId) return;
+      await fetch(`${server.replace(/\/$/, '')}/games/${gameId}/action`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ player_index: 0, action: 'discard', tile }),
@@ -77,7 +77,8 @@ export default function GameBoard({ state, server }) {
         <MeldArea melds={southMelds} />
         <River tiles={(south?.river ?? []).map(tileLabel)} />
         <Hand tiles={southHand} onDiscard={discard} />
-        <Controls server={server} />
+        <Controls server={server} gameId={gameId} />
+        <MeldArea melds={southMelds} />
       </div>
     </div>
   );
