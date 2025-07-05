@@ -43,6 +43,7 @@ Future work will expand these components.
 - [x] Hand & River components
 - [x] Meld area component
 - [x] Center display (dora & wall count)
+- [x] Tile emoji rendering in GUI
 - [x] Basic draw control via REST API
 - [x] Start game via GUI
 - [x] Continuous integration workflow
