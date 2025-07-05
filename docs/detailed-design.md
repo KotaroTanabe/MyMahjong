@@ -65,7 +65,7 @@ The interface renders tiles using SVG images and displays player hands, discard 
 
 ## MJAI Adapter
 
-The adapter converts engine events into the [MJAI protocol](https://mjai.app/docs/highlevel-api) so external Mahjong AIs can make decisions. This module is optional; it will be enabled when running against an AI such as Mortal.
+The adapter converts engine events into the [MJAI protocol](https://mjai.app/docs/highlevel-api) so external Mahjong AIs can make decisions. This module is optional and can be enabled when running against an external AI engine.
 
 Key responsibilities:
 

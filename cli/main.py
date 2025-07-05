@@ -91,8 +91,8 @@ def health(server: str) -> None:
 
 
 @cli.command(name="practice")
-@click.option("--mortal", is_flag=True, help="Use Mortal AI for suggestion")
-def practice_cmd(mortal: bool) -> None:
+@click.option("--ai", is_flag=True, help="Use external AI for suggestion")
+def practice_cmd(ai: bool) -> None:
     """Run a simple '何切る' practice problem."""
 
     problem = practice.generate_problem()
@@ -109,7 +109,7 @@ def practice_cmd(mortal: bool) -> None:
     index = click.prompt("Discard which tile number?", type=int)
     chosen = problem.hand[index - 1]
     click.echo(f"You discarded {fmt(chosen)}")
-    ai_suggestion = practice.suggest_discard(problem.hand, use_mortal=mortal)
+    ai_suggestion = practice.suggest_discard(problem.hand, use_ai=ai)
     click.echo(f"AI suggests discarding {fmt(ai_suggestion)}")
 
 

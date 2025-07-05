@@ -13,7 +13,7 @@ def test_practice_command(monkeypatch):
     )
     monkeypatch.setattr(practice, "generate_problem", lambda: problem)
 
-    def fake_suggest(hand: list[models.Tile], use_mortal: bool = False) -> models.Tile:
+    def fake_suggest(hand: list[models.Tile], use_ai: bool = False) -> models.Tile:
         return hand[0]
 
     monkeypatch.setattr(practice, "suggest_discard", fake_suggest)
@@ -26,7 +26,7 @@ def test_practice_command(monkeypatch):
     assert "AI suggests discarding m1" in result.output
 
 
-def test_practice_command_mortal(monkeypatch):
+def test_practice_command_external(monkeypatch):
     hand = [models.Tile("man", 1) for _ in range(14)]
     problem = practice.PracticeProblem(
         hand=hand,
@@ -35,16 +35,16 @@ def test_practice_command_mortal(monkeypatch):
     )
     monkeypatch.setattr(practice, "generate_problem", lambda: problem)
 
-    called: dict[str, bool] = {"mortal": False}
+    called: dict[str, bool] = {"ai": False}
 
-    def fake_suggest(hand: list[models.Tile], use_mortal: bool = False) -> models.Tile:
-        called["mortal"] = use_mortal
+    def fake_suggest(hand: list[models.Tile], use_ai: bool = False) -> models.Tile:
+        called["ai"] = use_ai
         return hand[0]
 
     monkeypatch.setattr(practice, "suggest_discard", fake_suggest)
 
     runner = CliRunner()
-    result = runner.invoke(cli, ["practice", "--mortal"], input="1\n")
+    result = runner.invoke(cli, ["practice", "--ai"], input="1\n")
 
     assert result.exit_code == 0
-    assert called["mortal"] is True
+    assert called["ai"] is True

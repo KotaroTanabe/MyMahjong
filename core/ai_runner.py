@@ -1,16 +1,16 @@
-"""Wrapper for running the Mortal AI as a subprocess."""
+"""Wrapper for running an external MJAI-based AI engine as a subprocess."""
 from __future__ import annotations
 
 import subprocess
 from typing import Optional
 
 
-class MortalAI:
-    """Launch and communicate with the Mortal AI via MJAI messages."""
+class ExternalAI:
+    """Launch and communicate with an external AI via MJAI messages."""
 
     def __init__(
         self,
-        executable: str = "mortal",
+        executable: str = "ai_engine",
         model_dir: str = ".",
         player_id: int = 0,
     ) -> None:
@@ -20,7 +20,7 @@ class MortalAI:
         self.process: Optional[subprocess.Popen[str]] = None
 
     def start(self) -> None:
-        """Start the Mortal process if not already running."""
+        """Start the AI process if not already running."""
         if self.process is not None:
             return
         self.process = subprocess.Popen(
