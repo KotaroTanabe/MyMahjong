@@ -10,7 +10,7 @@ from __future__ import annotations
 import json
 from dataclasses import asdict
 
-from .models import GameState
+from .models import GameEvent, GameState
 from .mortal_runner import MortalAI
 
 
@@ -25,3 +25,29 @@ def send_state_to_ai(state: GameState, ai: MortalAI) -> None:
 
     message = game_state_to_json(state)
     ai.send(message)
+
+
+def event_to_json(event: GameEvent) -> str:
+    """Return a JSON message describing ``event``."""
+
+    payload = {"type": event.name}
+    payload.update(event.payload)
+    return json.dumps(payload)
+
+
+def send_event_to_ai(event: GameEvent, ai: MortalAI) -> None:
+    """Serialize ``event`` and send it to ``ai``."""
+
+    ai.send(event_to_json(event))
+
+
+def json_to_action(message: str) -> dict:
+    """Parse a JSON-encoded AI action message."""
+
+    return json.loads(message)
+
+
+def receive_action(ai: MortalAI) -> dict:
+    """Receive a JSON action from ``ai`` and return it as a dict."""
+
+    return json_to_action(ai.receive())
