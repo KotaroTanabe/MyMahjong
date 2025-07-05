@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import Hand from './Hand.jsx';
 import River from './River.jsx';
 import MeldArea from './MeldArea.jsx';
@@ -15,6 +15,22 @@ export default function GameBoard({ state, server, gameId, peek = false }) {
   const west = players[1];
   const north = players[2];
   const east = players[3];
+
+  const prevPlayer = useRef(null);
+
+  useEffect(() => {
+    const current = state?.current_player;
+    if (!gameId || current == null || current === prevPlayer.current) return;
+    prevPlayer.current = current;
+    const tiles = state?.players?.[current]?.hand?.tiles ?? [];
+    if (tiles.length === 13) {
+      fetch(`${server.replace(/\/$/, '')}/games/${gameId}/action`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ player_index: current, action: 'draw' }),
+      }).catch(() => {});
+    }
+  }, [state?.current_player, gameId, server, state?.players]);
 
   const nameWithRiichi = (p) => (p?.riichi ? `${p.name} (Riichi)` : p?.name);
   const defaultHand = Array(13).fill('🀫');
