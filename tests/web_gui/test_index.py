@@ -122,7 +122,7 @@ def test_south_hand_displays_emojis() -> None:
 
 
 def test_app_updates_wall_on_draw() -> None:
-    text = Path('web_gui/App.jsx').read_text()
+    text = Path('web_gui/eventHandlers.js').read_text()
     assert 'wall.tiles.pop()' in text
 
 
