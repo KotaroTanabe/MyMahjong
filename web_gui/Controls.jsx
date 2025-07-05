@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 
-export default function Controls({ server }) {
+export default function Controls({ server, gameId }) {
   const [message, setMessage] = useState('');
 
   async function draw() {
     try {
-      const resp = await fetch(`${server.replace(/\/$/, '')}/games/1/action`, {
+      if (!gameId) return;
+      const resp = await fetch(`${server.replace(/\/$/, '')}/games/${gameId}/action`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ player_index: 0, action: 'draw' }),

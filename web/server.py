@@ -10,6 +10,8 @@ from pydantic import BaseModel
 from core import api, models
 
 app = FastAPI()
+# very small in-memory id tracker until multi-game support exists
+_next_game_id = 1
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -39,9 +41,12 @@ def health() -> dict[str, str]:
 
 @app.post("/games")
 def create_game(req: CreateGameRequest) -> dict:
-    """Create a new game and return its state."""
+    """Create a new game and return its id and state."""
+    global _next_game_id
     state = api.start_game(req.players)
-    return asdict(state)
+    game_id = _next_game_id
+    _next_game_id += 1
+    return {"id": game_id, **asdict(state)}
 
 
 @app.get("/games/{game_id}")

@@ -49,6 +49,8 @@ Future work will expand these components.
 - [x] Basic draw control via REST API
 - [x] Discard tiles via GUI
 - [x] Start game via GUI
+- [x] Join game by ID via GUI
+- [x] Reconnect to running game after reload
 - [x] Continuous integration workflow
 - [x] Web GUI unit tests
 - [x] Core <-> interface API documented
