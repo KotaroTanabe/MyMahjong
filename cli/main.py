@@ -57,6 +57,24 @@ def draw(game_id: int, player_index: int, server: str) -> None:
 
 
 @cli.command()
+@click.argument("game_id", type=int)
+@click.option(
+    "--server",
+    "server",
+    "-s",
+    required=True,
+    help="Base URL of remote server",
+)
+def state(game_id: int, server: str) -> None:
+    """Display the current state of a remote game."""
+    data = remote_game.get_game(server, game_id)
+    names = ", ".join(p["name"] for p in data.get("players", []))
+    remaining = data.get("wall", {}).get("remaining_tiles")
+    msg = f"Game {game_id}: {remaining} tiles remaining; players: {names}"
+    click.echo(msg)
+
+
+@cli.command()
 @click.option(
     "--server",
     "server",
