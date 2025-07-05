@@ -7,6 +7,7 @@ export default function App() {
   const [status, setStatus] = useState('Contacting server...');
   const [players, setPlayers] = useState('A,B,C,D');
   const [gameState, setGameState] = useState(null);
+  const [events, setEvents] = useState([]);
   const wsRef = useRef(null);
 
   async function fetchStatus() {
@@ -55,11 +56,50 @@ export default function App() {
     }
   }
 
+  function applyEvent(state, event) {
+    if (!state) return state;
+    const newState = JSON.parse(JSON.stringify(state));
+    switch (event.name) {
+      case 'start_game':
+        return event.payload.state;
+      case 'draw_tile': {
+        const p = newState.players[event.payload.player_index];
+        if (p) p.hand.tiles.push(event.payload.tile);
+        break;
+      }
+      case 'discard': {
+        const p = newState.players[event.payload.player_index];
+        if (p) {
+          const { tile } = event.payload;
+          const idx = p.hand.tiles.findIndex(
+            (t) => t.suit === tile.suit && t.value === tile.value,
+          );
+          if (idx !== -1) p.hand.tiles.splice(idx, 1);
+          p.river.push(tile);
+        }
+        break;
+      }
+      default:
+        break;
+    }
+    return newState;
+  }
+
+  function handleMessage(e) {
+    try {
+      const evt = JSON.parse(e.data);
+      setEvents((evts) => [...evts.slice(-9), evt.name]);
+      setGameState((s) => applyEvent(s, evt));
+    } catch {
+      // ignore parse errors
+    }
+  }
+
   function openWebSocket() {
     const url = `${server.replace(/\/$/, '').replace('http', 'ws')}/ws/1`;
     const ws = new WebSocket(url);
     ws.onopen = () => setStatus('WebSocket connected');
-    ws.onmessage = () => fetchGameState();
+    ws.onmessage = handleMessage;
     wsRef.current = ws;
   }
 
@@ -97,6 +137,14 @@ export default function App() {
         <button onClick={startGame}>Start Game</button>
       </div>
       <GameBoard state={gameState} server={server} />
+      <div className="event-log">
+        <h2>Events</h2>
+        <ul>
+          {events.map((e, i) => (
+            <li key={i}>{e}</li>
+          ))}
+        </ul>
+      </div>
       <p>{status}</p>
     </>
   );
