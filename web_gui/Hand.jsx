@@ -1,21 +1,30 @@
 import React from 'react';
-import { tileToEmoji } from './tileUtils.js';
+import { tileToImage, tileDescription } from './tileUtils.js';
 
 export default function Hand({ tiles = [], onDiscard }) {
   return (
     <div className="hand">
       {tiles.map((t, i) => {
-        const label = typeof t === 'string' ? t : tileToEmoji(t);
+        if (typeof t === 'string') {
+          return (
+            <span key={i} className="tile">{t}</span>
+          );
+        }
+        const src = t.src || tileToImage(t);
+        const alt = t.alt || tileDescription(t);
         return onDiscard ? (
           <button
             key={i}
             className="tile"
             onClick={() => onDiscard(t)}
+            aria-label={`Discard ${alt}`}
           >
-            {label}
+            <img src={src} alt={alt} />
           </button>
         ) : (
-          <span key={i} className="tile">{label}</span>
+          <span key={i} className="tile">
+            <img src={src} alt={alt} />
+          </span>
         );
       })}
     </div>
