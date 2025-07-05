@@ -25,6 +25,7 @@ Future work will expand these components.
 - [x] Mortal backend integration design
 - [ ] MJAI protocol support
 - [x] GameState JSON serialization
+- [x] RuleSet interface for scoring
 - [x] Local single-player play via CLI
 - [x] Basic remote game creation via CLI
 - [ ] REST + WebSocket API
@@ -56,6 +57,7 @@ Future work will expand these components.
 - [x] skip
 - [x] end_game
 - [x] standard wall initialization
+- [x] configurable ruleset
 
 ## Implementation plan
 
