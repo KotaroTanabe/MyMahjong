@@ -36,6 +36,18 @@
   min-height: 24px;
 }
 
+.meld-area {
+  display: flex;
+  justify-content: center;
+  gap: 0.25rem;
+  min-height: 24px;
+}
+
+.meld {
+  display: flex;
+  gap: 0.1rem;
+}
+
 .tile {
   display: inline-block;
   width: 24px;
@@ -48,3 +60,7 @@
 .east .river { transform: rotate(90deg); }
 .north .river { transform: rotate(180deg); }
 .west .river { transform: rotate(-90deg); }
+
+.east .meld-area { transform: rotate(90deg); }
+.north .meld-area { transform: rotate(180deg); }
+.west .meld-area { transform: rotate(-90deg); }

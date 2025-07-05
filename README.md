@@ -34,6 +34,7 @@ Future work will expand these components.
 - [x] React front-end skeleton
 - [x] Basic board layout
 - [x] Hand & River components
+- [x] Meld area component
 - [x] Continuous integration workflow
 - [x] Core <-> interface API documented
 - [x] GUI design documented
