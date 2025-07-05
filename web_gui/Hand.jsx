@@ -1,10 +1,11 @@
 import React from 'react';
+import { tileToEmoji } from './tileUtils.js';
 
 export default function Hand({ tiles = [], onDiscard }) {
   return (
     <div className="hand">
       {tiles.map((t, i) => {
-        const label = typeof t === 'string' ? t : `${t.suit[0]}${t.value}`;
+        const label = typeof t === 'string' ? t : tileToEmoji(t);
         return onDiscard ? (
           <button
             key={i}
