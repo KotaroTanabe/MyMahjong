@@ -50,6 +50,8 @@ class Wall:
     @property
     def remaining_yama_tiles(self) -> int:
         """Tiles left that can still be drawn this hand."""
+        if len(self.dead_wall) == self.wanpai_size:
+            return len(self.tiles) if len(self.tiles) > self.wanpai_size else 0
         return max(len(self.tiles) - self.wanpai_size, 0)
 
     @property
