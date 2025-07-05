@@ -50,6 +50,7 @@ Future work will expand these components.
 - [x] Discard tiles via GUI
 - [x] Meld and win actions via GUI
 - [x] Start game via GUI
+- [x] Handle start_kyoku event in GUI
 - [x] Continuous integration workflow
 - [x] Web GUI unit tests
 - [x] Core <-> interface API documented
