@@ -36,6 +36,12 @@ class MahjongEngine:
             p.hand.melds.clear()
             p.river.clear()
             p.riichi = False
+        winds = ["east", "south", "west", "north"]
+        self.state.seat_winds = []
+        for i, p in enumerate(self.state.players):
+            wind = winds[(i - dealer) % 4]
+            p.seat_wind = wind
+            self.state.seat_winds.append(wind)
         self.state.dealer = dealer
         self.state.round_number = round_number
         self.state.current_player = dealer
@@ -46,11 +52,16 @@ class MahjongEngine:
         )
 
     def deal_initial_hands(self) -> None:
-        """Deal 13 tiles to each player at the start of the game."""
+        """Deal initial tiles: 14 for the dealer and 13 for others."""
         assert self.state.wall is not None
+        # everyone starts with 13 tiles
         for _ in range(13):
             for player in self.state.players:
                 player.draw(self.state.wall.draw_tile())
+
+        # dealer gets one extra tile to begin their first turn
+        dealer_index = self.state.dealer
+        self.state.players[dealer_index].draw(self.state.wall.draw_tile())
 
     @property
     def remaining_tiles(self) -> int:
@@ -150,4 +161,5 @@ class MahjongEngine:
         self.state = GameState(wall=Wall())
         self.state.players = [Player(name=f"Player {i}") for i in range(4)]
         self.state.current_player = 0
+        self.state.seat_winds = []
         return final_state

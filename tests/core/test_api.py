@@ -1,4 +1,4 @@
-from core import api, models
+from core import api, models, practice
 
 
 def test_start_game() -> None:
@@ -9,8 +9,10 @@ def test_start_game() -> None:
 
 def test_start_game_deals_hands() -> None:
     state = api.start_game(["A", "B", "C", "D"])
+    dealer = state.dealer
     counts = [len(p.hand.tiles) for p in state.players]
-    assert all(c == 13 for c in counts)
+    assert counts[dealer] == 14
+    assert all(counts[i] == 13 for i in range(4) if i != dealer)
 
 
 def test_draw_and_discard() -> None:
@@ -61,3 +63,12 @@ def test_start_kyoku_api() -> None:
     state = api.start_kyoku(2, 3)
     assert state.dealer == 2
     assert state.round_number == 3
+    assert state.seat_winds == ["west", "north", "east", "south"]
+
+
+def test_practice_api_functions(monkeypatch) -> None:
+    monkeypatch.setattr(practice.random, "choice", lambda seq: seq[0])
+    prob = api.generate_practice_problem()
+    assert len(prob.hand) == 14
+    tile = api.suggest_practice_discard(prob.hand)
+    assert isinstance(tile, models.Tile)

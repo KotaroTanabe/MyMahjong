@@ -25,6 +25,12 @@ class CreateGameRequest(BaseModel):
     players: list[str]
 
 
+class SuggestRequest(BaseModel):
+    """Request body for AI discard suggestion."""
+
+    hand: list[dict]
+
+
 @app.get("/health")
 def health() -> dict[str, str]:
     """Simple health check endpoint."""
@@ -45,12 +51,30 @@ def get_game(game_id: int) -> dict:
     return asdict(api.get_state())
 
 
+@app.get("/practice")
+def practice_problem() -> dict:
+    """Return a random practice problem."""
+
+    problem = api.generate_practice_problem()
+    return asdict(problem)
+
+
+@app.post("/practice/suggest")
+def practice_suggest(req: SuggestRequest) -> dict:
+    """Return AI discard suggestion for the provided hand."""
+
+    hand = [models.Tile(**t) for t in req.hand]
+    tile = api.suggest_practice_discard(hand)
+    return asdict(tile)
+
+
 class ActionRequest(BaseModel):
     """Request body for game actions."""
 
     player_index: int
     action: str
     tile: dict | None = None
+    tiles: list[dict] | None = None
 
 
 @app.post("/games/{game_id}/action")
@@ -66,6 +90,32 @@ def game_action(game_id: int, req: ActionRequest) -> dict:
     if req.action == "discard" and req.tile:
         tile = models.Tile(**req.tile)
         api.discard_tile(req.player_index, tile)
+        return {"status": "ok"}
+    if req.action == "chi" and req.tiles:
+        tiles = [models.Tile(**t) for t in req.tiles]
+        api.call_chi(req.player_index, tiles)
+        return {"status": "ok"}
+    if req.action == "pon" and req.tiles:
+        tiles = [models.Tile(**t) for t in req.tiles]
+        api.call_pon(req.player_index, tiles)
+        return {"status": "ok"}
+    if req.action == "kan" and req.tiles:
+        tiles = [models.Tile(**t) for t in req.tiles]
+        api.call_kan(req.player_index, tiles)
+        return {"status": "ok"}
+    if req.action == "riichi":
+        api.declare_riichi(req.player_index)
+        return {"status": "ok"}
+    if req.action == "tsumo" and req.tile:
+        tile = models.Tile(**req.tile)
+        result = api.declare_tsumo(req.player_index, tile)
+        return result.__dict__
+    if req.action == "ron" and req.tile:
+        tile = models.Tile(**req.tile)
+        result = api.declare_ron(req.player_index, tile)
+        return result.__dict__
+    if req.action == "skip":
+        api.skip(req.player_index)
         return {"status": "ok"}
     raise HTTPException(status_code=400, detail="Unknown action")
 

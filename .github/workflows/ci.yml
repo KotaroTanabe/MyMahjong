@@ -19,8 +19,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: pip install build
-      - run: pip install -e ./core -e ./web -e ./cli
+      - run: curl -Ls https://astral.sh/uv/install.sh | sh
+      - run: uv pip install --system build
+      - run: uv pip install --system -e ./core -e ./web -e ./cli
       - run: python -m build core
       - run: python -m build cli
 
@@ -32,11 +33,21 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: pip install -e ./core -e ./web -e ./cli
-      - run: pip install flake8 mypy pytest
+      - run: curl -Ls https://astral.sh/uv/install.sh | sh
+      - run: uv pip install --system -e ./core -e ./web -e ./cli
+      - run: uv pip install --system flake8 mypy pytest
       - run: flake8
       - run: mypy core web cli
       - run: pytest -q
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: web_gui/package-lock.json
+      - run: npm ci
+        working-directory: web_gui
+      - run: npx vitest run
+        working-directory: web_gui
 
   deploy:
     runs-on: ubuntu-latest

@@ -29,3 +29,4 @@ def test_apply_action_start_kyoku() -> None:
     state = api.get_state()
     assert state.dealer == 1
     assert state.round_number == 2
+    assert state.seat_winds == ["north", "east", "south", "west"]
