@@ -28,3 +28,11 @@ def draw_tile(server: str, game_id: int, player_index: int) -> dict:
     )
     resp.raise_for_status()
     return resp.json()
+
+
+def check_health(server: str) -> dict:
+    """Check the remote server health endpoint."""
+    url = f"{server.rstrip('/')}/health"
+    resp = requests.get(url)
+    resp.raise_for_status()
+    return resp.json()

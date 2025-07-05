@@ -56,5 +56,20 @@ def draw(game_id: int, player_index: int, server: str) -> None:
     click.echo(f"Player {player_index} drew {tile['suit']}{tile['value']}")
 
 
+@cli.command()
+@click.option(
+    "--server",
+    "server",
+    "-s",
+    required=True,
+    help="Base URL of remote server",
+)
+def health(server: str) -> None:
+    """Check remote server health."""
+    data = remote_game.check_health(server)
+    status = data.get("status", "unknown")
+    click.echo(f"Server status: {status}")
+
+
 if __name__ == "__main__":
     cli()
