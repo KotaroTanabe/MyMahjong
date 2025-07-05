@@ -54,3 +54,9 @@ def test_game_board_references_center_display() -> None:
 def test_style_css_exists() -> None:
     css = Path('web_gui/style.css')
     assert css.is_file(), 'style.css missing'
+
+
+def test_app_has_server_selection() -> None:
+    text = Path('web_gui/App.jsx').read_text()
+    assert '<input' in text
+    assert 'Retry' in text
