@@ -79,6 +79,7 @@ Future work will expand these components.
 - [x] start_kyoku
 - [x] ryukyoku detection
 - [x] standard wall initialization
+- [x] dead wall & dora indicator tracking
 - [x] wanpai separation and yama remaining count
 - [x] configurable ruleset
 - [x] event log
