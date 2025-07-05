@@ -27,7 +27,7 @@ def generate_problem() -> PracticeProblem:
 
     engine = MahjongEngine()
     engine.pop_events()  # discard start event
-    engine.draw_tile(0)
+    # The dealer begins with 14 tiles so no initial draw is needed
     hand = engine.state.players[0].hand.tiles.copy()
     if engine.state.wall:
         dora = random.choice(engine.state.wall.tiles)

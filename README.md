@@ -48,6 +48,7 @@ Future work will expand these components.
 - [x] Adjustable tile font size (default 1.5x)
 - [x] Basic draw control via REST API
 - [x] Discard tiles via GUI
+- [x] Meld and win actions via GUI
 - [x] Start game via GUI
 - [x] Join game by ID via GUI
 - [x] Reconnect to running game after reload
@@ -55,6 +56,7 @@ Future work will expand these components.
 - [x] Web GUI unit tests
 - [x] Core <-> interface API documented
 - [x] GUI design documented
+- [x] Corrected seat orientation (shimocha right side)
 - [ ] 何切る問題 mode
   - [x] CLI practice command
   - [x] AI recommendation
@@ -79,10 +81,13 @@ Future work will expand these components.
 - [x] start_kyoku
 - [x] ryukyoku detection
 - [x] standard wall initialization
+- [x] dead wall & dora indicator tracking
+- [x] wanpai separation and yama remaining count
 - [x] configurable ruleset
 - [x] event log
 - [x] current player tracking
 - [x] action dispatch helper
+- [x] seat wind tracking
 
 ## Implementation plan progress
 
@@ -101,7 +106,7 @@ Future work will expand these components.
   `docs/mjai-ai-integration.md` so AI engines can connect via the protocol.
 - [x] **7. Set up GitHub Actions** – lint, type check, run tests and deploy the built
   web front-end to GitHub Pages.
-- [ ] **8. Add action endpoints** – implement `POST /games/{id}/action` for draw,
+- [x] **8. Add action endpoints** – implement `POST /games/{id}/action` for draw,
   discard, meld calls and win declarations.
 - [x] **9. Stream events via WebSocket** – create `/ws/{id}` to push engine events so
   the GUI updates instantly.
