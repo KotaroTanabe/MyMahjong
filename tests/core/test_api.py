@@ -72,3 +72,5 @@ def test_practice_api_functions(monkeypatch) -> None:
     assert len(prob.hand) == 14
     tile = api.suggest_practice_discard(prob.hand)
     assert isinstance(tile, models.Tile)
+    evals = api.evaluate_practice_discards(prob.hand)
+    assert len(evals) == 14

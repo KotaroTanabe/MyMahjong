@@ -111,6 +111,12 @@ def suggest_practice_discard(hand: list[Tile]) -> Tile:
     return practice.suggest_discard(hand)
 
 
+def evaluate_practice_discards(hand: list[Tile]) -> list[tuple[Tile, int]]:
+    """Return shanten numbers for discarding each tile in ``hand``."""
+
+    return practice.evaluate_discards(hand)
+
+
 def apply_action(action: GameAction) -> object | None:
     """Apply ``action`` to the running engine and return any result."""
 

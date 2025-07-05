@@ -62,6 +62,7 @@ Future work will expand these components.
   - [x] CLI practice command
   - [x] AI recommendation
   - [x] Web UI support
+  - [x] Discard evaluation API
 
 ### Core engine capabilities
 
@@ -156,6 +157,7 @@ Two API endpoints are provided:
 
 - `GET /practice` returns a new problem.
 - `POST /practice/suggest` returns the AI's suggested discard.
+- `POST /practice/evaluate` returns shanten numbers for each discard option.
 
 ## Running locally
 

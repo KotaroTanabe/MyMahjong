@@ -144,3 +144,8 @@ def test_practice_endpoints() -> None:
     assert resp.status_code == 200
     tile = resp.json()
     assert "suit" in tile and "value" in tile
+
+    resp = client.post("/practice/evaluate", json={"hand": data["hand"]})
+    assert resp.status_code == 200
+    evals = resp.json()
+    assert "results" in evals and len(evals["results"]) == len(data["hand"])
