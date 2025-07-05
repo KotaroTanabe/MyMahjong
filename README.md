@@ -44,6 +44,7 @@ Future work will expand these components.
 - [x] Meld area component
 - [x] Center display (dora & wall count)
 - [x] Basic draw control via REST API
+- [x] Discard tiles via GUI
 - [x] Start game via GUI
 - [x] Continuous integration workflow
 - [x] Core <-> interface API documented
@@ -91,7 +92,7 @@ Future work will expand these components.
   discard, meld calls and win declarations.
 - [x] **9. Stream events via WebSocket** – create `/ws/{id}` to push engine events so
   the GUI updates instantly.
-- [ ] **10. Connect GUI state** – update React components to fetch the initial game,
+ - [x] **10. Connect GUI state** – update React components to fetch the initial game,
   handle WebSocket events and send player actions.
 - [ ] **11. Provide a mock AI** – run a simple MJAI-compatible process through the
   adapter with an interface that later swaps in Mortal.
@@ -105,7 +106,6 @@ The following plan steps are not yet implemented:
 - Step 2 – Integrate Mortal AI.
 - Step 6 – Implement MJAI adapter.
 - Step 8 – Add full action endpoints.
-- Step 10 – Connect GUI state to WebSocket updates.
 - Step 11 – Provide a mock AI.
 - Step 12 – Write end-to-end tests.
 

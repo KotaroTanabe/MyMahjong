@@ -49,6 +49,14 @@
   min-height: 24px;
 }
 
+.event-log {
+  margin-top: 0.5rem;
+  max-height: 150px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  padding: 0.25rem;
+}
+
 .controls {
   display: flex;
   justify-content: center;

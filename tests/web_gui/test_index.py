@@ -87,3 +87,14 @@ def test_controls_use_server_prop() -> None:
     text = Path('web_gui/Controls.jsx').read_text()
     assert 'server' in text
     assert '/games/1/action' in text
+
+
+def test_hand_supports_discard() -> None:
+    text = Path('web_gui/Hand.jsx').read_text()
+    assert 'onDiscard' in text
+
+
+def test_app_handles_websocket_events() -> None:
+    text = Path('web_gui/App.jsx').read_text()
+    assert 'handleMessage' in text
+    assert 'event-log' in text

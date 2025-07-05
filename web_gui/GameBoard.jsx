@@ -18,7 +18,19 @@ export default function GameBoard({ state, server }) {
   const northHand = north?.hand?.tiles.map(tileLabel) ?? defaultHand;
   const westHand = west?.hand?.tiles.map(tileLabel) ?? defaultHand;
   const eastHand = east?.hand?.tiles.map(tileLabel) ?? defaultHand;
-  const southHand = south?.hand?.tiles.map(tileLabel) ?? defaultHand;
+  const southHand = south?.hand?.tiles ?? defaultHand;
+
+  async function discard(tile) {
+    try {
+      await fetch(`${server.replace(/\/$/, '')}/games/1/action`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ player_index: 0, action: 'discard', tile }),
+      });
+    } catch {
+      // ignore errors for now
+    }
+  }
 
   return (
     <div className="board-grid">
@@ -46,7 +58,7 @@ export default function GameBoard({ state, server }) {
       <div className="south seat">
         <div>{south?.name ?? 'South'}</div>
         <River tiles={(south?.river ?? []).map(tileLabel)} />
-        <Hand tiles={southHand} />
+        <Hand tiles={southHand} onDiscard={discard} />
         <Controls server={server} />
         <MeldArea melds={[]} />
       </div>
