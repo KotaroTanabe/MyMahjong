@@ -23,7 +23,7 @@ Future work will expand these components.
 
 - [ ] Mortal AI integration
 - [x] Mortal backend integration design
-- [ ] MJAI protocol support
+- [x] MJAI protocol support
 - [x] Basic MJAI event serialization
 - [x] GameState JSON serialization
 - [x] RuleSet interface for scoring
@@ -105,7 +105,7 @@ Future work will expand these components.
   channel for real-time play.
 - [x] **5. Develop React front-end** – consume the API and present a board based on the
   `docs/board-layout.md` design.
-- [ ] **6. Implement MJAI adapter** – translate game state to and from
+- [x] **6. Implement MJAI adapter** – translate game state to and from
   `docs/mjai-ai-integration.md` so AI engines can connect via the protocol.
 - [x] **7. Set up GitHub Actions** – lint, type check, run tests and deploy the built
   web front-end to GitHub Pages.
@@ -127,7 +127,6 @@ Future work will expand these components.
 The following plan steps are not yet implemented:
 
 - Step 2 – Integrate Mortal AI.
-- Step 6 – Implement MJAI adapter.
 - Step 8 – Add full action endpoints.
 - Step 11 – Provide a mock AI.
 - Step 12 – Write end-to-end tests.

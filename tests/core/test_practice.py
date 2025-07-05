@@ -17,3 +17,28 @@ def test_suggest_discard(monkeypatch):
     monkeypatch.setattr(practice.random, "choice", lambda seq: seq[-1])
     tile = practice.suggest_discard(tiles)
     assert tile == tiles[-1]
+
+
+def test_suggest_discard_mortal(monkeypatch):
+    class DummyAI(practice.MortalAI):
+        def __init__(self) -> None:
+            self.messages: list[str] = []
+
+        def start(self) -> None:  # type: ignore[override]
+            pass
+
+        def stop(self) -> None:  # type: ignore[override]
+            pass
+
+        def send(self, msg: str) -> None:  # type: ignore[override]
+            self.messages.append(msg)
+
+        def receive(self) -> str:  # type: ignore[override]
+            # always discard first tile
+            return '{"type": "discard", "tile": {"suit": "man", "value": 1}}'
+
+    monkeypatch.setattr(practice, "MortalAI", DummyAI)
+    tiles = [Tile("man", 1) for _ in range(14)]
+    tile = practice.suggest_discard(tiles, use_mortal=True)
+    assert isinstance(tile, Tile)
+    assert tile.suit == "man" and tile.value == 1

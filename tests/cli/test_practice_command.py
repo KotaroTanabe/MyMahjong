@@ -12,7 +12,11 @@ def test_practice_command(monkeypatch):
         seat_wind="east",
     )
     monkeypatch.setattr(practice, "generate_problem", lambda: problem)
-    monkeypatch.setattr(practice, "suggest_discard", lambda h: h[0])
+
+    def fake_suggest(hand: list[models.Tile], use_mortal: bool = False) -> models.Tile:
+        return hand[0]
+
+    monkeypatch.setattr(practice, "suggest_discard", fake_suggest)
 
     runner = CliRunner()
     result = runner.invoke(cli, ["practice"], input="1\n")
@@ -20,3 +24,27 @@ def test_practice_command(monkeypatch):
     assert result.exit_code == 0
     assert "Seat wind: east" in result.output
     assert "AI suggests discarding m1" in result.output
+
+
+def test_practice_command_mortal(monkeypatch):
+    hand = [models.Tile("man", 1) for _ in range(14)]
+    problem = practice.PracticeProblem(
+        hand=hand,
+        dora_indicator=models.Tile("pin", 9),
+        seat_wind="east",
+    )
+    monkeypatch.setattr(practice, "generate_problem", lambda: problem)
+
+    called: dict[str, bool] = {"mortal": False}
+
+    def fake_suggest(hand: list[models.Tile], use_mortal: bool = False) -> models.Tile:
+        called["mortal"] = use_mortal
+        return hand[0]
+
+    monkeypatch.setattr(practice, "suggest_discard", fake_suggest)
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ["practice", "--mortal"], input="1\n")
+
+    assert result.exit_code == 0
+    assert called["mortal"] is True
