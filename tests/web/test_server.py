@@ -21,3 +21,14 @@ def test_create_and_get_game() -> None:
     assert response.status_code == 200
     data = response.json()
     assert "players" in data
+
+
+def test_draw_action_endpoint() -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    resp = client.post(
+        "/games/1/action",
+        json={"player_index": 0, "action": "draw"},
+    )
+    assert resp.status_code == 200
+    tile = resp.json()
+    assert "suit" in tile and "value" in tile

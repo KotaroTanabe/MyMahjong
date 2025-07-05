@@ -49,6 +49,17 @@
   min-height: 24px;
 }
 
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+}
+
+.message {
+  margin-top: 0.25rem;
+}
+
 .meld {
   display: flex;
   gap: 0.1rem;
