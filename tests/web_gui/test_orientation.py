@@ -11,4 +11,4 @@ def test_dom_order() -> None:
     east_idx = jsx.find('className="east seat"')
     west_idx = jsx.find('className="west seat"')
     assert -1 not in (east_idx, west_idx)
-    assert east_idx < west_idx
+    assert west_idx < east_idx
