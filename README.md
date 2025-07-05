@@ -37,6 +37,7 @@ Future work will expand these components.
 - [x] Hand & River components
 - [x] Meld area component
 - [x] Center display (dora & wall count)
+- [x] Basic draw control via REST API
 - [x] Continuous integration workflow
 - [x] Core <-> interface API documented
 - [x] GUI design documented

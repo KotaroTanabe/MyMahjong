@@ -3,6 +3,7 @@ import Hand from './Hand.jsx';
 import River from './River.jsx';
 import MeldArea from './MeldArea.jsx';
 import CenterDisplay from './CenterDisplay.jsx';
+import Controls from './Controls.jsx';
 
 export default function GameBoard() {
   const hand = Array(13).fill('🀫');
@@ -29,6 +30,7 @@ export default function GameBoard() {
       <div className="south seat">
         <River tiles={[]} />
         <Hand tiles={hand} />
+        <Controls />
         <MeldArea melds={[]} />
       </div>
     </div>
