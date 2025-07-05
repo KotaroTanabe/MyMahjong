@@ -32,6 +32,7 @@ Future work will expand these components.
 - [x] Basic REST endpoints (create game, fetch game, health)
 - [x] Web GUI served through GitHub Pages
 - [x] Basic GUI status display
+- [x] GUI server selection and retry
 - [x] React front-end skeleton
 - [x] Basic board layout
 - [x] Hand & River components
