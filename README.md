@@ -41,6 +41,7 @@ Future work will expand these components.
 - [x] Continuous integration workflow
 - [x] Core <-> interface API documented
 - [x] GUI design documented
+- [x] Local dev start script
 
 ### Core engine capabilities
 
@@ -104,6 +105,14 @@ from the `web_gui` directory:
 cd web_gui
 npm install
 npx vite --open
+```
+
+### Start both services together
+
+Run the helper script in the repository root to launch the FastAPI backend and Vite dev server simultaneously:
+
+```bash
+python scripts/dev.py
 ```
 
 The GUI will automatically connect to the local FastAPI server's REST endpoints.
