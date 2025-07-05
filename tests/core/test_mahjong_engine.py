@@ -105,9 +105,40 @@ def test_declare_riichi() -> None:
     assert player.score == start_score - 1000
 
 
+def test_tsumo_updates_scores_and_emits_event() -> None:
+    engine = MahjongEngine(ruleset=ScoringRuleSet())
+    engine.pop_events()
+    tile = Tile("man", 1)
+    engine.state.players[0].hand.tiles.append(tile)
+    start_score = engine.state.players[0].score
+    engine.declare_tsumo(0, tile)
+    assert engine.state.players[0].score == start_score + 8000
+    evt = engine.pop_events()[-1]
+    assert evt.name == "tsumo"
+    assert evt.payload["scores"][0] == start_score + 8000
+
+
+def test_ron_updates_scores_and_emits_event() -> None:
+    engine = MahjongEngine(ruleset=ScoringRuleSet())
+    engine.pop_events()
+    tile = Tile("man", 2)
+    engine.state.players[0].hand.tiles.append(tile)
+    start_score = engine.state.players[0].score
+    engine.declare_ron(0, tile)
+    assert engine.state.players[0].score == start_score + 8000
+    evt = engine.pop_events()[-1]
+    assert evt.name == "ron"
+    assert evt.payload["scores"][0] == start_score + 8000
+
+
 class DummyRuleSet(RuleSet):
     def calculate_score(self, hand_tiles, melds, win_tile, *, is_tsumo=True):
         return HandResponse(han=1)
+
+
+class ScoringRuleSet(RuleSet):
+    def calculate_score(self, hand_tiles, melds, win_tile, *, is_tsumo=True):
+        return HandResponse(han=1, cost={"total": 8000})
 
 
 def test_event_log() -> None:

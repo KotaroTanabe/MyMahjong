@@ -145,13 +145,31 @@ class MahjongEngine:
     def declare_tsumo(self, player_index: int, win_tile: Tile) -> HandResponse:
         """Declare a self-drawn win and return scoring info."""
         result = self.calculate_score(player_index, win_tile)
-        self._emit("tsumo", {"player_index": player_index, "result": result})
+        player = self.state.players[player_index]
+        if result.cost and "total" in result.cost:
+            player.score += int(result.cost["total"])
+        scores = [p.score for p in self.state.players]
+        self._emit(
+            "tsumo",
+            {
+                "player_index": player_index,
+                "result": result,
+                "scores": scores,
+            },
+        )
         return result
 
     def declare_ron(self, player_index: int, win_tile: Tile) -> HandResponse:
         """Declare a win on another player's discard."""
         result = self.calculate_score(player_index, win_tile)
-        self._emit("ron", {"player_index": player_index, "result": result})
+        player = self.state.players[player_index]
+        if result.cost and "total" in result.cost:
+            player.score += int(result.cost["total"])
+        scores = [p.score for p in self.state.players]
+        self._emit(
+            "ron",
+            {"player_index": player_index, "result": result, "scores": scores},
+        )
         return result
 
     def skip(self, player_index: int) -> None:
