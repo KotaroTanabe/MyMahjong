@@ -66,6 +66,8 @@ export default function App() {
     switch (event.name) {
       case 'start_game':
         return event.payload.state;
+      case 'start_kyoku':
+        return event.payload.state;
       case 'draw_tile': {
         const p = newState.players[event.payload.player_index];
         if (p) p.hand.tiles.push(event.payload.tile);
