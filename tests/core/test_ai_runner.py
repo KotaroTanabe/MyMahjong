@@ -1,8 +1,8 @@
-from core.mortal_runner import MortalAI
+from core.ai_runner import ExternalAI
 import subprocess
 
 
-def test_mortal_ai_start(monkeypatch) -> None:
+def test_external_ai_start(monkeypatch) -> None:
     calls = []
 
     class DummyPopen:
@@ -18,7 +18,7 @@ def test_mortal_ai_start(monkeypatch) -> None:
             pass
 
     monkeypatch.setattr(subprocess, "Popen", DummyPopen)
-    ai = MortalAI(executable="mortal", model_dir="/models", player_id=2)
+    ai = ExternalAI(executable="ai_engine", model_dir="/models", player_id=2)
     ai.start()
-    assert calls == [["mortal", "2", "--model-dir", "/models"]]
+    assert calls == [["ai_engine", "2", "--model-dir", "/models"]]
     ai.stop()

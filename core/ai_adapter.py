@@ -2,10 +2,10 @@
 
 This module converts :class:`GameState`, :class:`GameEvent` and
 ``GameAction`` instances to and from the JSON messages understood by
-MJAI compatible engines such as Mortal.  Earlier versions only provided
-basic serialization.  The functions below now support full round–trip
-conversion so external AIs can be used for practice mode or as players in
-the future.
+MJAI compatible engines. Earlier versions only provided basic
+serialization. The functions below now support full round–trip
+conversion so external AIs can be used for practice mode or as players
+in the future.
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ from typing import Any
 from .models import GameAction, GameEvent, GameState, Tile, Meld, Hand
 from .player import Player
 from .wall import Wall
-from .mortal_runner import MortalAI
+from .ai_runner import ExternalAI
 
 
 def _encode(obj: Any) -> Any:
@@ -36,7 +36,7 @@ def game_state_to_json(state: GameState) -> str:
     return json.dumps(_encode(state))
 
 
-def send_state_to_ai(state: GameState, ai: MortalAI) -> None:
+def send_state_to_ai(state: GameState, ai: ExternalAI) -> None:
     """Serialize ``state`` and send it to ``ai``."""
 
     message = game_state_to_json(state)
@@ -112,7 +112,7 @@ def json_to_event(message: str) -> GameEvent:
     return GameEvent(name=name, payload=data)
 
 
-def send_event_to_ai(event: GameEvent, ai: MortalAI) -> None:
+def send_event_to_ai(event: GameEvent, ai: ExternalAI) -> None:
     """Serialize ``event`` and send it to ``ai``."""
 
     ai.send(event_to_json(event))
@@ -140,7 +140,7 @@ def json_to_action(message: str) -> GameAction:
     )
 
 
-def receive_action(ai: MortalAI) -> GameAction:
+def receive_action(ai: ExternalAI) -> GameAction:
     """Receive and deserialize a JSON action from ``ai``."""
 
     return json_to_action(ai.receive())

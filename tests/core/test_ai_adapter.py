@@ -11,13 +11,13 @@ from core.ai_adapter import (
 )
 from core import models
 from core.models import GameState, Tile, GameEvent
-from core.mortal_runner import MortalAI
+from core.ai_runner import ExternalAI
 from core.player import Player
 from core.wall import Wall
 import json
 
 
-class DummyAI(MortalAI):
+class DummyAI(ExternalAI):
     def __init__(self) -> None:
         self.sent_messages: list[str] = []
 

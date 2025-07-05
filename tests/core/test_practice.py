@@ -19,8 +19,8 @@ def test_suggest_discard(monkeypatch):
     assert tile == tiles[-1]
 
 
-def test_suggest_discard_mortal(monkeypatch):
-    class DummyAI(practice.MortalAI):
+def test_suggest_discard_external(monkeypatch):
+    class DummyAI(practice.ExternalAI):
         def __init__(self) -> None:
             self.messages: list[str] = []
 
@@ -37,8 +37,8 @@ def test_suggest_discard_mortal(monkeypatch):
             # always discard first tile
             return '{"type": "discard", "tile": {"suit": "man", "value": 1}}'
 
-    monkeypatch.setattr(practice, "MortalAI", DummyAI)
+    monkeypatch.setattr(practice, "ExternalAI", DummyAI)
     tiles = [Tile("man", 1) for _ in range(14)]
-    tile = practice.suggest_discard(tiles, use_mortal=True)
+    tile = practice.suggest_discard(tiles, use_ai=True)
     assert isinstance(tile, Tile)
     assert tile.suit == "man" and tile.value == 1

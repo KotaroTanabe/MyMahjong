@@ -77,7 +77,7 @@ def test_practice_api_functions(monkeypatch) -> None:
     assert isinstance(tile, models.Tile)
 
 
-def test_practice_api_mortal(monkeypatch) -> None:
+def test_practice_api_external(monkeypatch) -> None:
     prob = practice.PracticeProblem(
         hand=[models.Tile("man", 1) for _ in range(14)],
         dora_indicator=models.Tile("pin", 9),
@@ -85,10 +85,10 @@ def test_practice_api_mortal(monkeypatch) -> None:
     )
     monkeypatch.setattr(practice, "generate_problem", lambda: prob)
 
-    def fake_suggest(hand: list[models.Tile], use_mortal: bool = False) -> models.Tile:
-        assert use_mortal
+    def fake_suggest(hand: list[models.Tile], use_ai: bool = False) -> models.Tile:
+        assert use_ai
         return hand[0]
 
     monkeypatch.setattr(practice, "suggest_discard", fake_suggest)
-    tile = api.suggest_practice_discard(prob.hand, use_mortal=True)
+    tile = api.suggest_practice_discard(prob.hand, use_ai=True)
     assert tile.suit == "man"

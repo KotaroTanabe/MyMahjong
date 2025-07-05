@@ -197,14 +197,14 @@ def test_practice_endpoints() -> None:
     assert "suit" in tile and "value" in tile
 
 
-def test_practice_endpoints_mortal(monkeypatch) -> None:
-    def fake_suggest(hand: list[models.Tile], use_mortal: bool = False) -> models.Tile:
-        assert use_mortal
+def test_practice_endpoints_external(monkeypatch) -> None:
+    def fake_suggest(hand: list[models.Tile], use_ai: bool = False) -> models.Tile:
+        assert use_ai
         return hand[0]
 
     monkeypatch.setattr(api, "suggest_practice_discard", fake_suggest)
 
     prob = client.get("/practice")
     data = prob.json()
-    resp = client.post("/practice/suggest?mortal=true", json={"hand": data["hand"]})
+    resp = client.post("/practice/suggest?ai=true", json={"hand": data["hand"]})
     assert resp.status_code == 200

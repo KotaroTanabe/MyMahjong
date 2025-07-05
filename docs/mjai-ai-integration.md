@@ -1,6 +1,6 @@
 # MJAI AI Integration
 
-This project aims to run external Mahjong AIs that communicate via the [MJAI high level API](https://mjai.app/docs/highlevel-api). Our engine will expose an adapter that converts game state into the JSON messages defined by the specification and consumes the responses produced by the AI process. The goal is to support any AI that follows this protocol, including Mortal.
+This project aims to run external Mahjong AIs that communicate via the [MJAI high level API](https://mjai.app/docs/highlevel-api). Our engine will expose an adapter that converts game state into the JSON messages defined by the specification and consumes the responses produced by the AI process. The goal is to support any AI that follows this protocol.
 
 Key points:
 

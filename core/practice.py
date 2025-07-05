@@ -12,7 +12,7 @@ from .rules import _tile_to_index
 from .mahjong_engine import MahjongEngine
 from .models import Tile
 from .ai_adapter import send_state_to_ai, receive_action
-from .mortal_runner import MortalAI
+from .ai_runner import ExternalAI
 
 
 @dataclass
@@ -48,19 +48,19 @@ def _hand_counts(hand: list[Tile]) -> list[int]:
     return counts
 
 
-def suggest_discard(hand: list[Tile], use_mortal: bool = False) -> Tile:
+def suggest_discard(hand: list[Tile], use_ai: bool = False) -> Tile:
     """Return the AI suggested discard.
 
-    If ``use_mortal`` is ``True`` this function starts a ``MortalAI`` process
+    If ``use_ai`` is ``True`` this function starts an external AI process
     and sends the practice hand via the MJAI adapter.  The discard returned by
     the AI is used.  Otherwise a simple shanten based heuristic picks the tile.
     """
 
-    if use_mortal:
+    if use_ai:
         engine = MahjongEngine()
         engine.pop_events()
         engine.state.players[0].hand.tiles = hand.copy()
-        ai = MortalAI()
+        ai = ExternalAI()
         ai.start()
         try:
             send_state_to_ai(engine.state, ai)

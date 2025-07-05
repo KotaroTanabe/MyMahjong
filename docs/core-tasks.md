@@ -25,7 +25,7 @@ The following features are still missing from the `core` package to allow a full
 - Expand `ai_adapter.py` to handle all MJAI messages.
 - Validate actions received from external AIs before applying them.
 
-## Mortal AI integration
-- Use `mortal_runner.py` to launch the AI and connect through the adapter.
-- Provide helpers so the CLI and web server can run Mortal as an opponent.
+## External AI integration
+- Use `ai_runner.py` to launch the AI and connect through the adapter.
+- Provide helpers so the CLI and web server can run an external AI as an opponent.
 

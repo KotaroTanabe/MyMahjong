@@ -21,8 +21,8 @@ Future work will expand these components.
 
 ### Features
 
-- [ ] Mortal AI integration
-- [x] Mortal backend integration design
+ - [ ] External AI integration
+ - [x] External AI backend integration design
 - [x] MJAI protocol support
 - [x] Basic MJAI event serialization
 - [x] GameState JSON serialization
@@ -97,7 +97,7 @@ Future work will expand these components.
 
 - [x] **1. Create the game engine** – wrap the Python `mahjong` library and expose
   methods for drawing, discarding and scoring.
-- [ ] **2. Integrate Mortal AI** – add a module that uses the
+- [ ] **2. Integrate external AI** – add a module that uses the
   [MJAI high level API](https://mjai.app/docs/highlevel-api) to communicate with
   the AI process and execute its moves.
 - [x] **3. Build CLI** – provide commands for starting a local game against the AI and
@@ -117,7 +117,7 @@ Future work will expand these components.
  - [x] **10. Connect GUI state** – update React components to fetch the initial game,
   handle WebSocket events and send player actions.
 - [ ] **11. Provide a mock AI** – run a simple MJAI-compatible process through the
-  adapter with an interface that later swaps in Mortal.
+  adapter with an interface that later swaps in a stronger engine.
 - [ ] **12. Write end-to-end tests** – cover REST routes, WebSocket updates and basic
   GUI interactions.
  - [x] **13. Add `何切る問題` mode** – offer a practice scenario with a random seat wind
@@ -127,7 +127,7 @@ Future work will expand these components.
 
 The following plan steps are not yet implemented:
 
-- Step 2 – Integrate Mortal AI.
+- Step 2 – Integrate external AI.
 - Step 8 – Add full action endpoints.
 - Step 11 – Provide a mock AI.
 - Step 12 – Write end-to-end tests.
@@ -144,7 +144,7 @@ remain to be built:
   detection.
 - [ ] Exhaustive draw conditions such as four kans and nine terminals.
 - [ ] Complete MJAI protocol adapter for external AIs.
-- [ ] Mortal AI integration using the adapter.
+- [ ] External AI integration using the adapter.
 
 See `docs/core-tasks.md` for detailed task descriptions.
 

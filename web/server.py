@@ -65,11 +65,11 @@ def practice_problem() -> dict:
 
 
 @app.post("/practice/suggest")
-def practice_suggest(req: SuggestRequest, mortal: bool = False) -> dict:
+def practice_suggest(req: SuggestRequest, ai: bool = False) -> dict:
     """Return AI discard suggestion for the provided hand."""
 
     hand = [models.Tile(**t) for t in req.hand]
-    tile = api.suggest_practice_discard(hand, use_mortal=mortal)
+    tile = api.suggest_practice_discard(hand, use_ai=ai)
     return asdict(tile)
 
 
