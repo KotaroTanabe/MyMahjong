@@ -11,4 +11,5 @@ __all__ = [
     "mortal_runner",
     "api",
     "models",
+    "rules",
 ]
