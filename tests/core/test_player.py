@@ -10,3 +10,11 @@ def test_player_draw_and_discard() -> None:
     player.discard(tile)
     assert tile not in player.hand.tiles
     assert tile in player.river
+
+
+def test_player_declare_riichi() -> None:
+    player = Player(name="Test")
+    start_score = player.score
+    player.declare_riichi()
+    assert player.riichi
+    assert player.score == start_score - 1000

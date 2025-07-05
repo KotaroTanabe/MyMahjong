@@ -48,6 +48,7 @@ Future work will expand these components.
 - [x] call_kan
 - [x] declare_tsumo
 - [x] declare_ron
+- [x] declare_riichi
 - [x] skip
 - [x] end_game
 - [x] standard wall initialization

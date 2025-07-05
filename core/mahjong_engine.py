@@ -39,6 +39,11 @@ class MahjongEngine:
         """Discard a tile from the specified player's hand."""
         self.state.players[player_index].discard(tile)
 
+    def declare_riichi(self, player_index: int) -> None:
+        """Declare riichi for the given player."""
+        player = self.state.players[player_index]
+        player.declare_riichi()
+
     def calculate_score(
         self, player_index: int, win_tile: Tile
     ) -> HandResponse:

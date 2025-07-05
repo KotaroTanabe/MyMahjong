@@ -30,7 +30,7 @@ def test_discard_tile_updates_state() -> None:
     # Add tile to player's hand directly for simplicity
     engine.state.players[1].draw(tile)
     engine.discard_tile(1, tile)
-    assert tile not in engine.state.players[1].hand.tiles
+    assert all(t is not tile for t in engine.state.players[1].hand.tiles)
     assert tile in engine.state.players[1].river
 
 
@@ -81,3 +81,12 @@ def test_remaining_tiles_property() -> None:
     remaining = engine.remaining_tiles
     engine.draw_tile(0)
     assert engine.remaining_tiles == remaining - 1
+
+
+def test_declare_riichi() -> None:
+    engine = MahjongEngine()
+    player = engine.state.players[0]
+    start_score = player.score
+    engine.declare_riichi(0)
+    assert player.riichi
+    assert player.score == start_score - 1000

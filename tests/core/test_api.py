@@ -45,3 +45,12 @@ def test_end_game_creates_new_state() -> None:
     assert finished is state
     new_state = api.start_game(["E", "F", "G", "H"])
     assert new_state is not state
+
+
+def test_declare_riichi_api() -> None:
+    state = api.start_game(["A", "B", "C", "D"])
+    player = state.players[0]
+    score = player.score
+    api.declare_riichi(0)
+    assert player.riichi
+    assert player.score == score - 1000

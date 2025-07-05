@@ -31,6 +31,12 @@ def discard_tile(player_index: int, tile: Tile) -> None:
     _engine.discard_tile(player_index, tile)
 
 
+def declare_riichi(player_index: int) -> None:
+    """Declare riichi for the specified player."""
+    assert _engine is not None, "Game not started"
+    _engine.declare_riichi(player_index)
+
+
 def get_state() -> GameState:
     """Return the current game state."""
     assert _engine is not None, "Game not started"
