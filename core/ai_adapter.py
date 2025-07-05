@@ -53,6 +53,7 @@ def receive_action(ai: MortalAI) -> dict:
 
     return json_to_action(ai.receive())
 
+
 def apply_action(action: dict, engine: "MahjongEngine") -> None:
     """Apply an AI action dict to the given engine."""
     action_type = action.get("type")
