@@ -1,3 +1,7 @@
+:root {
+  --tile-font-size: 24px;
+}
+
 .board-grid {
   display: grid;
   grid-template-areas:
@@ -75,8 +79,9 @@
 
 .tile {
   display: inline-block;
-  width: 24px;
-  height: 32px;
+  width: calc(var(--tile-font-size) * 1.5);
+  height: calc(var(--tile-font-size) * 2);
+  font-size: var(--tile-font-size);
   background-color: white;
   border: 1px solid #333;
   border-radius: 2px;
