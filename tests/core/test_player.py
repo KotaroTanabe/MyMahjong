@@ -18,3 +18,14 @@ def test_player_declare_riichi() -> None:
     player.declare_riichi()
     assert player.riichi
     assert player.score == start_score - 1000
+
+
+def test_discard_removes_specific_instance() -> None:
+    player = Player(name="Test")
+    tile1 = Tile(suit="man", value=1)
+    tile2 = Tile(suit="man", value=1)
+    player.draw(tile1)
+    player.draw(tile2)
+    player.discard(tile2)
+    assert all(t is not tile2 for t in player.hand.tiles)
+    assert tile1 in player.hand.tiles
