@@ -19,6 +19,12 @@
 .north { grid-area: north; }
 .west { grid-area: west; }
 .center { grid-area: center; }
+.center-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
 .east { grid-area: east; }
 .south { grid-area: south; }
 

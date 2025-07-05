@@ -41,6 +41,16 @@ def test_meld_area_component_exists() -> None:
     assert meld.is_file(), 'MeldArea.jsx missing'
 
 
+def test_center_display_component_exists() -> None:
+    center = Path('web_gui/CenterDisplay.jsx')
+    assert center.is_file(), 'CenterDisplay.jsx missing'
+
+
+def test_game_board_references_center_display() -> None:
+    board = Path('web_gui/GameBoard.jsx').read_text()
+    assert 'CenterDisplay' in board
+
+
 def test_style_css_exists() -> None:
     css = Path('web_gui/style.css')
     assert css.is_file(), 'style.css missing'
