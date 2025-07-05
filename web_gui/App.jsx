@@ -169,59 +169,71 @@ export default function App() {
   return (
     <>
       <h1>MyMahjong GUI</h1>
-      <div>
-        <label>
+      <div className="field is-grouped is-align-items-flex-end">
+        <label className="label mr-2">
           Server:
           <input
+            className="input"
             value={server}
             onChange={(e) => setServer(e.target.value)}
             style={{ width: '20em' }}
           />
         </label>
-        <Button onClick={fetchStatus}>Retry</Button>
+        <div className="control">
+          <Button onClick={fetchStatus}>Retry</Button>
+        </div>
       </div>
-      <div>
-        <label>
+      <div className="field">
+        <label className="label">
           Mode:
-          <select value={mode} onChange={(e) => setMode(e.target.value)}>
-            <option value="game">Game</option>
-            <option value="practice">Practice</option>
-          </select>
+          <span className="select ml-2">
+            <select value={mode} onChange={(e) => setMode(e.target.value)}>
+              <option value="game">Game</option>
+              <option value="practice">Practice</option>
+            </select>
+          </span>
         </label>
       </div>
-      <div>
-        <label>
+      <div className="field">
+        <label className="checkbox">
           <input
             type="checkbox"
+            className="mr-1"
             checked={peek}
             onChange={(e) => setPeek(e.target.checked)}
           />
           Peek
         </label>
       </div>
-      <div>
-        <label>
+      <div className="field is-grouped is-align-items-flex-end">
+        <label className="label mr-2">
           Players:
           <input
+            className="input"
             value={players}
             onChange={(e) => setPlayers(e.target.value)}
             style={{ width: '20em' }}
           />
         </label>
-        <Button onClick={startGame}>Start Game</Button>
+        <div className="control">
+          <Button onClick={startGame}>Start Game</Button>
+        </div>
       </div>
-      <div>
-        <label>
+      <div className="field is-grouped is-align-items-flex-end">
+        <label className="label mr-2">
           Game ID:
           <input
+            className="input"
             value={gameId}
             onChange={(e) => setGameId(e.target.value)}
             style={{ width: '5em' }}
           />
         </label>
-        <Button onClick={() => { fetchGameState(); openWebSocket(); }}>
-          Join Game
-        </Button>
+        <div className="control">
+          <Button onClick={() => { fetchGameState(); openWebSocket(); }}>
+            Join Game
+          </Button>
+        </div>
       </div>
       {mode === 'game' ? (
         <GameBoard state={gameState} server={server} gameId={gameId} peek={peek} />

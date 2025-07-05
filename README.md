@@ -26,7 +26,8 @@ Future work will expand these components.
 - [x] MJAI protocol support
 - [x] Basic MJAI event serialization
 - [x] GameState JSON serialization
- - [x] Tenhou.net/6 log export ([format described](docs/tenhou-json.md))
+- [x] Tenhou.net/6 log export ([format described](docs/tenhou-json.md))
+- [ ] Full Tenhou log features (meld notation, yaku info)
 - [x] RuleSet interface for scoring
 - [x] Local single-player play via CLI
 - [x] Basic remote game creation via CLI
@@ -62,6 +63,7 @@ Future work will expand these components.
 - [x] Core <-> interface API documented
 - [x] GUI design documented
 - [x] Corrected seat orientation (shimocha right side)
+- [x] Stylish form inputs with Bulma CSS
 - [x] Responsive layout for narrow screens
 - [x] 何切る問題 mode
   - [x] CLI practice command

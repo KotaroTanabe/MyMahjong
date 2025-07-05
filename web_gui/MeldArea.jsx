@@ -6,13 +6,7 @@ export default function MeldArea({ melds = [] }) {
       {melds.map((meld, mIdx) => (
         <div key={mIdx} className="meld">
           {meld.map((t, i) => (
-            typeof t === 'string' ? (
-              <span key={i} className="tile">{t}</span>
-            ) : (
-              <span key={i} className="tile">
-                <img src={t.src} alt={t.alt} />
-              </span>
-            )
+            <span key={i} className="tile">{t}</span>
           ))}
         </div>
       ))}
