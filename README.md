@@ -9,12 +9,13 @@ MyMahjong is a simple TypeScript monorepo for experimenting with a Mahjong game 
 ## Implementation status
 
 The repository currently includes initial engine modules in the **core**
-package. Future work will expand these components. Other packages remain stubbed.
+package along with a minimal **cli**, **web** server and **web_gui**.
+Future work will expand these components.
 
 ### Packages
 
  - [x] core
- - [ ] cli
+ - [x] cli
  - [x] web
  - [x] web_gui
 
@@ -23,7 +24,7 @@ package. Future work will expand these components. Other packages remain stubbed
 - [ ] Mortal AI integration
 - [x] Mortal backend integration design
 - [ ] MJAI protocol support
-- [ ] Local single-player play via CLI
+- [x] Local single-player play via CLI
 - [ ] REST + WebSocket API
 - [x] Basic REST endpoints (create game, fetch game, health)
 - [x] Web GUI served through GitHub Pages

@@ -1,0 +1,17 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mymahjong-cli"
+version = "0.1.0"
+description = "CLI for MyMahjong"
+readme = "../README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "click",
+    "mymahjong-core",
+]
+
+[tool.hatch.build]
+packages = ["cli"]
