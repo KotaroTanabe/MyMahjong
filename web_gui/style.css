@@ -1,0 +1,23 @@
+.board-grid {
+  display: grid;
+  grid-template-areas:
+    '. north .'
+    'west center east'
+    '. south .';
+  grid-template-columns: 1fr 2fr 1fr;
+  grid-template-rows: auto auto auto;
+  gap: 0.5rem;
+  text-align: center;
+}
+
+.seat {
+  padding: 0.5rem;
+  background-color: #f2f2f2;
+  border: 1px solid #ccc;
+}
+
+.north { grid-area: north; }
+.west { grid-area: west; }
+.center { grid-area: center; }
+.east { grid-area: east; }
+.south { grid-area: south; }

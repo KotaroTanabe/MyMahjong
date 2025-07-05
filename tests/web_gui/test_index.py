@@ -8,6 +8,7 @@ def test_index_html_exists() -> None:
     assert 'MyMahjong GUI' in text
     assert '<div id="app"></div>' in text
     assert 'main.jsx' in text
+    assert 'style.css' in text
 
 
 def test_main_js_exists() -> None:
@@ -18,3 +19,13 @@ def test_main_js_exists() -> None:
 def test_app_jsx_exists() -> None:
     app = Path('web_gui/App.jsx')
     assert app.is_file(), 'App.jsx missing'
+
+
+def test_game_board_exists() -> None:
+    board = Path('web_gui/GameBoard.jsx')
+    assert board.is_file(), 'GameBoard.jsx missing'
+
+
+def test_style_css_exists() -> None:
+    css = Path('web_gui/style.css')
+    assert css.is_file(), 'style.css missing'
