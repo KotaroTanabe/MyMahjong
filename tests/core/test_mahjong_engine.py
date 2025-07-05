@@ -88,6 +88,13 @@ def test_remaining_tiles_property() -> None:
     assert engine.remaining_tiles == remaining - 1
 
 
+def test_remaining_yama_tiles_property() -> None:
+    engine = MahjongEngine()
+    yama_remaining = engine.remaining_yama_tiles
+    engine.draw_tile(0)
+    assert engine.remaining_yama_tiles == yama_remaining - 1
+
+
 def test_declare_riichi() -> None:
     engine = MahjongEngine()
     player = engine.state.players[0]

@@ -69,6 +69,12 @@ class MahjongEngine:
         assert self.state.wall is not None
         return self.state.wall.remaining_tiles
 
+    @property
+    def remaining_yama_tiles(self) -> int:
+        """Number of drawable tiles left this hand."""
+        assert self.state.wall is not None
+        return self.state.wall.remaining_yama_tiles
+
     def draw_tile(self, player_index: int) -> Tile:
         """Draw a tile for the specified player."""
         assert self.state.wall is not None
