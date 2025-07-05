@@ -71,6 +71,7 @@ Future work will expand these components.
 - [x] configurable ruleset
 - [x] event log
 - [x] current player tracking
+- [x] action dispatch helper
 
 ## Implementation plan progress
 
