@@ -110,7 +110,7 @@ def test_game_board_displays_melds_and_remaining() -> None:
     assert 'northMelds' in text
     assert 'remaining={remaining}' in text
 
-    
+
 def test_game_board_passes_remaining_prop() -> None:
     board = Path('web_gui/GameBoard.jsx').read_text()
     assert 'remaining={' in board
