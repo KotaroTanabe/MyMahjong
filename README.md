@@ -30,6 +30,7 @@ Future work will expand these components.
 - [x] Web GUI served through GitHub Pages
 - [x] Basic GUI status display
 - [x] React front-end skeleton
+- [x] Basic board layout
 - [x] Continuous integration workflow
 - [x] Core <-> interface API documented
 - [x] GUI design documented

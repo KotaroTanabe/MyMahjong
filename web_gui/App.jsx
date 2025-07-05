@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import GameBoard from './GameBoard.jsx';
+import './style.css';
 
 export default function App() {
   const [status, setStatus] = useState('Contacting server...');
@@ -23,7 +25,7 @@ export default function App() {
   return (
     <>
       <h1>MyMahjong GUI</h1>
-      <p>The interactive board will appear here in future updates.</p>
+      <GameBoard />
       <p>{status}</p>
     </>
   );
