@@ -33,7 +33,7 @@ Future work will expand these components.
 - [x] Draw tile in remote games via CLI
 - [x] View remote game state via CLI
 - [x] Remote server health check via CLI
-- [ ] REST + WebSocket API
+- [x] REST + WebSocket API
 - [x] Basic REST endpoints (create game, fetch game, health)
 - [x] Web GUI served through GitHub Pages
 - [x] Basic GUI status display
@@ -89,7 +89,7 @@ Future work will expand these components.
   web front-end to GitHub Pages.
 - [ ] **8. Add action endpoints** – implement `POST /games/{id}/action` for draw,
   discard, meld calls and win declarations.
-- [ ] **9. Stream events via WebSocket** – create `/ws/{id}` to push engine events so
+- [x] **9. Stream events via WebSocket** – create `/ws/{id}` to push engine events so
   the GUI updates instantly.
 - [ ] **10. Connect GUI state** – update React components to fetch the initial game,
   handle WebSocket events and send player actions.
@@ -105,7 +105,6 @@ The following plan steps are not yet implemented:
 - Step 2 – Integrate Mortal AI.
 - Step 6 – Implement MJAI adapter.
 - Step 8 – Add full action endpoints.
-- Step 9 – Stream events via WebSocket.
 - Step 10 – Connect GUI state to WebSocket updates.
 - Step 11 – Provide a mock AI.
 - Step 12 – Write end-to-end tests.

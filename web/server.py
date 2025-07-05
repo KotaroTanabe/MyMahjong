@@ -2,11 +2,12 @@ from __future__ import annotations
 
 from dataclasses import asdict
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
+import asyncio
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from core import api
+from core import api, models
 
 app = FastAPI()
 app.add_middleware(
@@ -49,6 +50,7 @@ class ActionRequest(BaseModel):
 
     player_index: int
     action: str
+    tile: dict | None = None
 
 
 @app.post("/games/{game_id}/action")
@@ -58,4 +60,23 @@ def game_action(game_id: int, req: ActionRequest) -> dict:
     if req.action == "draw":
         tile = api.draw_tile(req.player_index)
         return asdict(tile)
+    if req.action == "discard" and req.tile:
+        tile = models.Tile(**req.tile)
+        api.discard_tile(req.player_index, tile)
+        return {"status": "ok"}
     raise HTTPException(status_code=400, detail="Unknown action")
+
+
+@app.websocket("/ws/{game_id}")
+async def game_events(websocket: WebSocket, game_id: int) -> None:
+    """Stream game events to the client."""
+    _ = game_id  # placeholder for future multi-game support
+    await websocket.accept()
+    try:
+        while True:
+            events = api.pop_events()
+            for event in events:
+                await websocket.send_json(asdict(event))
+            await asyncio.sleep(0.1)
+    except WebSocketDisconnect:
+        pass
