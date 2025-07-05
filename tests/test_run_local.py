@@ -20,7 +20,10 @@ def test_run_local_starts_processes(monkeypatch):
             pass
 
     monkeypatch.setattr(subprocess, "Popen", DummyPopen)
-    monkeypatch.setattr(run_local, "time", type("t", (), {"sleep": lambda self, _: None})())
+    monkeypatch.setattr(
+        run_local, "time",
+        type("t", (), {"sleep": lambda self, _: None})()
+    )
     run_local.main()
 
     assert calls[0][0] == run_local.BACKEND_CMD
