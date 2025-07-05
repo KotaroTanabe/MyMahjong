@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Button from './Button.jsx';
 
 export default function Controls({ server, gameId }) {
   const [message, setMessage] = useState('');
@@ -71,14 +72,14 @@ export default function Controls({ server, gameId }) {
 
   return (
     <div className="controls">
-      <button onClick={draw}>Draw</button>
-      <button onClick={chi}>Chi</button>
-      <button onClick={pon}>Pon</button>
-      <button onClick={kan}>Kan</button>
-      <button onClick={riichi}>Riichi</button>
-      <button onClick={tsumo}>Tsumo</button>
-      <button onClick={ron}>Ron</button>
-      <button onClick={skip}>Skip</button>
+      <Button onClick={draw}>Draw</Button>
+      <Button onClick={chi}>Chi</Button>
+      <Button onClick={pon}>Pon</Button>
+      <Button onClick={kan}>Kan</Button>
+      <Button onClick={riichi}>Riichi</Button>
+      <Button onClick={tsumo}>Tsumo</Button>
+      <Button onClick={ron}>Ron</Button>
+      <Button onClick={skip}>Skip</Button>
       {message && <div className="message">{message}</div>}
     </div>
   );
