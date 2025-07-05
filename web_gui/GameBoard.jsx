@@ -4,13 +4,10 @@ import River from './River.jsx';
 import MeldArea from './MeldArea.jsx';
 import CenterDisplay from './CenterDisplay.jsx';
 import Controls from './Controls.jsx';
-import { tileToImage, tileDescription } from './tileUtils.js';
+import { tileToEmoji, tileDescription } from './tileUtils.js';
 
 function tileLabel(tile) {
-  return {
-    src: tileToImage(tile),
-    alt: tileDescription(tile),
-  };
+  return tileToEmoji(tile);
 }
 export default function GameBoard({ state, server, gameId, peek = false }) {
   const players = state?.players ?? [];

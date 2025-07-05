@@ -11,9 +11,9 @@ def run_node(code: str) -> str:
     return result.stdout.strip()
 
 
-def test_tile_to_image() -> None:
+def test_tile_to_emoji() -> None:
     output = run_node(
-        "import { tileToImage } from './web_gui/tileUtils.js';\n"
-        "console.log(tileToImage({suit: 'sou', value: 8}));"
+        "import { tileToEmoji } from './web_gui/tileUtils.js';\n"
+        "console.log(tileToEmoji({suit: 'sou', value: 8}));"
     )
-    assert output.endswith('sou_8.svg')
+    assert output == '🀗'
