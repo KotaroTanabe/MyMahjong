@@ -13,6 +13,14 @@ class MahjongEngine:
     def __init__(self) -> None:
         self.state = GameState(wall=Wall())
         self.state.players = [Player(name=f"Player {i}") for i in range(4)]
+        self.deal_initial_hands()
+
+    def deal_initial_hands(self) -> None:
+        """Deal 13 tiles to each player at the start of the game."""
+        assert self.state.wall is not None
+        for _ in range(13):
+            for player in self.state.players:
+                player.draw(self.state.wall.draw_tile())
 
     @property
     def remaining_tiles(self) -> int:

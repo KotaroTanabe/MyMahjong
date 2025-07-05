@@ -7,6 +7,12 @@ def test_start_game() -> None:
     assert state.players[0].name == "A"
 
 
+def test_start_game_deals_hands() -> None:
+    state = api.start_game(["A", "B", "C", "D"])
+    counts = [len(p.hand.tiles) for p in state.players]
+    assert all(c == 13 for c in counts)
+
+
 def test_draw_and_discard() -> None:
     state = api.start_game(["A", "B", "C", "D"])
     assert state.wall is not None

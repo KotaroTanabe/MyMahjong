@@ -36,7 +36,8 @@ Future work will expand these components.
 
 ### Core engine capabilities
 
-- [x] start_game
+ - [x] start_game
+ - [x] deal_initial_hands
 - [x] draw_tile
 - [x] discard_tile
 - [x] get_state
