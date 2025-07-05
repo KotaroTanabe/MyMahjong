@@ -182,6 +182,9 @@ The static web GUI in the `web_gui` directory is built and deployed via GitHub P
 
 https://kotarotanabe.github.io/MyMahjong/
 
+The Vite configuration sets `base: '/MyMahjong/'` so asset URLs resolve correctly when
+served from this subpath.
+
 ## Continuous Integration
 
 GitHub Actions run linting, type checking, build and tests for every pull request.
