@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import GameBoard from './GameBoard.jsx';
 import Practice from './Practice.jsx';
+import { applyEvent } from './applyEvent.js';
 import './style.css';
 
 export default function App() {
@@ -67,6 +68,8 @@ export default function App() {
     const newState = JSON.parse(JSON.stringify(state));
     switch (event.name) {
       case 'start_game':
+        return event.payload.state;
+      case 'start_kyoku':
         return event.payload.state;
       case 'draw_tile': {
         const p = newState.players[event.payload.player_index];
