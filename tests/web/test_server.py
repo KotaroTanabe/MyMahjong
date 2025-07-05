@@ -2,7 +2,7 @@ from dataclasses import asdict
 from fastapi.testclient import TestClient
 
 from web.server import app
-from core import api
+from core import api, models
 
 client = TestClient(app)
 
@@ -144,3 +144,16 @@ def test_practice_endpoints() -> None:
     assert resp.status_code == 200
     tile = resp.json()
     assert "suit" in tile and "value" in tile
+
+
+def test_practice_endpoints_mortal(monkeypatch) -> None:
+    def fake_suggest(hand: list[models.Tile], use_mortal: bool = False) -> models.Tile:
+        assert use_mortal
+        return hand[0]
+
+    monkeypatch.setattr(api, "suggest_practice_discard", fake_suggest)
+
+    prob = client.get("/practice")
+    data = prob.json()
+    resp = client.post("/practice/suggest?mortal=true", json={"hand": data["hand"]})
+    assert resp.status_code == 200

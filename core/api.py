@@ -105,10 +105,13 @@ def generate_practice_problem() -> practice.PracticeProblem:
     return practice.generate_problem()
 
 
-def suggest_practice_discard(hand: list[Tile]) -> Tile:
-    """Return AI suggested discard for ``hand``."""
+def suggest_practice_discard(hand: list[Tile], use_mortal: bool = False) -> Tile:
+    """Return AI suggested discard for ``hand``.
 
-    return practice.suggest_discard(hand)
+    ``use_mortal`` controls whether the Mortal AI should be invoked.
+    """
+
+    return practice.suggest_discard(hand, use_mortal=use_mortal)
 
 
 def apply_action(action: GameAction) -> object | None:
