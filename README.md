@@ -79,6 +79,7 @@ Future work will expand these components.
 - [x] event log
 - [x] current player tracking
 - [x] action dispatch helper
+- [x] seat wind tracking
 
 ## Implementation plan progress
 
