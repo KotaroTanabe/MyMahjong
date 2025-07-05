@@ -1,4 +1,4 @@
-from core import api, models
+from core import api, models, practice
 
 
 def test_start_game() -> None:
@@ -61,3 +61,11 @@ def test_start_kyoku_api() -> None:
     state = api.start_kyoku(2, 3)
     assert state.dealer == 2
     assert state.round_number == 3
+
+
+def test_practice_api_functions(monkeypatch) -> None:
+    monkeypatch.setattr(practice.random, "choice", lambda seq: seq[0])
+    prob = api.generate_practice_problem()
+    assert len(prob.hand) == 14
+    tile = api.suggest_practice_discard(prob.hand)
+    assert isinstance(tile, models.Tile)

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from .mahjong_engine import MahjongEngine
 from .models import GameState, Tile, GameEvent, GameAction
+from . import practice
 from mahjong.hand_calculating.hand_response import HandResponse
 
 # Singleton engine instance used by interfaces
@@ -96,6 +97,18 @@ def pop_events() -> list[GameEvent]:
     """Retrieve and clear pending engine events."""
     assert _engine is not None, "Game not started"
     return _engine.pop_events()
+
+
+def generate_practice_problem() -> practice.PracticeProblem:
+    """Return a new practice problem."""
+
+    return practice.generate_problem()
+
+
+def suggest_practice_discard(hand: list[Tile]) -> Tile:
+    """Return AI suggested discard for ``hand``."""
+
+    return practice.suggest_discard(hand)
 
 
 def apply_action(action: GameAction) -> object | None:

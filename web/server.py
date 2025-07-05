@@ -25,6 +25,12 @@ class CreateGameRequest(BaseModel):
     players: list[str]
 
 
+class SuggestRequest(BaseModel):
+    """Request body for AI discard suggestion."""
+
+    hand: list[dict]
+
+
 @app.get("/health")
 def health() -> dict[str, str]:
     """Simple health check endpoint."""
@@ -43,6 +49,23 @@ def get_game(game_id: int) -> dict:
     """Return basic game state for the given game id."""
     # For now we ignore game_id and return the singleton engine state
     return asdict(api.get_state())
+
+
+@app.get("/practice")
+def practice_problem() -> dict:
+    """Return a random practice problem."""
+
+    problem = api.generate_practice_problem()
+    return asdict(problem)
+
+
+@app.post("/practice/suggest")
+def practice_suggest(req: SuggestRequest) -> dict:
+    """Return AI discard suggestion for the provided hand."""
+
+    hand = [models.Tile(**t) for t in req.hand]
+    tile = api.suggest_practice_discard(hand)
+    return asdict(tile)
 
 
 class ActionRequest(BaseModel):
