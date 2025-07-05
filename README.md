@@ -52,6 +52,9 @@ Future work will expand these components.
 - [x] Core <-> interface API documented
 - [x] GUI design documented
 - [ ] 何切る問題 mode
+  - [x] CLI practice command
+  - [ ] AI recommendation
+  - [ ] Web UI support
 
 ### Core engine capabilities
 
@@ -122,6 +125,12 @@ See `docs/detailed-design.md` for an overview of the planned architecture.
 ## 何切る問題 mode (planned)
 
 This practice mode will present a what-to-discard problem to the player.
+
+An initial version is available via the CLI:
+
+```bash
+python -m cli.main practice
+```
 
 ### Planned workflow
 

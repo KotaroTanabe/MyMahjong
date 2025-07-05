@@ -2,6 +2,7 @@ import click
 
 from . import remote_game
 from .local_game import run_game
+from core import practice, models
 
 
 @click.group()
@@ -87,6 +88,28 @@ def health(server: str) -> None:
     data = remote_game.check_health(server)
     status = data.get("status", "unknown")
     click.echo(f"Server status: {status}")
+
+
+@cli.command(name="practice")
+def practice_cmd() -> None:
+    """Run a simple '何切る' practice problem."""
+
+    problem = practice.generate_problem()
+
+    def fmt(tile: models.Tile) -> str:
+        return f"{tile.suit[0]}{tile.value}"
+
+    click.echo(f"Seat wind: {problem.seat_wind}")
+    click.echo(f"Dora indicator: {fmt(problem.dora_indicator)}")
+    hand_str = " ".join(
+        f"{i+1}:{fmt(t)}" for i, t in enumerate(problem.hand)
+    )
+    click.echo(f"Hand: {hand_str}")
+    index = click.prompt("Discard which tile number?", type=int)
+    chosen = problem.hand[index - 1]
+    click.echo(f"You discarded {fmt(chosen)}")
+    ai_suggestion = practice.suggest_discard(problem.hand)
+    click.echo(f"AI suggests discarding {fmt(ai_suggestion)}")
 
 
 if __name__ == "__main__":
