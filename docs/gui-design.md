@@ -17,7 +17,7 @@ For a detailed overview of how each player area and discard river is arranged, i
 
 1. Provide visual assets for tiles and update the React components to render images instead of text.
 2. Update `web/src/style.css` to define fixed or minimum heights for board rows and make player areas scroll if content overflows.
-3. Add media queries that reorganize the grid on small screens (e.g. stacking side players above the center).
+3. Add media queries that reorganize the grid on small screens (e.g. stacking side players above the center). **Done.**
 4. Replace textual control labels with icons and add appropriate `aria-label` attributes. **Done.**
 5. Ensure the layout uses flexible units so it remains usable on both desktops and phones.
 6. Show dora indicators and remaining wall tiles in the center display. **Done.**

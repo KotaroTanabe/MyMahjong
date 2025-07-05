@@ -120,3 +120,16 @@
 .flat-btn:active {
   background-color: #004a99;
 }
+
+@media (max-width: 600px) {
+  .board-grid {
+    grid-template-areas:
+      'north'
+      'west'
+      'center'
+      'east'
+      'south';
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(5, auto);
+  }
+}
