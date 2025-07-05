@@ -70,8 +70,6 @@ def test_send_and_receive_event() -> None:
     assert received["type"] == "end_game"
     assert received["scores"] == [25000, 24000, 23000, 26000]
 
-from core.mahjong_engine import MahjongEngine
-from core.ai_adapter import apply_action
 
 
 def test_apply_action_draw_and_discard() -> None:
@@ -84,7 +82,12 @@ def test_apply_action_draw_and_discard() -> None:
     assert tile in engine.state.players[0].hand.tiles
 
     apply_action(
-        {"type": "discard", "player_index": 0, "tile": {"suit": "sou", "value": 9}},
+        {
+            "type": "discard",
+            "player_index": 0,
+            "tile": {"suit": "sou", "value": 9}
+        },
         engine,
     )
     assert tile in engine.state.players[0].river
+    
