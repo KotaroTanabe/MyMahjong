@@ -10,8 +10,9 @@ from __future__ import annotations
 import json
 from dataclasses import asdict
 
-from .models import GameEvent, GameState
+from .models import GameEvent, GameState, Tile
 from .mortal_runner import MortalAI
+from .mahjong_engine import MahjongEngine
 
 
 def game_state_to_json(state: GameState) -> str:
@@ -51,3 +52,40 @@ def receive_action(ai: MortalAI) -> dict:
     """Receive a JSON action from ``ai`` and return it as a dict."""
 
     return json_to_action(ai.receive())
+
+def apply_action(action: dict, engine: "MahjongEngine") -> None:
+    """Apply an AI action dict to the given engine."""
+    action_type = action.get("type")
+    player_index = action.get("player_index", 0)
+    if action_type == "draw":
+        engine.draw_tile(player_index)
+    elif action_type == "discard":
+        tile_data = action.get("tile")
+        assert tile_data is not None, "discard action requires tile"
+        tile = Tile(**tile_data)
+        engine.discard_tile(player_index, tile)
+    elif action_type == "riichi":
+        engine.declare_riichi(player_index)
+    elif action_type == "chi":
+        tiles = [Tile(**t) for t in action.get("tiles", [])]
+        engine.call_chi(player_index, tiles)
+    elif action_type == "pon":
+        tiles = [Tile(**t) for t in action.get("tiles", [])]
+        engine.call_pon(player_index, tiles)
+    elif action_type == "kan":
+        tiles = [Tile(**t) for t in action.get("tiles", [])]
+        engine.call_kan(player_index, tiles)
+    elif action_type == "tsumo":
+        tile_data = action.get("tile")
+        assert tile_data is not None, "tsumo action requires tile"
+        tile = Tile(**tile_data)
+        engine.declare_tsumo(player_index, tile)
+    elif action_type == "ron":
+        tile_data = action.get("tile")
+        assert tile_data is not None, "ron action requires tile"
+        tile = Tile(**tile_data)
+        engine.declare_ron(player_index, tile)
+    elif action_type == "skip":
+        engine.skip(player_index)
+    else:
+        raise ValueError(f"Unknown action type: {action_type}")
