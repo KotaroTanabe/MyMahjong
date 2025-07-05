@@ -135,6 +135,15 @@ npm install
 npx vite --open
 ```
 
+### Start both together
+
+You can launch the FastAPI server and the React GUI at the same time using
+`run_local.py`:
+
+```bash
+python run_local.py
+```
+
 The GUI will automatically connect to the local FastAPI server's REST endpoints.
 
 ## Deployed to
