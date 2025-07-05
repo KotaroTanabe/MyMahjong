@@ -181,6 +181,20 @@ You can launch the FastAPI server and the React GUI at the same time using
 python run_local.py
 ```
 
+### Build and test
+
+Install the editable packages and run all checks with **uv**:
+
+```bash
+uv pip install -e ./core -e ./cli -e ./web
+uv pip install flake8 mypy pytest build
+python -m build core
+python -m build cli
+flake8
+mypy core web cli
+pytest -q
+```
+
 The GUI will automatically connect to the local FastAPI server's REST endpoints.
 
 ## Deployed to
@@ -194,5 +208,6 @@ served from this subpath.
 
 ## Continuous Integration
 
-GitHub Actions run linting, type checking, build and tests for every pull request.
-Once these checks succeed, the workflow automatically approves and merges the PR.
+GitHub Actions run linting, type checking, build and tests for every pull request
+using **uv** to install dependencies. Once these checks succeed, the workflow
+automatically approves and merges the PR.
