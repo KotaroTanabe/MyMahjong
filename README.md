@@ -72,6 +72,8 @@ Future work will expand these components.
 - [x] declare_riichi
 - [x] skip
 - [x] end_game
+- [x] start_kyoku
+- [x] ryukyoku detection
 - [x] standard wall initialization
 - [x] configurable ruleset
 - [x] event log

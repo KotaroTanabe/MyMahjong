@@ -17,8 +17,8 @@ class MahjongEngine:
         self.state.players = [Player(name=f"Player {i}") for i in range(4)]
         self.state.current_player = 0
         self.events: list[GameEvent] = []
-        self.deal_initial_hands()
         self._emit("start_game", {"state": self.state})
+        self.start_kyoku(dealer=0, round_number=1)
 
     def _emit(self, name: str, payload: dict) -> None:
         self.events.append(GameEvent(name=name, payload=payload))
@@ -27,6 +27,23 @@ class MahjongEngine:
         events = self.events[:]
         self.events.clear()
         return events
+
+    def start_kyoku(self, dealer: int, round_number: int) -> None:
+        """Begin a new hand with fresh tiles."""
+        self.state.wall = Wall()
+        for p in self.state.players:
+            p.hand.tiles.clear()
+            p.hand.melds.clear()
+            p.river.clear()
+            p.riichi = False
+        self.state.dealer = dealer
+        self.state.round_number = round_number
+        self.state.current_player = dealer
+        self.deal_initial_hands()
+        self._emit(
+            "start_kyoku",
+            {"dealer": dealer, "round": round_number, "state": self.state},
+        )
 
     def deal_initial_hands(self) -> None:
         """Deal 13 tiles to each player at the start of the game."""
@@ -47,6 +64,8 @@ class MahjongEngine:
         tile = self.state.wall.draw_tile()
         self.state.players[player_index].draw(tile)
         self._emit("draw_tile", {"player_index": player_index, "tile": tile})
+        if self.state.wall.remaining_tiles == 0:
+            self._emit("ryukyoku", {"reason": "wall_empty"})
         return tile
 
     def discard_tile(self, player_index: int, tile: Tile) -> None:

@@ -19,6 +19,13 @@ def start_game(player_names: list[str]) -> GameState:
     return _engine.state
 
 
+def start_kyoku(dealer: int, round_number: int) -> GameState:
+    """Begin a new hand and return the updated state."""
+    assert _engine is not None, "Game not started"
+    _engine.start_kyoku(dealer, round_number)
+    return _engine.state
+
+
 def draw_tile(player_index: int) -> Tile:
     """Draw a tile for the given player."""
     assert _engine is not None, "Game not started"
@@ -128,6 +135,10 @@ def apply_action(action: GameAction) -> object | None:
     if action.type == "skip":
         assert action.player_index is not None
         _engine.skip(action.player_index)
+        return None
+    if action.type == "start_kyoku":
+        assert action.dealer is not None and action.round_number is not None
+        _engine.start_kyoku(action.dealer, action.round_number)
         return None
     if action.type == "end_game":
         return _engine.end_game()
