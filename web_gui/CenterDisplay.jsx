@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function CenterDisplay({ remaining = 0, dora = [] }) {
+export default function CenterDisplay({ remaining = 0, dora = ['\uD83C\uDE00'] }) {
   return (
     <div className="center-display">
       <div className="remaining">Remaining: {remaining}</div>

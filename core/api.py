@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from .mahjong_engine import MahjongEngine
-from .models import GameState, Tile, GameEvent
+from .models import GameState, Tile, GameEvent, GameAction
 from mahjong.hand_calculating.hand_response import HandResponse
 
 # Singleton engine instance used by interfaces
@@ -89,3 +89,47 @@ def pop_events() -> list[GameEvent]:
     """Retrieve and clear pending engine events."""
     assert _engine is not None, "Game not started"
     return _engine.pop_events()
+
+
+def apply_action(action: GameAction) -> object | None:
+    """Apply ``action`` to the running engine and return any result."""
+
+    assert _engine is not None, "Game not started"
+
+    if action.type == "draw":
+        assert action.player_index is not None
+        return _engine.draw_tile(action.player_index)
+    if action.type == "discard" and action.tile is not None:
+        assert action.player_index is not None
+        _engine.discard_tile(action.player_index, action.tile)
+        return None
+    if action.type == "chi" and action.tiles is not None:
+        assert action.player_index is not None
+        _engine.call_chi(action.player_index, action.tiles)
+        return None
+    if action.type == "pon" and action.tiles is not None:
+        assert action.player_index is not None
+        _engine.call_pon(action.player_index, action.tiles)
+        return None
+    if action.type == "kan" and action.tiles is not None:
+        assert action.player_index is not None
+        _engine.call_kan(action.player_index, action.tiles)
+        return None
+    if action.type == "riichi":
+        assert action.player_index is not None
+        _engine.declare_riichi(action.player_index)
+        return None
+    if action.type == "tsumo" and action.tile is not None:
+        assert action.player_index is not None
+        return _engine.declare_tsumo(action.player_index, action.tile)
+    if action.type == "ron" and action.tile is not None:
+        assert action.player_index is not None
+        return _engine.declare_ron(action.player_index, action.tile)
+    if action.type == "skip":
+        assert action.player_index is not None
+        _engine.skip(action.player_index)
+        return None
+    if action.type == "end_game":
+        return _engine.end_game()
+
+    raise ValueError(f"Unknown action: {action.type}")

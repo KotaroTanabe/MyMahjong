@@ -51,6 +51,7 @@ Future work will expand these components.
 - [x] Continuous integration workflow
 - [x] Core <-> interface API documented
 - [x] GUI design documented
+- [ ] 何切る問題 mode
 
 ### Core engine capabilities
 
@@ -72,6 +73,7 @@ Future work will expand these components.
 - [x] configurable ruleset
 - [x] event log
 - [x] current player tracking
+- [x] action dispatch helper
 
 ## Implementation plan progress
 
@@ -100,6 +102,8 @@ Future work will expand these components.
   adapter with an interface that later swaps in Mortal.
 - [ ] **12. Write end-to-end tests** – cover REST routes, WebSocket updates and basic
   GUI interactions.
+- [ ] **13. Add `何切る問題` mode** – offer a practice scenario with a random seat wind
+  and dora where the user picks a discard and the AI suggests a move.
 
 ### Remaining tasks
 
@@ -110,9 +114,22 @@ The following plan steps are not yet implemented:
 - Step 8 – Add full action endpoints.
 - Step 11 – Provide a mock AI.
 - Step 12 – Write end-to-end tests.
+- Step 13 – Add `何切る問題` mode.
 
 See `docs/detailed-design.md` for an overview of the planned architecture.
 `docs/web-gui-architecture.md` provides more details about the planned React GUI.
+
+## 何切る問題 mode (planned)
+
+This practice mode will present a what-to-discard problem to the player.
+
+### Planned workflow
+
+1. Randomly choose the seat wind and dora indicator.
+2. Assume it is the dealer's first turn with no prior actions.
+3. Display the hand and let the user select a discard.
+4. Ask the AI to compute its recommended discard.
+5. Show the AI suggestion to the user for comparison.
 
 ## Running locally
 

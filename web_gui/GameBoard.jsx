@@ -27,6 +27,7 @@ export default function GameBoard({ state, server }) {
   const remaining = state?.wall?.tiles?.length ?? 0;
   const dora = state?.wall?.tiles?.[0] ? [tileLabel(state.wall.tiles[0])] : [];
 
+  
   async function discard(tile) {
     try {
       await fetch(`${server.replace(/\/$/, '')}/games/1/action`, {
