@@ -22,11 +22,18 @@ class Player:
 
     def discard(self, tile: Tile) -> None:
         """Remove a tile from the player's hand and add it to the river."""
-        self.hand.tiles.remove(tile)
+        try:
+            # prefer to remove by object identity to avoid accidentally
+            # discarding a different tile with the same suit/value
+            idx = next(i for i, t in enumerate(self.hand.tiles) if t is tile)
+            self.hand.tiles.pop(idx)
+        except StopIteration:
+            # fall back to equality-based removal for backward compatibility
+            self.hand.tiles.remove(tile)
         self.river.append(tile)
 
     def declare_riichi(self) -> None:
-        """Mark the player as having declared riichi and pay the 1000 point stick."""
+        """Declare riichi and pay the 1000 point stick."""
         if self.riichi:
             return
         self.score -= 1000
