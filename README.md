@@ -137,7 +137,7 @@ The following plan steps are not yet implemented:
 The core package covers the basic turn flow but several important capabilities
 remain to be built:
 
-- [ ] Closed and added kan support with replacement draws and new dora
+- [x] Closed and added kan support with replacement draws and new dora
   indicators.
 - [ ] Tracking honba and riichi sticks in `GameState`.
 - [ ] Automatic round progression with dealer repeats and hanchan end
