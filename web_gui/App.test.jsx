@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Server } from 'mock-socket';
-import { describe, it, vi } from 'vitest';
+import { describe, it, vi, expect } from 'vitest';
 import App from './App.jsx';
 
 function mockFetch() {
@@ -39,5 +39,32 @@ describe('App websocket', () => {
 
     await screen.findByText('Remaining: 1');
     server.stop();
+  });
+});
+
+describe('App practice mode', () => {
+  it('fetches a practice problem when mode is selected', async () => {
+    global.fetch = vi.fn((url) => {
+      if (url.endsWith('/health')) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({ status: 'ok' }) });
+      }
+      if (url.endsWith('/practice')) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({
+          hand: [{ suit: 'man', value: 1 }],
+          dora_indicator: { suit: 'pin', value: 9 },
+          seat_wind: 'east'
+        }) });
+      }
+      if (url.endsWith('/practice/suggest')) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({ suit: 'man', value: 1 }) });
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
+    });
+
+    render(<App />);
+    const modeSelect = screen.getAllByLabelText('Mode:')[0];
+    await userEvent.selectOptions(modeSelect, 'practice');
+    const element = await screen.findByText('Seat wind: east');
+    expect(element).toBeTruthy();
   });
 });
