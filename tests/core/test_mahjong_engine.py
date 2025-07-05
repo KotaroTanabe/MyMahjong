@@ -117,3 +117,21 @@ def test_event_log() -> None:
         "tsumo",
         "end_game",
     ]
+
+
+def test_skip_advances_turn_and_emits_event() -> None:
+    engine = MahjongEngine()
+    assert engine.state.current_player == 0
+    engine.pop_events()  # clear start_game
+    engine.skip(0)
+    assert engine.state.current_player == 1
+    events = engine.pop_events()
+    assert events and events[0].name == "skip"
+
+
+def test_skip_ignored_if_not_players_turn() -> None:
+    engine = MahjongEngine()
+    engine.pop_events()
+    engine.skip(1)
+    assert engine.state.current_player == 0
+    assert not engine.pop_events()

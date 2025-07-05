@@ -15,6 +15,7 @@ class MahjongEngine:
         self.ruleset: RuleSet = ruleset or StandardRuleSet()
         self.state = GameState(wall=Wall())
         self.state.players = [Player(name=f"Player {i}") for i in range(4)]
+        self.state.current_player = 0
         self.events: list[GameEvent] = []
         self.deal_initial_hands()
         self._emit("start_game", {"state": self.state})
@@ -115,7 +116,12 @@ class MahjongEngine:
 
     def skip(self, player_index: int) -> None:
         """Skip action for the specified player."""
-        _ = player_index  # currently no-op
+        if player_index != self.state.current_player:
+            return
+        self.state.current_player = (self.state.current_player + 1) % len(
+            self.state.players
+        )
+        self._emit("skip", {"player_index": player_index})
 
     def end_game(self) -> GameState:
         """Reset the engine and return the final state."""
@@ -124,4 +130,5 @@ class MahjongEngine:
         self._emit("end_game", {"scores": scores})
         self.state = GameState(wall=Wall())
         self.state.players = [Player(name=f"Player {i}") for i in range(4)]
+        self.state.current_player = 0
         return final_state

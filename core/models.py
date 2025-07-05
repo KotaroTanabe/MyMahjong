@@ -35,6 +35,7 @@ class GameState:
     """Overall game state placeholder."""
     players: List["Player"] = field(default_factory=list)
     wall: Optional["Wall"] = None
+    current_player: int = 0
 
 
 @dataclass
