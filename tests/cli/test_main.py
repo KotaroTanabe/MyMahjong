@@ -53,3 +53,18 @@ def test_health_command_remote(monkeypatch) -> None:
     result = runner.invoke(cli, ["health", "-s", "http://host"])
     assert result.exit_code == 0
     assert "Server status: ok" in result.output
+
+
+def test_state_command_remote(monkeypatch) -> None:
+    def fake_get(server: str, game_id: int) -> dict:
+        return {
+            "players": [{"name": "A"}, {"name": "B"}],
+            "wall": {"remaining_tiles": 10},
+        }
+
+    monkeypatch.setattr("cli.remote_game.get_game", fake_get)
+    runner = CliRunner()
+    result = runner.invoke(cli, ["state", "1", "-s", "http://host"])
+    assert result.exit_code == 0
+    assert "10 tiles remaining" in result.output
+    assert "A, B" in result.output
