@@ -87,12 +87,15 @@ class MahjongEngine:
         self._emit("draw_tile", {"player_index": player_index, "tile": tile})
         if self.state.wall.remaining_tiles == 0:
             self._emit("ryukyoku", {"reason": "wall_empty"})
+        else:
+            self.state.current_player = (player_index + 1) % len(self.state.players)
         return tile
 
     def discard_tile(self, player_index: int, tile: Tile) -> None:
         """Discard a tile from the specified player's hand."""
         self.state.players[player_index].discard(tile)
         self._emit("discard", {"player_index": player_index, "tile": tile})
+        self.state.current_player = (player_index + 1) % len(self.state.players)
 
     def declare_riichi(self, player_index: int) -> None:
         """Declare riichi for the given player."""
