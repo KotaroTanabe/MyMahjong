@@ -51,6 +51,7 @@ Future work will expand these components.
 - [x] Continuous integration workflow
 - [x] Core <-> interface API documented
 - [x] GUI design documented
+- [x] Corrected seat orientation (shimocha right side)
 - [ ] 何切る問題 mode
   - [x] CLI practice command
   - [ ] AI recommendation

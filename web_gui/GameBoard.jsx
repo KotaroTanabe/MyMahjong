@@ -48,20 +48,20 @@ export default function GameBoard({ state, server }) {
         <River tiles={(north?.river ?? []).map(tileLabel)} />
         <Hand tiles={northHand} />
       </div>
-      <div className="west seat">
-        <div>{west?.name ?? 'West'}</div>
-        <MeldArea melds={westMelds} />
-        <River tiles={(west?.river ?? []).map(tileLabel)} />
-        <Hand tiles={westHand} />
-      </div>
-      <div className="center">
-        <CenterDisplay remaining={remaining} dora={dora} />
-      </div>
       <div className="east seat">
         <div>{east?.name ?? 'East'}</div>
         <MeldArea melds={eastMelds} />
         <River tiles={(east?.river ?? []).map(tileLabel)} />
         <Hand tiles={eastHand} />
+      </div>
+      <div className="center">
+        <CenterDisplay remaining={remaining} dora={dora} />
+      </div>
+      <div className="west seat">
+        <div>{west?.name ?? 'West'}</div>
+        <MeldArea melds={westMelds} />
+        <River tiles={(west?.river ?? []).map(tileLabel)} />
+        <Hand tiles={westHand} />
       </div>
       <div className="south seat">
         <div>{south?.name ?? 'South'}</div>
