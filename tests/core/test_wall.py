@@ -26,3 +26,13 @@ def test_wall_remaining_decreases() -> None:
     before = wall.remaining_tiles
     wall.draw_tile()
     assert wall.remaining_tiles == before - 1
+
+
+def test_remaining_yama_tiles_excludes_wanpai() -> None:
+    wall = Wall()
+    assert wall.remaining_yama_tiles == 136 - wall.wanpai_size
+    wall.draw_tile()
+    assert wall.remaining_yama_tiles == 136 - wall.wanpai_size - 1
+    # Remove all drawable tiles
+    wall.tiles = wall.tiles[-wall.wanpai_size:]
+    assert wall.remaining_yama_tiles == 0
