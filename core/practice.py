@@ -46,23 +46,27 @@ def _hand_counts(hand: list[Tile]) -> list[int]:
     return counts
 
 
-def suggest_discard(hand: list[Tile]) -> Tile:
-    """Return the AI suggested discard using a basic shanten heuristic."""
+def evaluate_discards(hand: list[Tile]) -> list[tuple[Tile, int]]:
+    """Return the shanten number for discarding each tile in ``hand``."""
 
     counts = _hand_counts(hand)
     shanten = Shanten()
-    best_tiles: list[Tile] = []
-    best_value = 8  # higher than any real shanten number
+    results: list[tuple[Tile, int]] = []
 
     for tile in hand:
         idx = _tile_to_index(tile)
         counts[idx] -= 1
         value = shanten.calculate_shanten(counts)
         counts[idx] += 1
-        if value < best_value:
-            best_value = value
-            best_tiles = [tile]
-        elif value == best_value:
-            best_tiles.append(tile)
+        results.append((tile, value))
 
+    return results
+
+
+def suggest_discard(hand: list[Tile]) -> Tile:
+    """Return the AI suggested discard using a basic shanten heuristic."""
+
+    evaluations = evaluate_discards(hand)
+    best_value = min(val for _, val in evaluations)
+    best_tiles = [t for t, v in evaluations if v == best_value]
     return random.choice(best_tiles) if best_tiles else random.choice(hand)

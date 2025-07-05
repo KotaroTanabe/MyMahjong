@@ -73,6 +73,19 @@ def practice_suggest(req: SuggestRequest) -> dict:
     return asdict(tile)
 
 
+@app.post("/practice/evaluate")
+def practice_evaluate(req: SuggestRequest) -> dict:
+    """Return shanten numbers for discarding each tile."""
+
+    hand = [models.Tile(**t) for t in req.hand]
+    results = api.evaluate_practice_discards(hand)
+    return {
+        "results": [
+            {"tile": asdict(t), "shanten": v} for t, v in results
+        ]
+    }
+
+
 class ActionRequest(BaseModel):
     """Request body for game actions."""
 
