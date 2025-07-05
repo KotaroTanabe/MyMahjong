@@ -9,16 +9,22 @@ import { tileToEmoji } from './tileUtils.js';
 function tileLabel(tile) {
   return tileToEmoji(tile);
 }
-export default function GameBoard({ state, server }) {
+export default function GameBoard({ state, server, peek = false, onTogglePeek }) {
   const players = state?.players ?? [];
   const south = players[0];
   const west = players[1];
   const north = players[2];
   const east = players[3];
   const defaultHand = Array(13).fill('🀫');
-  const northHand = north?.hand?.tiles.map(tileLabel) ?? defaultHand;
-  const westHand = west?.hand?.tiles.map(tileLabel) ?? defaultHand;
-  const eastHand = east?.hand?.tiles.map(tileLabel) ?? defaultHand;
+  const northHand = peek
+    ? north?.hand?.tiles.map(tileLabel) ?? defaultHand
+    : defaultHand;
+  const westHand = peek
+    ? west?.hand?.tiles.map(tileLabel) ?? defaultHand
+    : defaultHand;
+  const eastHand = peek
+    ? east?.hand?.tiles.map(tileLabel) ?? defaultHand
+    : defaultHand;
   const southHand = south?.hand?.tiles.map(tileLabel) ?? defaultHand;
   const northMelds = north?.hand?.melds.map((m) => m.tiles.map(tileLabel)) ?? [];
   const westMelds = west?.hand?.melds.map((m) => m.tiles.map(tileLabel)) ?? [];
@@ -67,7 +73,7 @@ export default function GameBoard({ state, server }) {
         <div>{south?.name ?? 'South'}</div>
         <River tiles={(south?.river ?? []).map(tileLabel)} />
         <Hand tiles={southHand} onDiscard={discard} />
-        <Controls server={server} />
+        <Controls server={server} peek={peek} onTogglePeek={onTogglePeek} />
         <MeldArea melds={southMelds} />
       </div>
     </div>

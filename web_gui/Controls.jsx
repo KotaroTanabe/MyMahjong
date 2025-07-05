@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function Controls({ server }) {
+export default function Controls({ server, peek = false, onTogglePeek }) {
   const [message, setMessage] = useState('');
 
   async function draw() {
@@ -30,6 +30,14 @@ export default function Controls({ server }) {
   return (
     <div className="controls">
       <button onClick={draw}>Draw</button>
+      <label>
+        <input
+          type="checkbox"
+          checked={peek}
+          onChange={(e) => onTogglePeek?.(e.target.checked)}
+        />
+        Peek
+      </label>
       {message && <div className="message">{message}</div>}
     </div>
   );

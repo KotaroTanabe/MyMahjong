@@ -89,6 +89,12 @@ def test_controls_use_server_prop() -> None:
     assert '/games/1/action' in text
 
 
+def test_controls_has_peek_checkbox() -> None:
+    text = Path('web_gui/Controls.jsx').read_text()
+    assert 'Peek' in text
+    assert 'onTogglePeek' in text
+
+
 def test_hand_supports_discard() -> None:
     text = Path('web_gui/Hand.jsx').read_text()
     assert 'onDiscard' in text
@@ -114,6 +120,11 @@ def test_game_board_displays_melds_and_remaining() -> None:
 def test_game_board_passes_remaining_prop() -> None:
     board = Path('web_gui/GameBoard.jsx').read_text()
     assert 'remaining={' in board
+
+
+def test_game_board_accepts_peek_prop() -> None:
+    board = Path('web_gui/GameBoard.jsx').read_text()
+    assert 'peek = false' in board
 
 
 def test_south_hand_displays_emojis() -> None:

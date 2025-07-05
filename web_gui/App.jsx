@@ -8,6 +8,7 @@ export default function App() {
   const [players, setPlayers] = useState('A,B,C,D');
   const [gameState, setGameState] = useState(null);
   const [events, setEvents] = useState([]);
+  const [peek, setPeek] = useState(false);
   const wsRef = useRef(null);
 
   async function fetchStatus() {
@@ -137,7 +138,7 @@ export default function App() {
         </label>
         <button onClick={startGame}>Start Game</button>
       </div>
-      <GameBoard state={gameState} server={server} />
+      <GameBoard state={gameState} server={server} peek={peek} onTogglePeek={setPeek} />
       <div className="event-log">
         <h2>Events</h2>
         <ul>
