@@ -9,6 +9,7 @@ def test_index_html_exists() -> None:
     assert '<div id="app"></div>' in text
     assert 'main.jsx' in text
     assert 'style.css' in text
+    assert 'bulma.min.css' in text
 
 
 def test_main_js_exists() -> None:

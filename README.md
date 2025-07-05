@@ -62,6 +62,7 @@ Future work will expand these components.
 - [x] Core <-> interface API documented
 - [x] GUI design documented
 - [x] Corrected seat orientation (shimocha right side)
+- [x] Stylish form inputs with Bulma CSS
 - [x] Responsive layout for narrow screens
 - [x] 何切る問題 mode
   - [x] CLI practice command
