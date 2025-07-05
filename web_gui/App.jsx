@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import GameBoard from './GameBoard.jsx';
+import { applyEvent } from './applyEvent.js';
 import './style.css';
 
 export default function App() {

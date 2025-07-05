@@ -129,8 +129,10 @@ def test_south_hand_displays_emojis() -> None:
 
 
 def test_app_updates_wall_on_draw() -> None:
-    text = Path('web_gui/App.jsx').read_text()
-    assert 'wall.tiles.pop()' in text
+    app = Path('web_gui/App.jsx').read_text()
+    assert 'applyEvent' in app
+    logic = Path('web_gui/applyEvent.js').read_text()
+    assert 'wall.tiles.pop()' in logic
 
 
 def test_controls_include_extra_actions() -> None:
