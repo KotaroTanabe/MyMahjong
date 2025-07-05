@@ -4,34 +4,10 @@ import Button from './Button.jsx';
 export default function Controls({ server, gameId }) {
   const [message, setMessage] = useState('');
 
-  async function draw() {
-    try {
-      if (!gameId) return;
-      const resp = await fetch(`${server.replace(/\/$/, '')}/games/${gameId}/action`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ player_index: 0, action: 'draw' }),
-      });
-      if (resp.ok) {
-        const tile = await resp.json();
-        setMessage(`Drew ${tile.suit} ${tile.value}`);
-      } else {
-        let data = null;
-        try {
-          data = await resp.json();
-        } catch {
-          // ignore
-        }
-        setMessage(data?.detail || 'Error drawing tile');
-      }
-    } catch {
-      setMessage('Server unreachable');
-    }
-  }
 
   async function simple(action, payload = {}) {
     try {
-      await fetch(`${server.replace(/\/$/, '')}/games/1/action`, {
+      await fetch(`${server.replace(/\/$/, '')}/games/${gameId}/action`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ player_index: 0, action, ...payload }),
@@ -72,7 +48,6 @@ export default function Controls({ server, gameId }) {
 
   return (
     <div className="controls">
-      <Button onClick={draw}>Draw</Button>
       <Button onClick={chi}>Chi</Button>
       <Button onClick={pon}>Pon</Button>
       <Button onClick={kan}>Kan</Button>

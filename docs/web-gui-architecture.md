@@ -13,7 +13,7 @@ The web client will be implemented as a small React application bundled with Vit
 - **Hand** – displays the tiles in a player's hand and action buttons.
 - **River** – shows each player's discard pile with orientation classes.
 - **MeldArea** – lists called sets (chi/pon/kan) for a seat.
-- **Controls** – minimal buttons for drawing, discarding and declaring wins.
+- **Controls** – buttons for calling melds, declaring wins and skipping turns.
 
 Each component receives only the data it needs so the interface remains simple and testable. Styling is handled by a single `style.css` file using CSS grid and flexbox.
 
@@ -22,7 +22,8 @@ Each component receives only the data it needs so the interface remains simple a
 1. After the page loads, `App` fetches the current game state via `GET /games/{id}`.
 2. `App` opens a WebSocket to `/ws/{id}` and listens for events.
 3. Incoming events update the React state, which re-renders the `GameBoard`.
-4. User actions send POST requests back to the server using the REST API.
+4. When `current_player` changes, `GameBoard` posts `{action: 'draw'}` for that player so drawing occurs automatically.
+5. User actions send POST requests back to the server using the REST API.
 
 ## Future Enhancements
 

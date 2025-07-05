@@ -51,6 +51,7 @@ Future work will expand these components.
 - [x] Peek at opponents' hands option
 - [x] Accessible tile buttons with aria-labels
 - [x] Basic draw control via REST API
+- [x] Automatic draw on turn start
 - [x] Discard tiles via GUI
 - [x] Meld and win actions via GUI
 - [x] Start game via GUI
