@@ -36,6 +36,8 @@ class GameState:
     players: List["Player"] = field(default_factory=list)
     wall: Optional["Wall"] = None
     current_player: int = 0
+    dealer: int = 0
+    round_number: int = 1
 
 
 @dataclass
@@ -54,3 +56,5 @@ class GameAction:
     player_index: int | None = None
     tile: Tile | None = None
     tiles: list[Tile] | None = None
+    dealer: int | None = None
+    round_number: int | None = None

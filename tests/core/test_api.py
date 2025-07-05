@@ -54,3 +54,10 @@ def test_declare_riichi_api() -> None:
     api.declare_riichi(0)
     assert player.riichi
     assert player.score == score - 1000
+
+
+def test_start_kyoku_api() -> None:
+    api.start_game(["A", "B", "C", "D"])
+    state = api.start_kyoku(2, 3)
+    assert state.dealer == 2
+    assert state.round_number == 3

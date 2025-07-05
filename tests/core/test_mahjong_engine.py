@@ -135,3 +135,24 @@ def test_skip_ignored_if_not_players_turn() -> None:
     engine.skip(1)
     assert engine.state.current_player == 0
     assert not engine.pop_events()
+
+
+def test_start_kyoku_resets_state_and_emits_event() -> None:
+    engine = MahjongEngine()
+    engine.pop_events()  # clear start_game and start_kyoku
+    engine.start_kyoku(dealer=1, round_number=2)
+    assert engine.state.dealer == 1
+    assert engine.state.round_number == 2
+    events = engine.pop_events()
+    assert events and events[0].name == "start_kyoku"
+
+
+def test_ryukyoku_event_on_wall_empty() -> None:
+    engine = MahjongEngine()
+    engine.pop_events()  # clear initial events
+    assert engine.state.wall is not None
+    engine.state.wall.tiles = [Tile("man", 1)]
+    engine.draw_tile(0)
+    events = engine.pop_events()
+    names = [e.name for e in events]
+    assert "ryukyoku" in names

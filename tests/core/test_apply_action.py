@@ -20,3 +20,12 @@ def test_apply_action_unknown() -> None:
     action = models.GameAction(type="foo", player_index=0)
     with pytest.raises(ValueError):
         api.apply_action(action)
+
+
+def test_apply_action_start_kyoku() -> None:
+    api.start_game(["A", "B", "C", "D"])
+    action = models.GameAction(type="start_kyoku", dealer=1, round_number=2)
+    api.apply_action(action)
+    state = api.get_state()
+    assert state.dealer == 1
+    assert state.round_number == 2
