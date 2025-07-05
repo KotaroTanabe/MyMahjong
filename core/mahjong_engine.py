@@ -20,6 +20,23 @@ class MahjongEngine:
         self._emit("start_game", {"state": self.state})
         self.start_kyoku(dealer=0, round_number=1)
 
+    def _draw_replacement_tile(self, player: Player) -> None:
+        """Draw a replacement tile from the dead wall and reveal new dora."""
+        assert self.state.wall is not None
+        if not self.state.wall.dead_wall:
+            return
+        tile = self.state.wall.dead_wall.pop(0)
+        player.draw(tile)
+        if self.state.dead_wall:
+            self.state.dead_wall.pop(0)
+        # Reveal next dora indicator if available
+        if len(self.state.wall.dead_wall) >= 5 + len(self.state.dora_indicators):
+            new_dora = self.state.wall.dead_wall[
+                -(5 + len(self.state.dora_indicators))
+            ]
+            self.state.wall.dora_indicators.append(new_dora)
+            self.state.dora_indicators.append(new_dora)
+
     def _emit(self, name: str, payload: dict) -> None:
         self.events.append(GameEvent(name=name, payload=payload))
 
@@ -207,51 +224,90 @@ class MahjongEngine:
         self._emit("meld", {"player_index": player_index, "meld": meld})
 
     def call_kan(self, player_index: int, tiles: list[Tile]) -> None:
-        """Form a kan meld using the given tiles."""
+        """Form a kan meld. Supports open, closed and added kan."""
         if len(tiles) != 4:
             raise ValueError("Kan requires four tiles")
 
-        last_tile = self.state.last_discard
-        last_player = self.state.last_discard_player
-        if last_tile is None or last_player is None:
-            raise ValueError("No discard available for kan")
-        if player_index == last_player:
-            raise ValueError("Cannot kan your own discard")
-        if not all(
-            t.suit == tiles[0].suit and t.value == tiles[0].value for t in tiles
-        ):
+        suit = tiles[0].suit
+        value = tiles[0].value
+        if not all(t.suit == suit and t.value == value for t in tiles):
             raise ValueError("Kan tiles must be identical")
-        if last_tile.suit != tiles[0].suit or last_tile.value != tiles[0].value:
-            raise ValueError("Discarded tile must match meld tiles")
 
         player = self.state.players[player_index]
-        count = sum(
-            1
-            for t in player.hand.tiles
-            if t.suit == tiles[0].suit and t.value == tiles[0].value
-        )
-        if count < 3:
+        last_tile = self.state.last_discard
+        last_player = self.state.last_discard_player
+
+        # Open kan using another player's discard
+        if last_tile is not None and last_player is not None:
+            if player_index == last_player:
+                raise ValueError("Cannot kan your own discard")
+            if last_tile.suit != suit or last_tile.value != value:
+                raise ValueError("Discarded tile must match meld tiles")
+            count = sum(
+                1
+                for t in player.hand.tiles
+                if t.suit == suit and t.value == value
+            )
+            if count < 3:
+                raise ValueError("Player missing tiles for kan")
+            meld_tiles: list[Tile] = [last_tile]
+            removed = 0
+            for i in range(len(player.hand.tiles) - 1, -1, -1):
+                tile_obj = player.hand.tiles[i]
+                if tile_obj.suit == suit and tile_obj.value == value:
+                    meld_tiles.append(player.hand.tiles.pop(i))
+                    removed += 1
+                    if removed == 3:
+                        break
+            discarder = self.state.players[last_player]
+            if not discarder.river or discarder.river[-1] != last_tile:
+                raise ValueError("Discard mismatch")
+            discarder.river.pop()
+            meld = Meld(tiles=meld_tiles, type="kan")
+            player.hand.melds.append(meld)
+            self.state.last_discard = None
+            self.state.last_discard_player = None
+            self._draw_replacement_tile(player)
+            self._emit("meld", {"player_index": player_index, "meld": meld})
+            return
+
+        # Added kan upgrade from an existing pon
+        for meld in player.hand.melds:
+            if meld.type == "pon" and all(
+                t.suit == suit and t.value == value for t in meld.tiles
+            ):
+                idx = next(
+                    (
+                        i
+                        for i, t in enumerate(player.hand.tiles)
+                        if t.suit == suit and t.value == value
+                    ),
+                    None,
+                )
+                if idx is None:
+                    raise ValueError("Player missing tile for added kan")
+                meld.tiles.append(player.hand.tiles.pop(idx))
+                meld.type = "added_kan"
+                self._draw_replacement_tile(player)
+                self._emit("meld", {"player_index": player_index, "meld": meld})
+                return
+
+        # Closed kan from hand
+        count = sum(1 for t in player.hand.tiles if t.suit == suit and t.value == value)
+        if count < 4:
             raise ValueError("Player missing tiles for kan")
+        meld_tiles = []
         removed = 0
         for i in range(len(player.hand.tiles) - 1, -1, -1):
-            if (
-                player.hand.tiles[i].suit == tiles[0].suit
-                and player.hand.tiles[i].value == tiles[0].value
-            ):
-                player.hand.tiles.pop(i)
+            tile_obj = player.hand.tiles[i]
+            if tile_obj.suit == suit and tile_obj.value == value:
+                meld_tiles.append(player.hand.tiles.pop(i))
                 removed += 1
-                if removed == 3:
+                if removed == 4:
                     break
-
-        discarder = self.state.players[last_player]
-        if not discarder.river or discarder.river[-1] != last_tile:
-            raise ValueError("Discard mismatch")
-        discarder.river.pop()
-
-        meld = Meld(tiles=tiles, type="kan")
+        meld = Meld(tiles=meld_tiles, type="closed_kan")
         player.hand.melds.append(meld)
-        self.state.last_discard = None
-        self.state.last_discard_player = None
+        self._draw_replacement_tile(player)
         self._emit("meld", {"player_index": player_index, "meld": meld})
 
     def declare_tsumo(self, player_index: int, win_tile: Tile) -> HandResponse:
