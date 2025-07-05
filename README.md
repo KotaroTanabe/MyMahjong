@@ -45,16 +45,18 @@ Future work will expand these components.
 - [x] Center display (dora & wall count)
 - [x] Meld display from game state
 - [x] Tile emoji rendering in GUI
+- [x] Adjustable tile font size (default 1.5x)
 - [x] Basic draw control via REST API
 - [x] Discard tiles via GUI
 - [x] Meld and win actions via GUI
 - [x] Start game via GUI
 - [x] Continuous integration workflow
+- [x] Web GUI unit tests
 - [x] Core <-> interface API documented
 - [x] GUI design documented
 - [ ] 何切る問題 mode
   - [x] CLI practice command
-  - [ ] AI recommendation
+  - [x] AI recommendation
   - [ ] Web UI support
 
 ### Core engine capabilities
@@ -125,23 +127,29 @@ The following plan steps are not yet implemented:
 See `docs/detailed-design.md` for an overview of the planned architecture.
 `docs/web-gui-architecture.md` provides more details about the planned React GUI.
 
-## 何切る問題 mode (planned)
+## 何切る問題 mode
 
-This practice mode will present a what-to-discard problem to the player.
+This practice mode presents a what-to-discard problem to the player.
+It is available via the CLI and the API.
 
-An initial version is available via the CLI:
+Run the CLI version with:
 
 ```bash
 python -m cli.main practice
 ```
 
-### Planned workflow
+### Current workflow
 
 1. Randomly choose the seat wind and dora indicator.
 2. Assume it is the dealer's first turn with no prior actions.
 3. Display the hand and let the user select a discard.
-4. Ask the AI to compute its recommended discard.
+4. The AI computes its recommended discard using a basic shanten heuristic.
 5. Show the AI suggestion to the user for comparison.
+
+Two API endpoints are provided:
+
+- `GET /practice` returns a new problem.
+- `POST /practice/suggest` returns the AI's suggested discard.
 
 ## Running locally
 
@@ -175,6 +183,20 @@ You can launch the FastAPI server and the React GUI at the same time using
 python run_local.py
 ```
 
+### Build and test
+
+Install the editable packages and run all checks with **uv**:
+
+```bash
+uv pip install -e ./core -e ./cli -e ./web
+uv pip install flake8 mypy pytest build
+python -m build core
+python -m build cli
+flake8
+mypy core web cli
+pytest -q
+```
+
 The GUI will automatically connect to the local FastAPI server's REST endpoints.
 
 ## Deployed to
@@ -188,5 +210,6 @@ served from this subpath.
 
 ## Continuous Integration
 
-GitHub Actions run linting, type checking, build and tests for every pull request.
-Once these checks succeed, the workflow automatically approves and merges the PR.
+GitHub Actions run linting, type checking, build and tests for every pull request
+using **uv** to install dependencies. Once these checks succeed, the workflow
+automatically approves and merges the PR.

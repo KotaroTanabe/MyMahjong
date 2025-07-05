@@ -141,3 +141,8 @@ def test_app_handles_new_events() -> None:
 def test_game_board_marks_riichi() -> None:
     text = Path('web_gui/GameBoard.jsx').read_text()
     assert 'Riichi' in text
+
+
+    def test_style_defines_tile_font_size() -> None:
+    css = Path('web_gui/style.css').read_text()
+    assert '--tile-font-size' in css
