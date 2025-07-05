@@ -77,6 +77,7 @@ Future work will expand these components.
 - [x] start_kyoku
 - [x] ryukyoku detection
 - [x] standard wall initialization
+- [x] dead wall & dora indicator tracking
 - [x] configurable ruleset
 - [x] event log
 - [x] current player tracking

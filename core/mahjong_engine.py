@@ -31,6 +31,10 @@ class MahjongEngine:
     def start_kyoku(self, dealer: int, round_number: int) -> None:
         """Begin a new hand with fresh tiles."""
         self.state.wall = Wall()
+        wall = self.state.wall
+        assert wall is not None
+        self.state.dora_indicators = wall.dora_indicators.copy()
+        self.state.dead_wall = wall.dead_wall.copy()
         for p in self.state.players:
             p.hand.tiles.clear()
             p.hand.melds.clear()
@@ -153,6 +157,10 @@ class MahjongEngine:
         scores = [p.score for p in final_state.players]
         self._emit("end_game", {"scores": scores})
         self.state = GameState(wall=Wall())
+        wall = self.state.wall
+        assert wall is not None
+        self.state.dora_indicators = wall.dora_indicators.copy()
+        self.state.dead_wall = wall.dead_wall.copy()
         self.state.players = [Player(name=f"Player {i}") for i in range(4)]
         self.state.current_player = 0
         return final_state

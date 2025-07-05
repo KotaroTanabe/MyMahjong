@@ -16,7 +16,8 @@ def test_initial_hands_dealt() -> None:
     counts = [len(p.hand.tiles) for p in engine.state.players]
     assert counts[dealer] == 14
     assert all(counts[i] == 13 for i in range(4) if i != dealer)
-    assert engine.remaining_tiles == 136 - (14 + 13 * 3)
+    # Only 122 tiles are available for play after reserving the dead wall
+    assert engine.remaining_tiles == 122 - (14 + 13 * 3)
 
 
 def test_draw_tile_updates_state() -> None:
@@ -145,6 +146,8 @@ def test_start_kyoku_resets_state_and_emits_event() -> None:
     engine.start_kyoku(dealer=1, round_number=2)
     assert engine.state.dealer == 1
     assert engine.state.round_number == 2
+    assert len(engine.state.dora_indicators) == 1
+    assert engine.state.dora_indicators[0] in engine.state.dead_wall
     events = engine.pop_events()
     assert events and events[0].name == "start_kyoku"
 
