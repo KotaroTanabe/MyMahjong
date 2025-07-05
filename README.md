@@ -24,6 +24,7 @@ Future work will expand these components.
 - [ ] Mortal AI integration
 - [x] Mortal backend integration design
 - [ ] MJAI protocol support
+- [x] GameState JSON serialization
 - [x] Local single-player play via CLI
 - [ ] REST + WebSocket API
 - [x] Basic REST endpoints (create game, fetch game, health)
