@@ -50,6 +50,7 @@ Future work will expand these components.
 - [x] Discard tiles via GUI
 - [x] Start game via GUI
 - [x] Continuous integration workflow
+- [x] Web GUI unit tests
 - [x] Core <-> interface API documented
 - [x] GUI design documented
 - [ ] 何切る問題 mode
