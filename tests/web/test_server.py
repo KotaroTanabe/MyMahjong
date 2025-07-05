@@ -49,6 +49,19 @@ def test_discard_action_endpoint() -> None:
     assert resp.json() == {"status": "ok"}
 
 
+def test_draw_from_empty_wall_returns_error() -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    from core import api
+    assert api._engine is not None
+    api._engine.state.wall.tiles = []  # type: ignore[list]
+    resp = client.post(
+        "/games/1/action",
+        json={"player_index": 0, "action": "draw"},
+    )
+    assert resp.status_code == 409
+    assert resp.json() == {"detail": "Wall is empty"}
+
+
 def test_websocket_streams_events() -> None:
     client.post("/games", json={"players": ["A", "B", "C", "D"]})
     with client.websocket_connect("/ws/1") as ws:

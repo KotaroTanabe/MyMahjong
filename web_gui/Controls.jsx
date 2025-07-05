@@ -14,7 +14,13 @@ export default function Controls({ server }) {
         const tile = await resp.json();
         setMessage(`Drew ${tile.suit} ${tile.value}`);
       } else {
-        setMessage('Error drawing tile');
+        let data = null;
+        try {
+          data = await resp.json();
+        } catch {
+          // ignore
+        }
+        setMessage(data?.detail || 'Error drawing tile');
       }
     } catch {
       setMessage('Server unreachable');

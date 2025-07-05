@@ -58,7 +58,10 @@ def game_action(game_id: int, req: ActionRequest) -> dict:
     """Perform a simple game action and return its result."""
     _ = game_id  # placeholder for future multi-game support
     if req.action == "draw":
-        tile = api.draw_tile(req.player_index)
+        try:
+            tile = api.draw_tile(req.player_index)
+        except IndexError:
+            raise HTTPException(status_code=409, detail="Wall is empty")
         return asdict(tile)
     if req.action == "discard" and req.tile:
         tile = models.Tile(**req.tile)
