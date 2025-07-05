@@ -53,7 +53,7 @@ Future work will expand these components.
 - [x] GUI design documented
 - [ ] 何切る問題 mode
   - [x] CLI practice command
-  - [ ] AI recommendation
+  - [x] AI recommendation
   - [ ] Web UI support
 
 ### Core engine capabilities
@@ -124,23 +124,29 @@ The following plan steps are not yet implemented:
 See `docs/detailed-design.md` for an overview of the planned architecture.
 `docs/web-gui-architecture.md` provides more details about the planned React GUI.
 
-## 何切る問題 mode (planned)
+## 何切る問題 mode
 
-This practice mode will present a what-to-discard problem to the player.
+This practice mode presents a what-to-discard problem to the player.
+It is available via the CLI and the API.
 
-An initial version is available via the CLI:
+Run the CLI version with:
 
 ```bash
 python -m cli.main practice
 ```
 
-### Planned workflow
+### Current workflow
 
 1. Randomly choose the seat wind and dora indicator.
 2. Assume it is the dealer's first turn with no prior actions.
 3. Display the hand and let the user select a discard.
-4. Ask the AI to compute its recommended discard.
+4. The AI computes its recommended discard using a basic shanten heuristic.
 5. Show the AI suggestion to the user for comparison.
+
+Two API endpoints are provided:
+
+- `GET /practice` returns a new problem.
+- `POST /practice/suggest` returns the AI's suggested discard.
 
 ## Running locally
 

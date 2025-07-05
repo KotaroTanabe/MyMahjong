@@ -12,7 +12,8 @@ def test_generate_problem(monkeypatch):
 
 
 def test_suggest_discard(monkeypatch):
-    tiles = [Tile("man", 1), Tile("pin", 2)]
+    # all tiles equal so algorithm relies on random.choice
+    tiles = [Tile("man", 1) for _ in range(14)]
     monkeypatch.setattr(practice.random, "choice", lambda seq: seq[-1])
     tile = practice.suggest_discard(tiles)
     assert tile == tiles[-1]
