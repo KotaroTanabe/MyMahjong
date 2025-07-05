@@ -9,7 +9,7 @@ import { tileToEmoji } from './tileUtils.js';
 function tileLabel(tile) {
   return tileToEmoji(tile);
 }
-export default function GameBoard({ state, server, gameId }) {
+export default function GameBoard({ state, server, gameId, peek = false }) {
   const players = state?.players ?? [];
   const south = players[0];
   const west = players[1];
@@ -19,9 +19,17 @@ export default function GameBoard({ state, server, gameId }) {
   const nameWithRiichi = (p) => (p?.riichi ? `${p.name} (Riichi)` : p?.name);
   const defaultHand = Array(13).fill('🀫');
 
-  const northHand = north?.hand?.tiles.map(tileLabel) ?? defaultHand;
-  const westHand = west?.hand?.tiles.map(tileLabel) ?? defaultHand;
-  const eastHand = east?.hand?.tiles.map(tileLabel) ?? defaultHand;
+  function concealedHand(p) {
+    const count = p?.hand?.tiles?.length ?? 13;
+    return Array(count).fill('🀫');
+  }
+
+  const northHand =
+    peek ? north?.hand?.tiles.map(tileLabel) ?? defaultHand : concealedHand(north);
+  const westHand =
+    peek ? west?.hand?.tiles.map(tileLabel) ?? defaultHand : concealedHand(west);
+  const eastHand =
+    peek ? east?.hand?.tiles.map(tileLabel) ?? defaultHand : concealedHand(east);
   const southHand = south?.hand?.tiles.map(tileLabel) ?? defaultHand;
 
   const northMelds = north?.hand?.melds.map((m) => m.tiles.map(tileLabel)) ?? [];

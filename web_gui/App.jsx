@@ -12,6 +12,7 @@ export default function App() {
   const [gameState, setGameState] = useState(null);
   const [events, setEvents] = useState([]);
   const [mode, setMode] = useState('game');
+  const [peek, setPeek] = useState(false);
   const wsRef = useRef(null);
 
   async function fetchStatus() {
@@ -179,6 +180,16 @@ export default function App() {
       </div>
       <div>
         <label>
+          <input
+            type="checkbox"
+            checked={peek}
+            onChange={(e) => setPeek(e.target.checked)}
+          />
+          Peek
+        </label>
+      </div>
+      <div>
+        <label>
           Players:
           <input
             value={players}
@@ -202,7 +213,7 @@ export default function App() {
         </button>
       </div>
       {mode === 'game' ? (
-        <GameBoard state={gameState} server={server} gameId={gameId} />
+        <GameBoard state={gameState} server={server} gameId={gameId} peek={peek} />
       ) : (
         <Practice server={server} />
       )}

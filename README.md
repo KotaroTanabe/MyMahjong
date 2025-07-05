@@ -46,6 +46,7 @@ Future work will expand these components.
 - [x] Meld display from game state
 - [x] Tile emoji rendering in GUI
 - [x] Adjustable tile font size (default 1.5x)
+- [x] Peek at opponents' hands option
 - [x] Basic draw control via REST API
 - [x] Discard tiles via GUI
 - [x] Meld and win actions via GUI
