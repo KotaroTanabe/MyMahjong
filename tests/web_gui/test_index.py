@@ -91,6 +91,12 @@ def test_app_has_game_id_input() -> None:
     assert 'localStorage' in text
 
 
+def test_setup_fields_only_in_game_mode() -> None:
+    text = Path('web_gui/App.jsx').read_text()
+    import re
+    assert re.search(r"mode === 'game' &&[\s\S]*?SetupFields", text)
+
+
 def test_app_opens_websocket() -> None:
     text = Path('web_gui/App.jsx').read_text()
     assert '/ws/${' in text

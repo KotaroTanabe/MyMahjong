@@ -205,33 +205,34 @@ export default function App() {
   return (
     <>
       <ServerModeFields />
-      {gameState ? (
-        <>
-          <div className="field">
-            <Button onClick={() => setShowSettings(true)}>Options</Button>
-          </div>
-          {showSettings && (
-            <div className="modal is-active">
-              <div
-                className="modal-background"
-                onClick={() => setShowSettings(false)}
-              ></div>
-              <div className="modal-content">
-                <div className="box">
-                  <SetupFields />
-                </div>
-              </div>
-              <button
-                className="modal-close is-large"
-                aria-label="close"
-                onClick={() => setShowSettings(false)}
-              ></button>
+      {mode === 'game' &&
+        (gameState ? (
+          <>
+            <div className="field">
+              <Button onClick={() => setShowSettings(true)}>Options</Button>
             </div>
-          )}
-        </>
-      ) : (
-        <SetupFields />
-      )}
+            {showSettings && (
+              <div className="modal is-active">
+                <div
+                  className="modal-background"
+                  onClick={() => setShowSettings(false)}
+                ></div>
+                <div className="modal-content">
+                  <div className="box">
+                    <SetupFields />
+                  </div>
+                </div>
+                <button
+                  className="modal-close is-large"
+                  aria-label="close"
+                  onClick={() => setShowSettings(false)}
+                ></button>
+              </div>
+            )}
+          </>
+        ) : (
+          <SetupFields />
+        ))}
       {mode === 'game' && (
         <div className="field is-grouped is-align-items-flex-end">
           <div className="control">
