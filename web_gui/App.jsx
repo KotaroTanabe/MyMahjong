@@ -115,7 +115,6 @@ export default function App() {
 
   return (
     <>
-      <h1>MyMahjong GUI</h1>
       <div className="field is-grouped is-align-items-flex-end">
         <label className="label mr-2">
           Server:
