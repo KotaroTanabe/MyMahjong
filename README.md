@@ -46,6 +46,7 @@ Future work will expand these components.
 - [x] Meld area component
 - [x] Center display (dora & wall count)
 - [x] Meld display from game state
+- [x] Melds positioned to the right of the player's hand
 - [x] Tile image rendering in GUI with alt text
 - [x] Adjustable tile font size (default 1.5x)
 - [x] Peek at opponents' hands option
