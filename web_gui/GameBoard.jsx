@@ -47,7 +47,7 @@ export default function GameBoard({
     peek ? west?.hand?.tiles.map(tileLabel) ?? defaultHand : concealedHand(west);
   const eastHand =
     peek ? east?.hand?.tiles.map(tileLabel) ?? defaultHand : concealedHand(east);
-  const southHand = south?.hand?.tiles.map(tileLabel) ?? defaultHand;
+  const southHand = south?.hand?.tiles ?? defaultHand;
 
   const northMelds = north?.hand?.melds.map((m) => m.tiles.map(tileLabel)) ?? [];
   const westMelds = west?.hand?.melds.map((m) => m.tiles.map(tileLabel)) ?? [];
@@ -60,6 +60,7 @@ export default function GameBoard({
   async function discard(tile) {
     try {
       if (!gameId) return;
+      if (typeof tile === 'string') return;
       await fetch(`${server.replace(/\/$/, '')}/games/${gameId}/action`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -115,7 +116,7 @@ export default function GameBoard({
         hand={southHand}
         melds={southMelds}
         riverTiles={(south?.river ?? []).map(tileLabel)}
-        onDiscard={discard}
+        onDiscard={state?.current_player === 0 ? discard : undefined}
         server={server}
         gameId={gameId}
         playerIndex={0}
