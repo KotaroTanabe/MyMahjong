@@ -61,6 +61,7 @@ Future work will expand these components.
 - [x] Discard tiles via GUI
 - [x] Display hand shanten count via GUI
 - [x] Allowed actions API
+- [x] GUI follows next actions from core
 - [x] Meld and win actions via GUI
 - [x] Start game via GUI
 - [x] Simple shanten-based AI for automated turns (discards tiles that keep shanten and calls pon/chi when it improves the hand)
