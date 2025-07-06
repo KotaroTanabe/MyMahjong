@@ -239,3 +239,11 @@ def test_auto_action_endpoint() -> None:
     assert resp.status_code == 200
     tile = resp.json()
     assert "suit" in tile and "value" in tile
+
+
+def test_shanten_endpoint() -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    resp = client.get("/games/1/shanten/0")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "shanten" in data and isinstance(data["shanten"], int)

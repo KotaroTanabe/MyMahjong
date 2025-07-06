@@ -58,6 +58,7 @@ Future work will expand these components.
 - [x] Basic draw control via REST API
 - [x] Automatic draw on turn start
 - [x] Discard tiles via GUI
+- [x] Display hand shanten count via GUI
 - [x] Meld and win actions via GUI
 - [x] Start game via GUI
 - [x] Simple tsumogiri AI for automated turns
