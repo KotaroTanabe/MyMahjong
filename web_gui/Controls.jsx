@@ -1,7 +1,18 @@
 import React, { useState } from 'react';
 import Button from './Button.jsx';
 
-export default function Controls({ server, gameId, playerIndex = 0 }) {
+export default function Controls({
+  server,
+  gameId,
+  playerIndex = 0,
+  canChi = true,
+  canPon = true,
+  canKan = true,
+  canRiichi = true,
+  canTsumo = true,
+  canRon = true,
+  canSkip = true,
+}) {
   const [message, setMessage] = useState('');
 
 
@@ -48,13 +59,13 @@ export default function Controls({ server, gameId, playerIndex = 0 }) {
 
   return (
     <div className="controls">
-      <Button onClick={chi}>Chi</Button>
-      <Button onClick={pon}>Pon</Button>
-      <Button onClick={kan}>Kan</Button>
-      <Button onClick={riichi}>Riichi</Button>
-      <Button onClick={tsumo}>Tsumo</Button>
-      <Button onClick={ron}>Ron</Button>
-      <Button onClick={skip}>Skip</Button>
+      <Button onClick={chi} disabled={!canChi}>Chi</Button>
+      <Button onClick={pon} disabled={!canPon}>Pon</Button>
+      <Button onClick={kan} disabled={!canKan}>Kan</Button>
+      <Button onClick={riichi} disabled={!canRiichi}>Riichi</Button>
+      <Button onClick={tsumo} disabled={!canTsumo}>Tsumo</Button>
+      <Button onClick={ron} disabled={!canRon}>Ron</Button>
+      <Button onClick={skip} disabled={!canSkip}>Skip</Button>
       {message && <div className="message">{message}</div>}
     </div>
   );

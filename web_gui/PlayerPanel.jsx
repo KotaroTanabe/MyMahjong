@@ -14,6 +14,7 @@ export default function PlayerPanel({
   server,
   gameId,
   playerIndex,
+  actions = {},
 }) {
   return (
     <div className={`${seat} seat player-panel`}>
@@ -26,7 +27,12 @@ export default function PlayerPanel({
         <Hand tiles={hand} onDiscard={onDiscard} />
         <MeldArea melds={melds} />
       </div>
-      <Controls server={server} gameId={gameId} playerIndex={playerIndex} />
+      <Controls
+        server={server}
+        gameId={gameId}
+        playerIndex={playerIndex}
+        {...actions}
+      />
     </div>
   );
 }

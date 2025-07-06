@@ -6,6 +6,31 @@ import { tileToEmoji } from './tileUtils.js';
 function tileLabel(tile) {
   return tileToEmoji(tile);
 }
+
+function availableActions(state, idx) {
+  const player = state?.players?.[idx];
+  if (!state || !player) return {};
+  const last = state.last_discard;
+  const lastPlayer = state.last_discard_player;
+  const counts = {};
+  for (const t of player.hand?.tiles ?? []) {
+    const key = `${t.suit}-${t.value}`;
+    counts[key] = (counts[key] ?? 0) + 1;
+  }
+  const lastKey = last ? `${last.suit}-${last.value}` : null;
+  const canChi =
+    !!(
+      last &&
+      lastPlayer != null &&
+      (lastPlayer + 1) % (state.players?.length ?? 4) === idx
+    );
+  const canPon = !!(last && lastPlayer !== idx && (counts[lastKey] ?? 0) >= 2);
+  const canKan =
+    (last && lastPlayer !== idx && (counts[lastKey] ?? 0) >= 3) ||
+    Object.values(counts).some((c) => c >= 4);
+  const isCurrent = state.current_player === idx;
+  return { canChi, canPon, canKan, canRiichi: isCurrent, canTsumo: isCurrent, canRon: !!(last && lastPlayer !== idx), canSkip: isCurrent };
+}
 export default function GameBoard({
   state,
   server,
@@ -83,6 +108,7 @@ export default function GameBoard({
         server={server}
         gameId={gameId}
         playerIndex={2}
+        actions={availableActions(state, 2)}
       />
       <PlayerPanel
         seat="east"
@@ -93,6 +119,7 @@ export default function GameBoard({
         server={server}
         gameId={gameId}
         playerIndex={3}
+        actions={availableActions(state, 3)}
       />
       <div className="center">
         <CenterDisplay remaining={remaining} dora={dora} />
@@ -106,6 +133,7 @@ export default function GameBoard({
         server={server}
         gameId={gameId}
         playerIndex={1}
+        actions={availableActions(state, 1)}
       />
       <PlayerPanel
         seat="south"
@@ -117,6 +145,7 @@ export default function GameBoard({
         server={server}
         gameId={gameId}
         playerIndex={0}
+        actions={availableActions(state, 0)}
       />
     </div>
   );

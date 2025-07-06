@@ -54,6 +54,7 @@ Future work will expand these components.
 - [x] Automatic draw on turn start
 - [x] Discard tiles via GUI
 - [x] Meld and win actions via GUI
+- [x] Disable unavailable action buttons
 - [x] Start game via GUI
 - [x] Handle start_kyoku event in GUI
 - [x] Join game by ID via GUI
