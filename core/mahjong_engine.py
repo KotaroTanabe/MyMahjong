@@ -100,6 +100,7 @@ class MahjongEngine:
             p.hand.melds.clear()
             p.river.clear()
             p.riichi = False
+            p.must_tsumogiri = False
         self.state.last_discard = None
         self.state.last_discard_player = None
         self.state.kan_count = 0
@@ -160,7 +161,11 @@ class MahjongEngine:
 
     def discard_tile(self, player_index: int, tile: Tile) -> None:
         """Discard a tile from the specified player's hand."""
-        self.state.players[player_index].discard(tile)
+        player = self.state.players[player_index]
+        if player.must_tsumogiri and player.hand.tiles and player.hand.tiles[-1] is not tile:
+            raise ValueError("Must discard the drawn tile after declaring riichi")
+        player.discard(tile)
+        player.must_tsumogiri = False
         self._emit("discard", {"player_index": player_index, "tile": tile})
         self.state.current_player = (player_index + 1) % len(self.state.players)
         self.state.last_discard = tile

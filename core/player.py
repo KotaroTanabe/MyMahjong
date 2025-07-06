@@ -16,6 +16,7 @@ class Player:
     river: list[Tile] = field(default_factory=list)
     riichi: bool = False
     seat_wind: str = "east"
+    must_tsumogiri: bool = False
 
     def draw(self, tile: Tile) -> None:
         """Add a tile to the player's hand."""
@@ -39,3 +40,4 @@ class Player:
             return
         self.score -= 1000
         self.riichi = True
+        self.must_tsumogiri = True
