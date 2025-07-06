@@ -19,7 +19,7 @@ export default function App() {
   const [events, setEvents] = useState([]);
   const [mode, setMode] = useState('game');
   const [peek, setPeek] = useState(false);
-  const [sortHand, setSortHand] = useState(false);
+  const [sortHand, setSortHand] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
   const wsRef = useRef(null);
 
