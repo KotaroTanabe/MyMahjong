@@ -259,9 +259,16 @@ class MahjongEngine:
         discarder.river.pop()
 
         called_index = None
+        called_from = None
         if last_tile in tiles:
             called_index = tiles.index(last_tile)
-        meld = Meld(tiles=tiles, type="chi", called_index=called_index)
+            called_from = (player_index - last_player) % len(self.state.players)
+        meld = Meld(
+            tiles=tiles,
+            type="chi",
+            called_index=called_index,
+            called_from=called_from,
+        )
         player.hand.melds.append(meld)
         self.state.last_discard = None
         self.state.last_discard_player = None
@@ -312,9 +319,16 @@ class MahjongEngine:
         discarder.river.pop()
 
         called_index = None
+        called_from = None
         if last_tile in tiles:
             called_index = tiles.index(last_tile)
-        meld = Meld(tiles=tiles, type="pon", called_index=called_index)
+            called_from = (player_index - last_player) % len(self.state.players)
+        meld = Meld(
+            tiles=tiles,
+            type="pon",
+            called_index=called_index,
+            called_from=called_from,
+        )
         player.hand.melds.append(meld)
         self.state.last_discard = None
         self.state.last_discard_player = None
@@ -363,7 +377,13 @@ class MahjongEngine:
                 raise ValueError("Discard mismatch")
             discarder.river.pop()
             called_index = 0
-            meld = Meld(tiles=meld_tiles, type="kan", called_index=called_index)
+            called_from = (player_index - last_player) % len(self.state.players)
+            meld = Meld(
+                tiles=meld_tiles,
+                type="kan",
+                called_index=called_index,
+                called_from=called_from,
+            )
             player.hand.melds.append(meld)
             self.state.last_discard = None
             self.state.last_discard_player = None
