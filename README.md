@@ -78,6 +78,7 @@ Future work will expand these components.
 - [x] Icon buttons using react-icons
 - [x] Human/robot icons for AI toggle
 - [x] Icon tooltips for peek and sort toggles
+- [x] Compact header with gear options icon
 - [x] Favicon with mahjong emoji
 - [x] Highlight active player on board
 - [x] 6x4 discard grid rendering

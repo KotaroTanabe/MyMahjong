@@ -34,7 +34,7 @@ describe('App websocket', () => {
     await userEvent.clear(input);
     await userEvent.type(input, 'http://localhost:1235');
     await userEvent.click(screen.getByText('Start Game'));
-    const optionsButton = await screen.findByText('Options');
+    const optionsButton = await screen.findByLabelText('Options');
     expect(optionsButton).toBeTruthy();
     server.stop();
   });
@@ -87,7 +87,7 @@ describe('App reload', () => {
     render(<App />);
     await screen.findByText('WebSocket connected');
     expect(screen.getByLabelText('Server:').value).toBe('http://localhost:5678');
-    await userEvent.click(screen.getByText('Options'));
+    await userEvent.click(screen.getByLabelText('Options'));
     expect(screen.getByLabelText('Game ID:').value).toBe('1');
     server.stop();
   });
@@ -129,7 +129,7 @@ describe('App settings modal', () => {
     await userEvent.clear(input);
     await userEvent.type(input, 'http://localhost:1234');
     await userEvent.click(screen.getByText('Start Game'));
-    const options = await screen.findByText('Options');
+    const options = await screen.findByLabelText('Options');
     expect(screen.queryByText('Start Game')).toBeNull();
     expect(options).toBeTruthy();
     await userEvent.click(options);
