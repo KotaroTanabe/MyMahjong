@@ -23,3 +23,15 @@ tile: {suit: 'pin', value: 1}}};\n"
     )
     output = run_node(code)
     assert output == '1'
+
+
+def test_skip_updates_current_player() -> None:
+    code = (
+        "import { applyEvent } from './web_gui/applyEvent.js';\n"
+        "const state = {current_player: 0, players: [{}, {}]};\n"
+        "const evt = {name: 'skip', payload: {player_index: 0}};\n"
+        "const newState = applyEvent(state, evt);\n"
+        "console.log(newState.current_player);"
+    )
+    output = run_node(code)
+    assert output == '1'
