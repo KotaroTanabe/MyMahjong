@@ -1,11 +1,11 @@
 from pathlib import Path
 
 
-def test_alt_layout_class_in_css() -> None:
+def test_player_panel_layout_css() -> None:
     css = Path('web_gui/style.css').read_text()
-    assert '.board-grid-alt' in css
+    assert '.board-grid' in css
 
 
-def test_game_board_supports_layout_prop() -> None:
+def test_game_board_uses_player_panels() -> None:
     jsx = Path('web_gui/GameBoard.jsx').read_text()
-    assert 'layout ===' in jsx and 'board-grid-alt' in jsx
+    assert 'PlayerPanel' in jsx
