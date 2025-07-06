@@ -23,11 +23,11 @@ Each seat has one meld zone. The North player's hand is drawn just above the riv
 ```
   🀫x13 (North Hand)
   +---------------+----------------------+---------------+
-  | North Fuuro   | North River          | East Fuuro    |
+  | North Fuuro   | North River          | West Fuuro    |
   +---------------+----------------------+---------------+
-  | West River    | Wall / Dora / Round  | East River    |
+  | East River    | Wall / Dora / Round  | West River    |
   +---------------+----------------------+---------------+
-  | West Fuuro    | South River          | South Fuuro   |
+  | East Fuuro    | South River          | South Fuuro   |
   +---------------+----------------------+---------------+
 ```
 
