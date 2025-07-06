@@ -2,7 +2,7 @@ import click
 
 from . import remote_game
 from .local_game import run_game
-from core import practice, models, shanten_quiz
+from core import practice, models, shanten_quiz, api
 
 
 @click.group()
@@ -73,6 +73,23 @@ def state(game_id: int, server: str) -> None:
     remaining = data.get("wall", {}).get("remaining_tiles")
     msg = f"Game {game_id}: {remaining} tiles remaining; players: {names}"
     click.echo(msg)
+
+
+@cli.command(name="shanten")
+@click.argument("game_id", type=int)
+@click.argument("player_index", type=int)
+@click.option("--server", "server", "-s", help="Base URL of remote server")
+def shanten_cmd(game_id: int, player_index: int, server: str | None) -> None:
+    """Display the shanten number for PLAYER_INDEX in GAME_ID."""
+    if server:
+        data = remote_game.get_game(server, game_id)
+        player = data["players"][player_index]
+        tiles = [models.Tile(**t) for t in player["hand"]["tiles"]]
+    else:
+        state = api.get_state()
+        tiles = state.players[player_index].hand.tiles
+    value = api.calculate_shanten(tiles)
+    click.echo(f"Shanten: {value}")
 
 
 @cli.command()
