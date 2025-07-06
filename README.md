@@ -34,6 +34,7 @@ Future work will expand these components.
 - [x] Join remote games via CLI
 - [x] Draw tile in remote games via CLI
 - [x] View remote game state via CLI
+- [x] Display player hand shanten via CLI
 - [x] Remote server health check via CLI
 - [x] REST + WebSocket API
 - [x] Basic REST endpoints (create game, fetch game, health)

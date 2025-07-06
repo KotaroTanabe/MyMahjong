@@ -4,7 +4,7 @@ from __future__ import annotations
 from .mahjong_engine import MahjongEngine
 from .models import GameState, Tile, GameEvent, GameAction
 from .ai import AI_REGISTRY
-from . import practice
+from . import practice, shanten_quiz
 from mahjong.hand_calculating.hand_response import HandResponse
 
 # Singleton engine instance used by interfaces
@@ -131,6 +131,12 @@ def suggest_practice_discard(hand: list[Tile], use_ai: bool = False) -> Tile:
     """
 
     return practice.suggest_discard(hand, use_ai=use_ai)
+
+
+def calculate_shanten(hand: list[Tile]) -> int:
+    """Return the shanten number for ``hand``."""
+
+    return shanten_quiz.calculate_shanten(hand)
 
 
 def apply_action(action: GameAction) -> object | None:
