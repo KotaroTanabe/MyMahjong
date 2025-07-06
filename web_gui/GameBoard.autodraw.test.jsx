@@ -34,4 +34,19 @@ describe('GameBoard auto draw', () => {
     expect(fetchMock).toHaveBeenCalledTimes(3);
     expect(JSON.parse(fetchMock.mock.calls[2][1].body)).toEqual({ player_index: 0, action: 'auto', ai_type: 'simple' });
   });
+
+  it('does not auto play when result is shown', async () => {
+    const fetchMock = vi.fn(() => Promise.resolve({ ok: true }));
+    global.fetch = fetchMock;
+    const state = { ...mockState(0), result: { type: 'ryukyoku' } };
+    const { rerender } = render(
+      <GameBoard state={state} server="http://s" gameId="1" />,
+    );
+    await Promise.resolve();
+    expect(fetchMock).toHaveBeenCalledTimes(0);
+    state.result = null;
+    state.current_player = 1;
+    rerender(<GameBoard state={state} server="http://s" gameId="1" />);
+    await Promise.resolve();
+  });
 });

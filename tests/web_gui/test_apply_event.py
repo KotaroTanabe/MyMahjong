@@ -84,3 +84,27 @@ def test_riichi_event_updates_score_and_sticks() -> None:
     )
     output = run_node(code)
     assert output == '24000:1:true'
+
+
+def test_tsumo_sets_result_and_scores() -> None:
+    code = (
+        "import { applyEvent } from './web_gui/applyEvent.js';\n"
+        "const state = {players:[{score:25000},{score:25000},{score:25000},{score:25000}]};\n"
+        "const evt = {name:'tsumo', payload:{player_index:0, scores:[26000,24000,24000,24000], result:{han:1,fu:30,cost:{total:1000}}, win_tile:{suit:'man',value:1}, hand:{tiles:[],melds:[]}}};\n"
+        "const newState = applyEvent(state, evt);\n"
+        "console.log(newState.result.type + ':' + newState.players[0].score);"
+    )
+    output = run_node(code)
+    assert output == 'tsumo:26000'
+
+
+def test_ron_sets_result_and_scores() -> None:
+    code = (
+        "import { applyEvent } from './web_gui/applyEvent.js';\n"
+        "const state = {players:[{score:25000},{score:25000},{score:25000},{score:25000}]};\n"
+        "const evt = {name:'ron', payload:{player_index:0, scores:[33000,17000,25000,25000], result:{han:2,fu:40,cost:{total:8000}}, win_tile:{suit:'pin',value:5}, hand:{tiles:[],melds:[]}}};\n"
+        "const newState = applyEvent(state, evt);\n"
+        "console.log(newState.result.type + ':' + newState.players[0].score);"
+    )
+    output = run_node(code)
+    assert output == 'ron:33000'
