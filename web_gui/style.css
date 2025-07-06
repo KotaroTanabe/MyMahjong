@@ -133,9 +133,13 @@
 .north .river { transform: rotate(180deg); }
 .west .river { transform: rotate(-90deg); }
 
-.east .meld-area { transform: rotate(90deg); }
-.north .meld-area { transform: rotate(180deg); }
-.west .meld-area { transform: rotate(-90deg); }
+.called-tile {
+  transform: rotate(90deg);
+}
+
+.called-tile:hover {
+  transform: rotate(90deg) translateY(-2px);
+}
 .flat-btn {
   background-color: #007bff;
   border: none;

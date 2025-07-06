@@ -27,6 +27,7 @@ class Meld:
     """Collection of tiles forming a meld (chi, pon, kan)."""
     tiles: List[Tile]
     type: str
+    called_index: int | None = None
 
 
 @dataclass

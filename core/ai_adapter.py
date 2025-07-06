@@ -52,7 +52,11 @@ def json_to_game_state(message: str) -> GameState:
         return Tile(**d)
 
     def decode_meld(d: dict[str, Any]) -> Meld:
-        return Meld(tiles=[decode_tile(t) for t in d["tiles"]], type=d["type"])
+        return Meld(
+            tiles=[decode_tile(t) for t in d["tiles"]],
+            type=d["type"],
+            called_index=d.get("called_index"),
+        )
 
     def decode_hand(d: dict[str, Any]) -> Hand:
         tiles = [decode_tile(t) for t in d.get("tiles", [])]

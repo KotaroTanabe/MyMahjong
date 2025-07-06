@@ -13,9 +13,9 @@ This document outlines how the Mahjong board is arranged in the web UI. The desi
   Discard piles remain directly in front of the players.
 - Opponents occupy the top, left and right edges, surrounding a central area used for wall tiles or indicators.
 - Each opponent's concealed hand is drawn just outside their discard pile so the river remains visible.
-- Each seat's discard pile and meld area is rotated with CSS so tiles face the center.
+- Each seat's discard pile is rotated with CSS so tiles face the center.
   `.seat-east` rotates 90deg, `.seat-north` 180deg and `.seat-west` -90deg.
-- Melds are drawn in dedicated areas separate from discard piles so rivers remain intact.
+- Melds follow the hand orientation. The tile taken from another player is rotated 90 degrees within the meld. Melds are drawn in dedicated areas separate from discard piles so rivers remain intact.
 
 ### Player Panel Layout
 
