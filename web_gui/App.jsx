@@ -19,6 +19,7 @@ export default function App() {
   const [mode, setMode] = useState('game');
   const [peek, setPeek] = useState(false);
   const [sortHand, setSortHand] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const wsRef = useRef(null);
 
   useEffect(() => {
@@ -102,6 +103,84 @@ export default function App() {
     wsRef.current = ws;
   }
 
+  function SetupFields() {
+    return (
+      <>
+        <div className="field is-grouped is-align-items-flex-end">
+          <label className="label mr-2">
+            Server:
+            <input
+              className="input"
+              value={server}
+              onChange={(e) => setServer(e.target.value)}
+              style={{ width: '20em' }}
+            />
+          </label>
+          <div className="control">
+            <Button aria-label="Retry" onClick={fetchStatus}>
+              <FiRefreshCw />
+            </Button>
+          </div>
+          {connectionStatus === 'ok' ? (
+            <span aria-label="Server ok" className="icon has-text-success ml-2">
+              <FiCheck />
+            </span>
+          ) : connectionStatus ? (
+            <span aria-label="Server error" className="ml-2 has-text-danger">
+              {connectionStatus}
+            </span>
+          ) : null}
+        </div>
+        <div className="field">
+          <label className="label">
+            Mode:
+            <span className="select ml-2">
+              <select value={mode} onChange={(e) => setMode(e.target.value)}>
+                <option value="game">Game</option>
+                <option value="practice">Practice</option>
+              </select>
+            </span>
+          </label>
+        </div>
+        <div className="field is-grouped is-align-items-flex-end">
+          <label className="label mr-2">
+            Players:
+            <input
+              className="input"
+              value={players}
+              onChange={(e) => setPlayers(e.target.value)}
+              style={{ width: '20em' }}
+            />
+          </label>
+          <div className="control">
+            <Button onClick={startGame}>Start Game</Button>
+          </div>
+        </div>
+        <div className="field is-grouped is-align-items-flex-end">
+          <label className="label mr-2">
+            Game ID:
+            <input
+              className="input"
+              value={gameId}
+              onChange={(e) => setGameId(e.target.value)}
+              style={{ width: '5em' }}
+            />
+          </label>
+          <div className="control">
+            <Button
+              onClick={() => {
+                fetchGameState();
+                openWebSocket();
+              }}
+            >
+              Join Game
+            </Button>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   useEffect(() => {
     fetchStatus();
     if (gameId) {
@@ -116,51 +195,43 @@ export default function App() {
 
   return (
     <>
-      <div className="field is-grouped is-align-items-flex-end">
-        <label className="label mr-2">
-          Server:
-          <input
-            className="input"
-            value={server}
-            onChange={(e) => setServer(e.target.value)}
-            style={{ width: '20em' }}
-          />
-        </label>
-        <div className="control">
-          <Button aria-label="Retry" onClick={fetchStatus}><FiRefreshCw /></Button>
+      {gameState ? (
+        <>
+          <div className="field">
+            <Button onClick={() => setShowSettings(true)}>Options</Button>
+          </div>
+          {showSettings && (
+            <div className="modal is-active">
+              <div
+                className="modal-background"
+                onClick={() => setShowSettings(false)}
+              ></div>
+              <div className="modal-content">
+                <div className="box">
+                  <SetupFields />
+                </div>
+              </div>
+              <button
+                className="modal-close is-large"
+                aria-label="close"
+                onClick={() => setShowSettings(false)}
+              ></button>
+            </div>
+          )}
+        </>
+      ) : (
+        <SetupFields />
+      )}
+      {mode === 'game' && (
+        <div className="field is-grouped is-align-items-flex-end">
+          <label className="label mr-2">Peek:</label>
+          <div className="control">
+            <Button aria-label="Toggle peek" onClick={() => setPeek(!peek)}>
+              {peek ? <FiEyeOff /> : <FiEye />}
+            </Button>
+          </div>
         </div>
-        {connectionStatus === 'ok' ? (
-          <span aria-label="Server ok" className="icon has-text-success ml-2">
-            <FiCheck />
-          </span>
-        ) : connectionStatus ? (
-          <span aria-label="Server error" className="ml-2 has-text-danger">
-            {connectionStatus}
-          </span>
-        ) : null}
-      </div>
-      <div className="field">
-        <label className="label">
-          Mode:
-          <span className="select ml-2">
-            <select value={mode} onChange={(e) => setMode(e.target.value)}>
-              <option value="game">Game</option>
-              <option value="practice">Practice</option>
-            </select>
-          </span>
-        </label>
-      </div>
-      <div className="field is-grouped is-align-items-flex-end">
-        <label className="label mr-2">Peek:</label>
-        <div className="control">
-          <Button
-            aria-label="Toggle peek"
-            onClick={() => setPeek(!peek)}
-          >
-            {peek ? <FiEyeOff /> : <FiEye />}
-          </Button>
-        </div>
-      </div>
+      )}
       <div className="field is-grouped is-align-items-flex-end">
         <label className="label mr-2">Sort:</label>
         <div className="control">
@@ -169,36 +240,6 @@ export default function App() {
             onClick={() => setSortHand(!sortHand)}
           >
             <FiShuffle />
-          </Button>
-        </div>
-      </div>
-      <div className="field is-grouped is-align-items-flex-end">
-        <label className="label mr-2">
-          Players:
-          <input
-            className="input"
-            value={players}
-            onChange={(e) => setPlayers(e.target.value)}
-            style={{ width: '20em' }}
-          />
-        </label>
-        <div className="control">
-          <Button onClick={startGame}>Start Game</Button>
-        </div>
-      </div>
-      <div className="field is-grouped is-align-items-flex-end">
-        <label className="label mr-2">
-          Game ID:
-          <input
-            className="input"
-            value={gameId}
-            onChange={(e) => setGameId(e.target.value)}
-            style={{ width: '5em' }}
-          />
-        </label>
-        <div className="control">
-          <Button onClick={() => { fetchGameState(); openWebSocket(); }}>
-            Join Game
           </Button>
         </div>
       </div>
