@@ -53,6 +53,9 @@ def is_tenpai(hand_tiles: list[Tile], melds: list[Meld]) -> bool:
     for meld in melds:
         for t in meld.tiles:
             counts[_tile_to_index(t)] += 1
-    if sum(counts) > 14 and hand_tiles:
-        counts[_tile_to_index(hand_tiles[-1])] -= 1
+    total = sum(counts)
+    if total > 14 and hand_tiles:
+        excess = total - 14
+        for _ in range(excess):
+            counts[_tile_to_index(hand_tiles[-1])] -= 1
     return Shanten().calculate_shanten(counts) == 0

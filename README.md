@@ -61,7 +61,7 @@ Future work will expand these components.
 - [x] Display hand shanten count via GUI
 - [x] Meld and win actions via GUI
 - [x] Start game via GUI
-- [x] Simple tsumogiri AI for automated turns
+- [x] Simple shanten-based AI for automated turns (discards tiles that keep shanten and calls pon/chi when it improves the hand)
 - [x] Toggle AI per player from GUI
 - [x] AI type selection framework (currently only 'simple')
 - [x] Players 2-4 use AI by default in GUI
