@@ -459,6 +459,12 @@ class MahjongEngine:
             if player_index in self.state.waiting_for_claims:
                 self.state.waiting_for_claims.remove(player_index)
                 self._emit("skip", {"player_index": player_index})
+                if not self.state.waiting_for_claims:
+                    # All players have passed on the discard; draw for next player
+                    next_player = self.state.current_player
+                    self.draw_tile(next_player)
+                    # draw_tile advances current_player; reset to drawer
+                    self.state.current_player = next_player
             return
         if player_index != self.state.current_player:
             return
@@ -466,6 +472,10 @@ class MahjongEngine:
             self.state.players
         )
         self._emit("skip", {"player_index": player_index})
+        new_player = self.state.current_player
+        self.draw_tile(new_player)
+        # draw_tile advances current_player; reset to drawer
+        self.state.current_player = new_player
 
     def advance_hand(self, winner_index: int | None = None) -> None:
         """Move to the next hand and handle dealer rotation."""
