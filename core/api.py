@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from .mahjong_engine import MahjongEngine
 from .models import GameState, Tile, GameEvent, GameAction
-from .simple_ai import tsumogiri_turn
+from .ai import AI_REGISTRY
 from . import practice
 from mahjong.hand_calculating.hand_response import HandResponse
 
@@ -88,11 +88,15 @@ def skip(player_index: int) -> None:
     _engine.skip(player_index)
 
 
-def auto_play_turn(player_index: int | None = None) -> Tile:
-    """Have a simple AI draw and discard for ``player_index``."""
+def auto_play_turn(player_index: int | None = None, ai_type: str = "simple") -> Tile:
+    """Have the specified AI draw and discard for ``player_index``."""
+
     assert _engine is not None, "Game not started"
     idx = player_index if player_index is not None else _engine.state.current_player
-    return tsumogiri_turn(_engine, idx)
+    ai = AI_REGISTRY.get(ai_type)
+    if ai is None:
+        raise ValueError(f"Unknown ai_type: {ai_type}")
+    return ai(_engine, idx)
 
 
 def advance_hand(winner_index: int | None = None) -> GameState:
