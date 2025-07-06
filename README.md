@@ -45,6 +45,7 @@ Future work will expand these components.
 - [x] Hand & River components
 - [x] Meld area component
 - [x] Center display (dora & wall count)
+- [x] Display honba & riichi stick counts
 - [x] Meld display from game state
 - [x] Melds positioned to the right of the player's hand
 - [x] Tile image rendering in GUI with alt text

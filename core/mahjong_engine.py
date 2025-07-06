@@ -331,11 +331,12 @@ class MahjongEngine:
         player = self.state.players[player_index]
         if result.cost and "total" in result.cost:
             total = int(result.cost["total"])
-            player.score += total
+            honba_bonus = self.state.honba * 100
+            player.score += total + honba_bonus * (len(self.state.players) - 1)
             share = total // (len(self.state.players) - 1)
             for i, p in enumerate(self.state.players):
                 if i != player_index:
-                    p.score -= share
+                    p.score -= share + honba_bonus
             player.score += self.state.riichi_sticks * 1000
             self.state.riichi_sticks = 0
         scores = [p.score for p in self.state.players]
@@ -356,10 +357,11 @@ class MahjongEngine:
         player = self.state.players[player_index]
         if result.cost and "total" in result.cost:
             total = int(result.cost["total"])
-            player.score += total
+            honba_bonus = self.state.honba * 300
+            player.score += total + honba_bonus
             discarder = self.state.last_discard_player
             if discarder is not None and discarder != player_index:
-                self.state.players[discarder].score -= total
+                self.state.players[discarder].score -= total + honba_bonus
             player.score += self.state.riichi_sticks * 1000
             self.state.riichi_sticks = 0
         scores = [p.score for p in self.state.players]

@@ -49,6 +49,9 @@
   align-items: center;
   gap: 0.25rem;
 }
+.center-display .counts {
+  font-size: 0.9rem;
+}
 .east { grid-area: east; }
 .south { grid-area: south; }
 
