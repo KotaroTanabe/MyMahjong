@@ -5,7 +5,7 @@ export default function River({ tiles = [] }) {
   return (
     <div className="river">
       {cells.map((t, i) => (
-        <span key={i} className="tile">
+        <span key={i} className="mj-tile">
           {t ?? '\u00a0'}
         </span>
       ))}

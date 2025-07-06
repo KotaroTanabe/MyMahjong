@@ -6,7 +6,7 @@ export default function MeldArea({ melds = [] }) {
       {melds.map((meld, mIdx) => (
         <div key={mIdx} className="meld">
           {meld.map((t, i) => (
-            <span key={i} className="tile">{t}</span>
+            <span key={i} className="mj-tile">{t}</span>
           ))}
         </div>
       ))}

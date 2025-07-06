@@ -5,7 +5,7 @@ import River from './River.jsx';
 describe('River layout', () => {
   it('reserves 24 grid cells', () => {
     const { container } = render(<River tiles={['A', 'B']} />);
-    const cells = container.querySelectorAll('.river .tile');
+    const cells = container.querySelectorAll('.river .mj-tile');
     expect(cells).toHaveLength(24);
     expect(cells[0].textContent).toBe('A');
     expect(cells[1].textContent).toBe('B');

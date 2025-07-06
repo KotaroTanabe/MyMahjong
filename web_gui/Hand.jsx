@@ -10,14 +10,14 @@ export default function Hand({ tiles = [], onDiscard }) {
         return onDiscard ? (
           <button
             key={i}
-            className="tile"
+            className="mj-tile"
             onClick={() => onDiscard(t)}
             aria-label={`Discard ${alt}`}
           >
             {label}
           </button>
         ) : (
-          <span key={i} className="tile">{label}</span>
+          <span key={i} className="mj-tile">{label}</span>
         );
       })}
     </div>

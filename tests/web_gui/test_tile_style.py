@@ -3,7 +3,7 @@ from pathlib import Path
 
 def test_tile_size_and_border() -> None:
     css = Path('web_gui/style.css').read_text()
-    start = css.index('.tile {')
+    start = css.index('.mj-tile {')
     end = css.index('}', start)
     tile_block = css[start:end]
     assert 'width: calc(var(--tile-font-size) * 1.2);' in tile_block
