@@ -52,6 +52,9 @@
 .center-display .counts {
   font-size: 0.9rem;
 }
+.turn-status {
+  font-weight: bold;
+}
 .east { grid-area: east; }
 .south { grid-area: south; }
 

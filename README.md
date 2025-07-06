@@ -74,6 +74,7 @@ Future work will expand these components.
 - [x] Icon buttons using react-icons
 - [x] Favicon with mahjong emoji
 - [x] Highlight active player on board
+- [x] Meld/win declaration waiting status display
 - [x] 6x4 discard grid rendering
 - [x] Modal error display on failed discard actions
 - [x] 何切る問題 mode

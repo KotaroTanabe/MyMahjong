@@ -75,6 +75,19 @@ export default function GameBoard({
   const remaining = state?.wall?.tiles?.length ?? 0;
   const dora = state?.wall?.tiles?.[0] ? [tileLabel(state.wall.tiles[0])] : [];
 
+  const active =
+    state?.waiting_for != null ? state.waiting_for : state?.current_player;
+
+  let statusMessage = '';
+  if (state?.waiting_for != null) {
+    statusMessage = '副露・和了の宣言待ち';
+  } else if (state?.result) {
+    statusMessage = '流局しました';
+  } else if (state?.current_player != null) {
+    const name = players[state.current_player]?.name ?? `Player ${state.current_player}`;
+    statusMessage = `${name} の手番です`;
+  }
+
   async function discard(tile) {
     try {
       if (!gameId) return;
@@ -101,6 +114,7 @@ export default function GameBoard({
         dora={dora}
         honba={state?.honba ?? 0}
         riichiSticks={state?.riichi_sticks ?? 0}
+        statusMessage={statusMessage}
       />
       <div className={boardClass}>
       <PlayerPanel
@@ -112,7 +126,7 @@ export default function GameBoard({
         server={server}
         gameId={gameId}
         playerIndex={2}
-        activePlayer={state?.current_player}
+        activePlayer={active}
         aiActive={aiPlayers[2]}
         toggleAI={toggleAI}
       />
@@ -125,7 +139,7 @@ export default function GameBoard({
         server={server}
         gameId={gameId}
         playerIndex={1}
-        activePlayer={state?.current_player}
+        activePlayer={active}
         aiActive={aiPlayers[1]}
         toggleAI={toggleAI}
       />
@@ -138,7 +152,7 @@ export default function GameBoard({
         server={server}
         gameId={gameId}
         playerIndex={3}
-        activePlayer={state?.current_player}
+        activePlayer={active}
         aiActive={aiPlayers[3]}
         toggleAI={toggleAI}
       />
@@ -152,7 +166,7 @@ export default function GameBoard({
         server={server}
         gameId={gameId}
         playerIndex={0}
-        activePlayer={state?.current_player}
+        activePlayer={active}
         aiActive={aiPlayers[0]}
         toggleAI={toggleAI}
       />

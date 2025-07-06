@@ -10,7 +10,7 @@ def test_active_player_css() -> None:
 
 def test_game_board_passes_prop() -> None:
     jsx = Path('web_gui/GameBoard.jsx').read_text()
-    assert 'activePlayer={state?.current_player}' in jsx
+    assert 'activePlayer={active}' in jsx
 
 
 def test_player_panel_accepts_prop() -> None:

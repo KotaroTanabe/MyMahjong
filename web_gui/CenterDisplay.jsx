@@ -5,6 +5,7 @@ export default function CenterDisplay({
   dora = [],
   honba = 0,
   riichiSticks = 0,
+  statusMessage = '',
 }) {
   return (
     <div className="center-display">
@@ -13,6 +14,9 @@ export default function CenterDisplay({
       <div className="counts">
         Honba: {honba} | Riichi: {riichiSticks}
       </div>
+      {statusMessage && (
+        <div className="turn-status">{statusMessage}</div>
+      )}
     </div>
   );
 }
