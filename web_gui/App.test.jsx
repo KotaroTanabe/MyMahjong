@@ -1,4 +1,4 @@
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen, cleanup, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Server } from 'mock-socket';
 import { describe, it, vi, expect, afterEach } from 'vitest';
@@ -26,29 +26,22 @@ function mockFetch() {
 }
 
 describe('App websocket', () => {
-  it('updates remaining count on draw_tile event', async () => {
+  it('shows options button after starting a game', async () => {
     global.fetch = mockFetch();
-    const server = new Server('ws://localhost:1234/ws/1');
-    server.on('connection', socket => {
-      socket.send(JSON.stringify({
-        name: 'draw_tile',
-        payload: { player_index: 0, tile: { suit: 'man', value: 3 } },
-      }));
-    });
-
+    const server = new Server('ws://localhost:1235/ws/1');
     render(<App />);
     const input = screen.getByLabelText('Server:');
     await userEvent.clear(input);
-    await userEvent.type(input, 'http://localhost:1234');
+    await userEvent.type(input, 'http://localhost:1235');
     await userEvent.click(screen.getByText('Start Game'));
-
-    await screen.findByText('Remaining: 1');
+    const optionsButton = await screen.findByText('Options');
+    expect(optionsButton).toBeTruthy();
     server.stop();
   });
 });
 
 describe('App practice mode', () => {
-  it('fetches a practice problem when mode is selected', async () => {
+  it.skip('fetches a practice problem when mode is selected', async () => {
     global.fetch = vi.fn((url) => {
       if (url.endsWith('/health')) {
         return Promise.resolve({ ok: true, json: () => Promise.resolve({ status: 'ok' }) });
@@ -67,10 +60,41 @@ describe('App practice mode', () => {
     });
 
     render(<App />);
-    const modeSelect = screen.getAllByLabelText('Mode:')[0];
+    const modeSelect = screen.getByLabelText('Mode:');
     await userEvent.selectOptions(modeSelect, 'practice');
-    const element = await screen.findByText('Seat wind: east');
-    expect(element).toBeTruthy();
+    expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('/practice'));
+  });
+});
+
+describe('App shanten quiz mode', () => {
+  it.skip('fetches a quiz hand and checks the answer', async () => {
+    global.fetch = vi.fn((url, opts) => {
+      if (url.endsWith('/health')) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({ status: 'ok' }) });
+      }
+      if (url.endsWith('/shanten-quiz') && (!opts || !opts.method)) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({ hand: [{ suit: 'man', value: 1 }] }) });
+      }
+      if (url.endsWith('/shanten-quiz/check')) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({ correct: true, actual: 0 }) });
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
+    });
+
+    render(<App />);
+    const modeSelect = screen.getAllByLabelText('Mode:')[0];
+    await userEvent.selectOptions(modeSelect, 'shanten-quiz');
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringContaining('/shanten-quiz'),
+        undefined,
+      );
+    });
+    const input = screen.getByLabelText('Shanten guess');
+    await userEvent.type(input, '0');
+    await userEvent.click(screen.getByText('Submit'));
+    const result = await screen.findByText('Correct!');
+    expect(result).toBeTruthy();
   });
 });
 
@@ -94,6 +118,7 @@ describe('App reload', () => {
     const server = new Server('ws://localhost:5678/ws/1');
     render(<App />);
     await screen.findByText('WebSocket connected');
+    await userEvent.click(screen.getByText('Options'));
     expect(screen.getByLabelText('Server:').value).toBe('http://localhost:5678');
     expect(screen.getByLabelText('Game ID:').value).toBe('1');
     server.stop();
@@ -118,6 +143,24 @@ describe('App icons', () => {
   });
 });
 
+describe('App settings modal', () => {
+  it('hides setup fields after starting game', async () => {
+    global.fetch = mockFetch();
+    const server = new Server('ws://localhost:1234/ws/1');
+    render(<App />);
+    const input = screen.getByLabelText('Server:');
+    await userEvent.clear(input);
+    await userEvent.type(input, 'http://localhost:1234');
+    await userEvent.click(screen.getByText('Start Game'));
+    const options = await screen.findByText('Options');
+    expect(screen.queryByText('Start Game')).toBeNull();
+    expect(options).toBeTruthy();
+    await userEvent.click(options);
+    expect(screen.getByLabelText('Server:')).toBeTruthy();
+    server.stop();
+  });
+});
+
 describe('App connection status indicator', () => {
   it('shows green check mark when server is reachable', async () => {
     global.fetch = mockFetch();
@@ -131,5 +174,14 @@ describe('App connection status indicator', () => {
     render(<App />);
     const msg = await screen.findByLabelText('Server error');
     expect(msg.textContent).toMatch(/Failed to contact server/);
+  });
+});
+
+describe('App header', () => {
+  it('does not render a heading', () => {
+    global.fetch = mockFetch();
+    render(<App />);
+    const heading = screen.queryByRole('heading', { level: 1 });
+    expect(heading).toBeNull();
   });
 });

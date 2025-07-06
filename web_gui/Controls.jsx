@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import Button from './Button.jsx';
 
-export default function Controls({ server, gameId, playerIndex = 0 }) {
+export default function Controls({
+  server,
+  gameId,
+  playerIndex = 0,
+  activePlayer = null,
+  aiActive = false,
+}) {
   const [message, setMessage] = useState('');
 
 
@@ -46,15 +52,17 @@ export default function Controls({ server, gameId, playerIndex = 0 }) {
     simple('skip');
   }
 
+  const disabled = playerIndex !== activePlayer || aiActive;
+
   return (
     <div className="controls">
-      <Button onClick={chi}>Chi</Button>
-      <Button onClick={pon}>Pon</Button>
-      <Button onClick={kan}>Kan</Button>
-      <Button onClick={riichi}>Riichi</Button>
-      <Button onClick={tsumo}>Tsumo</Button>
-      <Button onClick={ron}>Ron</Button>
-      <Button onClick={skip}>Skip</Button>
+      <Button onClick={chi} disabled={disabled}>Chi</Button>
+      <Button onClick={pon} disabled={disabled}>Pon</Button>
+      <Button onClick={kan} disabled={disabled}>Kan</Button>
+      <Button onClick={riichi} disabled={disabled}>Riichi</Button>
+      <Button onClick={tsumo} disabled={disabled}>Tsumo</Button>
+      <Button onClick={ron} disabled={disabled}>Ron</Button>
+      <Button onClick={skip} disabled={disabled}>Skip</Button>
       {message && <div className="message">{message}</div>}
     </div>
   );

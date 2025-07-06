@@ -30,3 +30,14 @@ export function tileDescription(tile) {
   }
   return `${value} ${suit}`;
 }
+
+export function sortTiles(tiles) {
+  const order = { man: 0, pin: 1, sou: 2, wind: 3, dragon: 4 };
+  return tiles
+    .slice()
+    .sort((a, b) => {
+      const suitDiff = order[a.suit] - order[b.suit];
+      if (suitDiff !== 0) return suitDiff;
+      return a.value - b.value;
+    });
+}

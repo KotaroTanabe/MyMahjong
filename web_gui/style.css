@@ -101,7 +101,7 @@
   gap: 0.1rem;
 }
 
-.tile {
+.mj-tile {
   display: inline-block;
   width: calc(var(--tile-font-size) * 1.2);
   height: calc(var(--tile-font-size) * 1.6);
@@ -112,13 +112,17 @@
   transition: transform 0.2s;
 }
 
-.tile:hover {
+.mj-tile:hover {
   transform: translateY(-2px);
 }
 
-.tile img {
+.mj-tile img {
   width: 100%;
   height: 100%;
+}
+
+.practice .hand {
+  justify-content: flex-start;
 }
 
 .east .river { transform: rotate(90deg); }
@@ -143,6 +147,10 @@
 }
 .flat-btn:active {
   background-color: #004a99;
+}
+.flat-btn:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
 }
 
 .active-player .player-header {

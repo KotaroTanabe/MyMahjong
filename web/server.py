@@ -33,6 +33,13 @@ class SuggestRequest(BaseModel):
     hand: list[dict]
 
 
+class QuizRequest(BaseModel):
+    """Request body for shanten quiz answer."""
+
+    hand: list[dict]
+    guess: int
+
+
 @app.get("/health")
 def health() -> dict[str, str]:
     """Simple health check endpoint."""
@@ -74,6 +81,23 @@ def practice_suggest(req: SuggestRequest, ai: bool = False) -> dict:
     hand = [models.Tile(**t) for t in req.hand]
     tile = api.suggest_practice_discard(hand, use_ai=ai)
     return asdict(tile)
+
+
+@app.get("/shanten-quiz")
+def shanten_quiz_hand() -> dict:
+    """Return a random hand for the shanten quiz."""
+
+    hand = api.generate_quiz_hand()
+    return {"hand": [asdict(t) for t in hand]}
+
+
+@app.post("/shanten-quiz/check")
+def shanten_quiz_check(req: QuizRequest) -> dict:
+    """Return whether the guess matches the hand's shanten number."""
+
+    hand = [models.Tile(**t) for t in req.hand]
+    actual = api.quiz_shanten(hand)
+    return {"correct": req.guess == actual, "actual": actual}
 
 
 class ActionRequest(BaseModel):
