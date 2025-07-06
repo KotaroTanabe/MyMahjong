@@ -124,9 +124,9 @@ def test_tsumo_updates_scores_and_emits_event() -> None:
     assert engine.state.players[0].score == start_score + 8000 + 1000
     assert engine.state.players[1].score == loser_start - 2666
     assert engine.state.riichi_sticks == 0
-    evt = engine.pop_events()[-1]
-    assert evt.name == "tsumo"
-    assert evt.payload["scores"][0] == start_score + 8000 + 1000
+    events = engine.pop_events()
+    tsumo_evt = next(e for e in events if e.name == "tsumo")
+    assert tsumo_evt.payload["scores"][0] == start_score + 8000 + 1000
 
 
 def test_ron_updates_scores_and_emits_event() -> None:
@@ -143,9 +143,9 @@ def test_ron_updates_scores_and_emits_event() -> None:
     assert engine.state.players[0].score == start_score + 8000 + 1000
     assert engine.state.players[1].score == loser_start - 8000
     assert engine.state.riichi_sticks == 0
-    evt = engine.pop_events()[-1]
-    assert evt.name == "ron"
-    assert evt.payload["scores"][0] == start_score + 8000 + 1000
+    events = engine.pop_events()
+    ron_evt = next(e for e in events if e.name == "ron")
+    assert ron_evt.payload["scores"][0] == start_score + 8000 + 1000
 
 
 class DummyRuleSet(RuleSet):
@@ -174,6 +174,7 @@ def test_event_log() -> None:
         "discard",
         "riichi",
         "tsumo",
+        "start_kyoku",
         "end_game",
     ]
 

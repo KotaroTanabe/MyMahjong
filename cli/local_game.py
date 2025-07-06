@@ -12,7 +12,14 @@ def run_game(players: list[str]) -> None:
     players_display = ', '.join(p.name for p in state.players)
     click.echo(f"Game started with players: {players_display}")
     turn = 0
-    while state.wall and state.wall.remaining_tiles > 0:
+    start_round = state.round_number
+    start_honba = state.honba
+    while (
+        state.wall
+        and state.wall.remaining_tiles > 0
+        and state.round_number == start_round
+        and state.honba == start_honba
+    ):
         tile = api.draw_tile(turn)
         name = state.players[turn].name
         click.echo(f"{name} drew {tile.suit}{tile.value}")
