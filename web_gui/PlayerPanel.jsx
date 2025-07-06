@@ -14,12 +14,14 @@ export default function PlayerPanel({
   server,
   gameId,
   playerIndex,
+  activePlayer,
 }) {
+  const active = playerIndex === activePlayer;
   return (
-    <div className={`${seat} seat player-panel`}>
+    <div className={`${seat} seat player-panel${active ? ' active-player' : ''}`}> 
       <div className="player-header">
         <span className="riichi-stick">{player?.riichi ? '|' : '\u00a0'}</span>
-        <span>{(player ? player.name : seat) + (player ? ` ${player.score}` : '')}</span>
+        <span className="player-name">{(player ? player.name : seat) + (player ? ` ${player.score}` : '')}</span>
       </div>
       <River tiles={riverTiles} />
       <div className="hand-with-melds">
