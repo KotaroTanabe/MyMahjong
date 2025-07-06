@@ -533,3 +533,58 @@ class MahjongEngine:
         self.state.last_discard = None
         self.state.last_discard_player = None
         return final_state
+
+    def get_allowed_actions(self, player_index: int) -> list[str]:
+        """Return a list of actions the player may take."""
+
+        if player_index < 0 or player_index >= len(self.state.players):
+            raise IndexError("Invalid player index")
+
+        state = self.state
+        player = state.players[player_index]
+        tiles = player.hand.tiles
+
+        actions: set[str] = set()
+
+        last = state.last_discard
+        last_player = state.last_discard_player
+
+        if (
+            player_index == state.current_player
+            and last is not None
+            and last_player is not None
+            and last_player != player_index
+        ):
+            actions.add("skip")
+
+        if last is not None and last_player is not None and last_player != player_index:
+            same = [t for t in tiles if t.suit == last.suit and t.value == last.value]
+            if len(same) >= 2:
+                actions.add("pon")
+            if len(same) >= 3:
+                actions.add("kan")
+            if (
+                (last_player + 1) % len(state.players) == player_index
+                and last.suit in {"man", "pin", "sou"}
+            ):
+                def has(v: int) -> bool:
+                    return any(t.suit == last.suit and t.value == v for t in tiles)
+
+                if has(last.value - 2) and has(last.value - 1):
+                    actions.add("chi")
+                if has(last.value - 1) and has(last.value + 1):
+                    actions.add("chi")
+                if has(last.value + 1) and has(last.value + 2):
+                    actions.add("chi")
+
+        counts: dict[tuple[str, int], int] = {}
+        for t in tiles:
+            key = (t.suit, t.value)
+            counts[key] = counts.get(key, 0) + 1
+            if counts[key] >= 4:
+                actions.add("kan")
+
+        if not player.riichi:
+            actions.add("riichi")
+
+        return sorted(actions)

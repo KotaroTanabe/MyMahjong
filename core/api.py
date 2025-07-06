@@ -155,6 +155,13 @@ def calculate_shanten(hand: list[Tile]) -> int:
     return shanten_quiz.calculate_shanten(hand)
 
 
+def get_allowed_actions(player_index: int) -> list[str]:
+    """Return allowed actions for ``player_index`` in the current game."""
+
+    assert _engine is not None, "Game not started"
+    return _engine.get_allowed_actions(player_index)
+
+
 def apply_action(action: GameAction) -> object | None:
     """Apply ``action`` to the running engine and return any result."""
 
