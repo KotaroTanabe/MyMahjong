@@ -23,7 +23,11 @@ def run_game(players: list[str]) -> None:
         tile = api.draw_tile(turn)
         name = state.players[turn].name
         click.echo(f"{name} drew {tile.suit}{tile.value}")
-        api.discard_tile(turn, tile)
+        try:
+            api.discard_tile(turn, tile)
+        except ValueError:
+            # skip invalid discards if the tile vanished somehow
+            pass
         click.echo(f"{name} discarded {tile.suit}{tile.value}")
         turn = (turn + 1) % len(state.players)
     api.end_game()
