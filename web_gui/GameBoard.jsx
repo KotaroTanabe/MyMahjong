@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import CenterDisplay from './CenterDisplay.jsx';
 import PlayerPanel from './PlayerPanel.jsx';
-import { tileToEmoji } from './tileUtils.js';
+import { tileToEmoji, sortTiles } from './tileUtils.js';
 import ErrorModal from './ErrorModal.jsx';
 
 function tileLabel(tile) {
@@ -12,6 +12,7 @@ export default function GameBoard({
   server,
   gameId,
   peek = false,
+  sortHand = false,
 }) {
   const players = state?.players ?? [];
   const south = players[0];
@@ -59,7 +60,12 @@ export default function GameBoard({
     peek ? west?.hand?.tiles.map(tileLabel) ?? defaultHand : concealedHand(west);
   const eastHand =
     peek ? east?.hand?.tiles.map(tileLabel) ?? defaultHand : concealedHand(east);
-  const southHand = south?.hand?.tiles ?? defaultHand;
+  const southTiles = south?.hand?.tiles ?? null;
+  const southHand = southTiles
+    ? sortHand
+      ? sortTiles(southTiles)
+      : southTiles
+    : defaultHand;
 
   const northMelds = north?.hand?.melds.map((m) => m.tiles.map(tileLabel)) ?? [];
   const westMelds = west?.hand?.melds.map((m) => m.tiles.map(tileLabel)) ?? [];
