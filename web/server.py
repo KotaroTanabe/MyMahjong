@@ -110,6 +110,23 @@ def shanten_quiz_check(req: QuizRequest) -> dict:
     return {"shanten": value}
 
 
+@app.get("/games/{game_id}/shanten/{player_index}")
+def shanten_number(game_id: int, player_index: int) -> dict:
+    """Return the shanten number for ``player_index`` in the current game."""
+
+    _ = game_id  # placeholder for future multi-game support
+    try:
+        state = api.get_state()
+    except AssertionError:
+        raise HTTPException(status_code=404, detail="Game not started")
+    try:
+        tiles = state.players[player_index].hand.tiles
+    except IndexError:
+        raise HTTPException(status_code=404, detail="Player not found")
+    value = api.calculate_shanten(tiles)
+    return {"shanten": value}
+
+
 class ActionRequest(BaseModel):
     """Request body for game actions."""
 

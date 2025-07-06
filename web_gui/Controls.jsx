@@ -25,6 +25,22 @@ export default function Controls({
     }
   }
 
+  async function shanten() {
+    try {
+      const resp = await fetch(
+        `${server.replace(/\/$/, '')}/games/${gameId}/shanten/${playerIndex}`
+      );
+      if (resp.ok) {
+        const data = await resp.json();
+        setMessage(`Shanten: ${data.shanten}`);
+      } else {
+        setMessage(`Error ${resp.status}`);
+      }
+    } catch {
+      setMessage('Server unreachable');
+    }
+  }
+
   function chi() {
     simple('chi', { tiles: [{ suit: 'man', value: 1 }, { suit: 'man', value: 2 }, { suit: 'man', value: 3 }] });
   }
@@ -65,6 +81,7 @@ export default function Controls({
       <Button onClick={tsumo} disabled={!isAllowed('tsumo')}>Tsumo</Button>
       <Button onClick={ron} disabled={!isAllowed('ron')}>Ron</Button>
       <Button onClick={skip} disabled={!isAllowed('skip')}>Skip</Button>
+      <Button onClick={shanten}>Shanten</Button>
       {message && <div className="message">{message}</div>}
     </div>
   );
