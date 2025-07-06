@@ -64,7 +64,12 @@ export default function GameBoard({
     if (tiles.length === 13) {
       const action = aiPlayers[current] ? 'auto' : 'draw';
       const body = { player_index: current, action };
-      if (action === 'auto') body.ai_type = aiTypes[current];
+      if (action === 'auto') {
+        body.ai_type = aiTypes[current];
+        body.ai_players = aiPlayers
+          .map((v, i) => (v ? i : null))
+          .filter((v) => v !== null);
+      }
       fetch(`${server.replace(/\/$/, '')}/games/${gameId}/action`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
