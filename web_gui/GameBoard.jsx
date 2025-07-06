@@ -132,6 +132,7 @@ export default function GameBoard({
         hand={northHand}
         melds={northMelds}
         riverTiles={(north?.river ?? []).map(tileLabel)}
+        state={state}
         server={server}
         gameId={gameId}
         playerIndex={2}
@@ -145,6 +146,7 @@ export default function GameBoard({
         hand={westHand}
         melds={westMelds}
         riverTiles={(west?.river ?? []).map(tileLabel)}
+        state={state}
         server={server}
         gameId={gameId}
         playerIndex={1}
@@ -158,6 +160,7 @@ export default function GameBoard({
         hand={eastHand}
         melds={eastMelds}
         riverTiles={(east?.river ?? []).map(tileLabel)}
+        state={state}
         server={server}
         gameId={gameId}
         playerIndex={3}
@@ -174,6 +177,7 @@ export default function GameBoard({
         onDiscard={
           state?.current_player === 0 && !aiPlayers[0] ? discard : undefined
         }
+        state={state}
         server={server}
         gameId={gameId}
         playerIndex={0}

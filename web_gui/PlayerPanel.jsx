@@ -5,6 +5,7 @@ import River from './River.jsx';
 import MeldArea from './MeldArea.jsx';
 import Controls from './Controls.jsx';
 import Button from './Button.jsx';
+import { getAllowedActions } from './allowedActions.js';
 
 export default function PlayerPanel({
   seat,
@@ -19,8 +20,10 @@ export default function PlayerPanel({
   activePlayer,
   aiActive = false,
   toggleAI,
+  state,
 }) {
   const active = playerIndex === activePlayer;
+  const allowedActions = getAllowedActions(state, playerIndex);
   return (
     <div className={`${seat} seat player-panel${active ? ' active-player' : ''}`}> 
       <div className="player-header">
@@ -48,6 +51,7 @@ export default function PlayerPanel({
         playerIndex={playerIndex}
         activePlayer={activePlayer}
         aiActive={aiActive}
+        allowedActions={allowedActions}
       />
     </div>
   );
