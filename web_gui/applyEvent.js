@@ -1,6 +1,7 @@
 export function applyEvent(state, event) {
   if (!state) return state;
   const newState = JSON.parse(JSON.stringify(state));
+  if (!Array.isArray(newState.waiting_for_claims)) newState.waiting_for_claims = [];
   switch (event.name) {
     case 'start_game':
       return event.payload.state;
@@ -26,6 +27,9 @@ export function applyEvent(state, event) {
         (event.payload.player_index + 1) % newState.players.length;
       newState.last_discard = event.payload.tile;
       newState.last_discard_player = event.payload.player_index;
+      newState.waiting_for_claims = newState.players
+        .map((_, i) => i)
+        .filter((i) => i !== event.payload.player_index);
       break;
     }
     case 'meld': {
@@ -39,6 +43,8 @@ export function applyEvent(state, event) {
         });
         p.hand.melds.push(event.payload.meld);
       }
+      newState.current_player = event.payload.player_index;
+      newState.waiting_for_claims = [];
       break;
     }
     case 'riichi': {
@@ -57,6 +63,7 @@ export function applyEvent(state, event) {
     case 'tsumo':
     case 'ron': {
       newState.result = event.payload;
+      newState.waiting_for_claims = [];
       break;
     }
     case 'ryukyoku': {
@@ -69,8 +76,16 @@ export function applyEvent(state, event) {
       break;
     }
     case 'skip': {
-      const next = (event.payload.player_index + 1) % newState.players.length;
-      newState.current_player = next;
+      newState.waiting_for_claims = newState.waiting_for_claims.filter(
+        (i) => i !== event.payload.player_index,
+      );
+      if (newState.waiting_for_claims.length === 0) {
+        const base =
+          typeof newState.last_discard_player === 'number'
+            ? newState.last_discard_player
+            : event.payload.player_index;
+        newState.current_player = (base + 1) % newState.players.length;
+      }
       break;
     }
     default:

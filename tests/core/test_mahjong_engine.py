@@ -223,9 +223,24 @@ def test_skip_advances_turn_and_emits_event() -> None:
 def test_skip_ignored_if_not_players_turn() -> None:
     engine = MahjongEngine()
     engine.pop_events()
+    tile = engine.state.players[0].hand.tiles[0]
+    engine.discard_tile(0, tile)
+    engine.skip(0)
+    assert engine.state.current_player == 1
+    events = engine.pop_events()
+    assert not any(e.name == "skip" and e.payload["player_index"] == 0 for e in events)
+
+
+def test_draw_blocked_until_all_skip() -> None:
+    engine = MahjongEngine()
+    tile = engine.state.players[0].hand.tiles[0]
+    engine.discard_tile(0, tile)
+    with pytest.raises(ValueError):
+        engine.draw_tile(1)
     engine.skip(1)
-    assert engine.state.current_player == 0
-    assert not engine.pop_events()
+    engine.skip(2)
+    engine.skip(3)
+    engine.draw_tile(1)
 
 
 def test_start_kyoku_resets_state_and_emits_event() -> None:
