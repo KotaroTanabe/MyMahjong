@@ -27,11 +27,30 @@ export default function GameBoard({
   const [aiTypes] = useState(['simple', 'simple', 'simple', 'simple']);
 
   function toggleAI(idx) {
+    const enable = !aiPlayers[idx];
     setAiPlayers((a) => {
       const arr = a.slice();
-      arr[idx] = !arr[idx];
+      arr[idx] = enable;
       return arr;
     });
+    if (
+      enable &&
+      idx === state?.current_player &&
+      gameId &&
+      state?.players?.[idx]?.hand?.tiles?.length >= 14
+    ) {
+      const tiles = state.players[idx].hand.tiles;
+      const tile = tiles[tiles.length - 1];
+      fetch(`${server.replace(/\/$/, '')}/games/${gameId}/action`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          player_index: idx,
+          action: 'discard',
+          tile,
+        }),
+      }).catch(() => {});
+    }
   }
 
   useEffect(() => {
