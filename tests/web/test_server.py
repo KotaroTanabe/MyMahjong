@@ -144,7 +144,7 @@ def test_additional_action_endpoints() -> None:
         "/games/1/action",
         json={"player_index": 0, "action": "riichi"},
     )
-    assert resp.status_code == 200
+    assert resp.status_code == 409
 
     draw = client.post(
         "/games/1/action",

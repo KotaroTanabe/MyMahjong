@@ -1,4 +1,5 @@
 from core.player import Player
+from core import models
 from core.models import Tile
 
 
@@ -40,3 +41,12 @@ def test_discard_removes_specific_instance() -> None:
 def test_player_has_seat_wind() -> None:
     player = Player(name="Test")
     assert player.seat_wind == "east"
+
+
+def test_has_open_melds() -> None:
+    player = Player(name="Test")
+    assert not player.has_open_melds()
+    player.hand.melds.append(
+        models.Meld(tiles=[models.Tile("man", 1)] * 3, type="pon")
+    )
+    assert player.has_open_melds()

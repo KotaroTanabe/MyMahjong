@@ -5,6 +5,18 @@ from core.rules import RuleSet
 from mahjong.hand_calculating.hand_response import HandResponse
 
 
+def _set_tenpai_hand(player) -> None:
+    player.hand.tiles = [
+        Tile("man", 1), Tile("man", 1),
+        Tile("man", 2), Tile("man", 2),
+        Tile("man", 3), Tile("man", 3),
+        Tile("pin", 4), Tile("pin", 4),
+        Tile("pin", 5), Tile("pin", 5),
+        Tile("sou", 6), Tile("sou", 6),
+        Tile("sou", 7), Tile("sou", 8),
+    ]
+
+
 def test_engine_initialization() -> None:
     engine = MahjongEngine()
     assert len(engine.state.players) == 4
@@ -106,6 +118,7 @@ def test_remaining_yama_tiles_property() -> None:
 def test_declare_riichi() -> None:
     engine = MahjongEngine()
     player = engine.state.players[0]
+    _set_tenpai_hand(player)
     start_score = player.score
     engine.declare_riichi(0)
     assert player.riichi
@@ -117,6 +130,7 @@ def test_riichi_event_includes_score_and_sticks() -> None:
     engine = MahjongEngine()
     engine.pop_events()  # clear start_game
     start_score = engine.state.players[0].score
+    _set_tenpai_hand(engine.state.players[0])
     engine.declare_riichi(0)
     events = engine.pop_events()
     riichi_evt = next(e for e in events if e.name == "riichi")
@@ -127,6 +141,7 @@ def test_riichi_event_includes_score_and_sticks() -> None:
 def test_discard_requires_tsumogiri_after_riichi() -> None:
     engine = MahjongEngine()
     player = engine.state.players[0]
+    _set_tenpai_hand(player)
     tile_to_discard = player.hand.tiles[0]
     engine.declare_riichi(0)
     with pytest.raises(ValueError):
@@ -136,6 +151,7 @@ def test_discard_requires_tsumogiri_after_riichi() -> None:
 def test_tsumogiri_allowed_after_riichi() -> None:
     engine = MahjongEngine()
     player = engine.state.players[0]
+    _set_tenpai_hand(player)
     drawn = player.hand.tiles[-1]
     engine.declare_riichi(0)
     engine.discard_tile(0, drawn)
@@ -148,6 +164,7 @@ def test_tsumo_updates_scores_and_emits_event() -> None:
     engine.pop_events()
     tile = Tile("man", 1)
     engine.state.players[0].hand.tiles.append(tile)
+    _set_tenpai_hand(engine.state.players[1])
     engine.declare_riichi(1)
     start_score = engine.state.players[0].score
     loser_start = engine.state.players[1].score
@@ -165,6 +182,7 @@ def test_ron_updates_scores_and_emits_event() -> None:
     engine.pop_events()
     tile = Tile("man", 2)
     engine.state.players[0].hand.tiles.append(tile)
+    _set_tenpai_hand(engine.state.players[2])
     engine.declare_riichi(2)
     engine.state.players[1].hand.tiles.append(Tile("man", 2))
     engine.discard_tile(1, engine.state.players[1].hand.tiles[-1])
@@ -196,6 +214,7 @@ def test_event_log() -> None:
     engine.state.wall.tiles.append(tile)
     drawn = engine.draw_tile(0)
     engine.discard_tile(0, drawn)
+    _set_tenpai_hand(engine.state.players[0])
     engine.declare_riichi(0)
     engine.declare_tsumo(0, drawn)
     engine.end_game()

@@ -56,15 +56,9 @@ class MahjongEngine:
 
     def _is_tenpai(self, player: Player) -> bool:
         """Return True if ``player`` is in tenpai."""
-        counts = [0] * 34
-        for t in player.hand.tiles:
-            counts[_tile_to_index(t)] += 1
-        for meld in player.hand.melds:
-            for t in meld.tiles:
-                counts[_tile_to_index(t)] += 1
-        if sum(counts) > 14 and player.hand.tiles:
-            counts[_tile_to_index(player.hand.tiles[-1])] -= 1
-        return Shanten().calculate_shanten(counts) == 0
+        from .shanten_quiz import is_tenpai
+
+        return is_tenpai(player.hand.tiles, player.hand.melds)
 
     def _resolve_ryukyoku(self, reason: str) -> None:
         """Handle a draw, apply noten penalties and advance the hand."""
@@ -180,7 +174,13 @@ class MahjongEngine:
 
     def declare_riichi(self, player_index: int) -> None:
         """Declare riichi for the given player."""
+        from .shanten_quiz import is_tenpai
+
         player = self.state.players[player_index]
+        if player.has_open_melds():
+            raise ValueError("Cannot declare riichi with open melds")
+        if not is_tenpai(player.hand.tiles, player.hand.melds):
+            raise ValueError("Cannot declare riichi when not in tenpai")
         player.declare_riichi()
         self.state.riichi_sticks += 1
         self._emit(
