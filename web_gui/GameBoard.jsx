@@ -78,7 +78,7 @@ export default function GameBoard({
   const boardClass = layout === 'classic' ? 'board-grid' : 'board-grid-alt';
 
   if (layout !== 'classic') {
-    const panel = (p, hand, melds, riverTiles, seat, onDiscard) => (
+    const panel = (p, hand, melds, riverTiles, seat, onDiscard, idx) => (
       <div className={`${seat} seat player-panel`}>
         <div className="player-header">
           <span className="riichi-stick">{p?.riichi ? '|' : '\u00a0'}</span>
@@ -89,16 +89,20 @@ export default function GameBoard({
           <Hand tiles={hand} onDiscard={onDiscard} />
           <MeldArea melds={melds} />
         </div>
+        <Controls server={server} gameId={gameId} playerIndex={idx} />
       </div>
     );
 
     return (
-      <div className={boardClass}>
-        {panel(north, northHand, northMelds, (north?.river ?? []).map(tileLabel), 'north')}
-        {panel(east, eastHand, eastMelds, (east?.river ?? []).map(tileLabel), 'east')}
-        {panel(west, westHand, westMelds, (west?.river ?? []).map(tileLabel), 'west')}
-        {panel(south, southHand, southMelds, (south?.river ?? []).map(tileLabel), 'south', discard)}
-      </div>
+      <>
+        <div className={boardClass}>
+          {panel(north, northHand, northMelds, (north?.river ?? []).map(tileLabel), 'north', undefined, 2)}
+          {panel(east, eastHand, eastMelds, (east?.river ?? []).map(tileLabel), 'east', undefined, 3)}
+          {panel(west, westHand, westMelds, (west?.river ?? []).map(tileLabel), 'west', undefined, 1)}
+          {panel(south, southHand, southMelds, (south?.river ?? []).map(tileLabel), 'south', discard, 0)}
+        </div>
+        <CenterDisplay remaining={remaining} dora={dora} />
+      </>
     );
   }
 
@@ -109,6 +113,7 @@ export default function GameBoard({
         <MeldArea melds={northMelds} />
         <River tiles={(north?.river ?? []).map(tileLabel)} />
         <Hand tiles={northHand} />
+        <Controls server={server} gameId={gameId} playerIndex={2} />
       </div>
 
       <div className="west seat">
@@ -116,6 +121,7 @@ export default function GameBoard({
         <MeldArea melds={westMelds} />
         <River tiles={(west?.river ?? []).map(tileLabel)} />
         <Hand tiles={westHand} />
+        <Controls server={server} gameId={gameId} playerIndex={1} />
       </div>
 
       <div className="center">
@@ -127,6 +133,7 @@ export default function GameBoard({
         <MeldArea melds={eastMelds} />
         <River tiles={(east?.river ?? []).map(tileLabel)} />
         <Hand tiles={eastHand} />
+        <Controls server={server} gameId={gameId} playerIndex={3} />
       </div>
 
       <div className="south seat">
@@ -134,7 +141,7 @@ export default function GameBoard({
         <MeldArea melds={southMelds} />
         <River tiles={(south?.river ?? []).map(tileLabel)} />
         <Hand tiles={southHand} onDiscard={discard} />
-        <Controls server={server} gameId={gameId} />
+        <Controls server={server} gameId={gameId} playerIndex={0} />
         <MeldArea melds={southMelds} />
       </div>
     </div>

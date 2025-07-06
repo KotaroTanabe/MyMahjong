@@ -46,6 +46,8 @@ Future work will expand these components.
 - [x] Hand & River components
 - [x] Meld area component
 - [x] Center display (dora & wall count)
+- [x] Center display visible in panel layout
+- [x] Action buttons for each player
 - [x] Meld display from game state
 - [x] Tile image rendering in GUI with alt text
 - [x] Adjustable tile font size (default 1.5x)
