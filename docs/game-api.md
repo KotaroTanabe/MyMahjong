@@ -28,7 +28,7 @@ The following classes defined in `core.models` are used throughout the API:
 | `start_game`       | list of player names                    | Begin a new hanchan. Returns `GameState`. |
 | `draw_tile`        | `player_index`                          | Draw the next tile for a player. |
 | `discard_tile`     | `player_index`, `Tile`                  | Discard a tile from the player's hand. |
-| `call_chi`         | `player_index`, `tiles`                 | Call `chi` using the given tiles. |
+| `call_chi`         | `player_index`, `tiles`                 | Call `chi` using the given tiles. When only two tiles are provided the current discard is automatically added. |
 | `call_pon`         | `player_index`, `tiles`                 | Call `pon` using the given tiles. |
 | `call_kan`         | `player_index`, `tiles`                 | Declare an open or closed `kan`. |
 | `declare_ron`      | `player_index`, `Tile`                  | Win on another player's discard. |
