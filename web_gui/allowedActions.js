@@ -7,7 +7,12 @@ export function getAllowedActions(state, playerIndex) {
   const lastPlayer = state.last_discard_player;
   const numPlayers = state.players.length;
 
-  if (playerIndex === state.current_player) {
+  if (
+    playerIndex === state.current_player &&
+    last &&
+    lastPlayer !== null &&
+    lastPlayer !== playerIndex
+  ) {
     actions.add('skip');
   }
 
