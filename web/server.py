@@ -127,6 +127,20 @@ def shanten_number(game_id: int, player_index: int) -> dict:
     return {"shanten": value}
 
 
+@app.get("/games/{game_id}/allowed-actions/{player_index}")
+def allowed_actions(game_id: int, player_index: int) -> dict:
+    """Return allowed actions for ``player_index``."""
+
+    _ = game_id  # placeholder for future multi-game support
+    try:
+        actions = api.get_allowed_actions(player_index)
+    except AssertionError:
+        raise HTTPException(status_code=404, detail="Game not started")
+    except IndexError:
+        raise HTTPException(status_code=404, detail="Player not found")
+    return {"actions": actions}
+
+
 class ActionRequest(BaseModel):
     """Request body for game actions."""
 

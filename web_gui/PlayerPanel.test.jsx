@@ -1,6 +1,9 @@
 import { render } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import PlayerPanel from './PlayerPanel.jsx';
+
+// Prevent fetch errors in useEffect
+global.fetch = vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve({ actions: [] }) });
 
 function panel(aiActive) {
   return (

@@ -56,6 +56,7 @@ Future work will expand these components.
 - [x] Riipai (sort hand) button in GUI (enabled by default and used in Practice and Shanten Quiz)
 - [x] Accessible tile buttons with aria-labels
 - [x] Basic draw control via REST API
+- [x] Allowed actions API and GUI integration
 - [x] Automatic draw on turn start
 - [x] Discard tiles via GUI
 - [x] Display hand shanten count via GUI
@@ -108,6 +109,7 @@ Future work will expand these components.
 - [x] declare_ron
 - [x] declare_riichi
 - [x] skip
+- [x] get_allowed_actions
 - [x] end_game
 - [x] start_kyoku
 - [x] ryukyoku detection

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaUser, FaRobot } from 'react-icons/fa';
 import Hand from './Hand.jsx';
 import River from './River.jsx';
@@ -24,7 +24,17 @@ export default function PlayerPanel({
   state,
 }) {
   const active = playerIndex === activePlayer;
-  const allowedActions = getAllowedActions(state, playerIndex);
+  const [allowedActions, setAllowedActions] = useState([]);
+
+  useEffect(() => {
+    let ignore = false;
+    getAllowedActions(server, gameId, playerIndex).then((acts) => {
+      if (!ignore) setAllowedActions(acts);
+    });
+    return () => {
+      ignore = true;
+    };
+  }, [server, gameId, playerIndex, state]);
   return (
     <div className={`${seat} seat player-panel${active ? ' active-player' : ''}`}> 
       <div className="player-header">

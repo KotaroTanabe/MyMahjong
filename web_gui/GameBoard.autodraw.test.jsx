@@ -2,6 +2,17 @@ import { render, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import GameBoard from './GameBoard.jsx';
 
+function setupFetch() {
+  const fetchMock = vi.fn(() => Promise.resolve({ ok: true, json: () => Promise.resolve({}) }));
+  global.fetch = (url, options) => {
+    if (String(url).includes('allowed-actions')) {
+      return Promise.resolve({ ok: true, json: () => Promise.resolve({ actions: [] }) });
+    }
+    return fetchMock(url, options);
+  };
+  return fetchMock;
+}
+
 function mockState(playerIndex = 0) {
   return {
     current_player: playerIndex,
@@ -12,8 +23,7 @@ function mockState(playerIndex = 0) {
 
 describe('GameBoard auto draw', () => {
   it('requests draw or auto when current_player changes', async () => {
-    const fetchMock = vi.fn(() => Promise.resolve({ ok: true, json: () => Promise.resolve({}) }));
-    global.fetch = fetchMock;
+    const fetchMock = setupFetch();
     const state = mockState(0);
     const { rerender, getAllByLabelText } = render(
       <GameBoard state={state} server="http://s" gameId="1" />,
@@ -36,8 +46,7 @@ describe('GameBoard auto draw', () => {
   });
 
   it('does not auto play when result is shown', async () => {
-    const fetchMock = vi.fn(() => Promise.resolve({ ok: true }));
-    global.fetch = fetchMock;
+    const fetchMock = setupFetch();
     const state = { ...mockState(0), result: { type: 'ryukyoku' } };
     const { rerender } = render(
       <GameBoard state={state} server="http://s" gameId="1" />,

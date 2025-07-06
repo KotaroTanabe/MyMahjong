@@ -107,3 +107,21 @@ def test_get_tenhou_log_api() -> None:
     api.start_game(["A", "B", "C", "D"])
     log = api.get_tenhou_log()
     assert log.startswith("{") and "name" in log
+
+
+def test_get_allowed_actions_api() -> None:
+    state = api.start_game(["A", "B", "C", "D"])
+    tile = models.Tile("man", 2)
+    state.players[1].hand.tiles.append(tile)
+    api.discard_tile(1, tile)
+    state.players[2].hand.tiles = [models.Tile("man", 1), models.Tile("man", 3)]
+    acts = api.get_allowed_actions(2)
+    assert "chi" in acts
+    assert "pon" not in acts
+    state.current_player = 2
+    acts = api.get_allowed_actions(2)
+    assert "skip" in acts
+    state.last_discard = None
+    state.last_discard_player = None
+    state.current_player = 0
+    assert "skip" not in api.get_allowed_actions(0)

@@ -500,6 +500,63 @@ class MahjongEngine:
         # draw_tile advances current_player; reset to drawer
         self.state.current_player = new_player
 
+    def get_allowed_actions(self, player_index: int) -> list[str]:
+        """Return possible actions for ``player_index``.
+
+        This mirrors the simplified logic previously implemented in the
+        front-end so the client no longer needs to duplicate it.
+        """
+
+        player = self.state.players[player_index]
+        actions: set[str] = set()
+        last = self.state.last_discard
+        last_player = self.state.last_discard_player
+        num_players = len(self.state.players)
+
+        if (
+            player_index == self.state.current_player
+            and last
+            and last_player is not None
+            and last_player != player_index
+        ):
+            actions.add("skip")
+
+        if last and last_player is not None and last_player != player_index:
+            tiles = player.hand.tiles
+            match_count = sum(
+                1 for t in tiles if t.suit == last.suit and t.value == last.value
+            )
+            if match_count >= 2:
+                actions.add("pon")
+            if match_count >= 3:
+                actions.add("kan")
+            if (
+                (last_player + 1) % num_players == player_index
+                and last.suit in {"man", "pin", "sou"}
+            ):
+                has = lambda v: any(
+                    t.suit == last.suit and t.value == v for t in tiles
+                )
+                if has(last.value - 2) and has(last.value - 1):
+                    actions.add("chi")
+                if has(last.value - 1) and has(last.value + 1):
+                    actions.add("chi")
+                if has(last.value + 1) and has(last.value + 2):
+                    actions.add("chi")
+            # Ron detection not implemented
+
+        counts: dict[tuple[str, int], int] = {}
+        for t in player.hand.tiles:
+            key = (t.suit, t.value)
+            counts[key] = counts.get(key, 0) + 1
+            if counts[key] >= 4:
+                actions.add("kan")
+
+        if not player.riichi:
+            actions.add("riichi")
+
+        return sorted(actions)
+
     def advance_hand(self, winner_index: int | None = None) -> None:
         """Move to the next hand and handle dealer rotation."""
         if winner_index is None or winner_index == self.state.dealer:
