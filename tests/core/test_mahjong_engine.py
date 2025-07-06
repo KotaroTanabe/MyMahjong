@@ -1,3 +1,4 @@
+import pytest
 from core.mahjong_engine import MahjongEngine
 from core.models import Tile, Meld
 from core.rules import RuleSet
@@ -127,6 +128,36 @@ def test_declare_riichi() -> None:
     assert player.riichi
     assert player.score == start_score - 1000
     assert engine.state.riichi_sticks == 1
+
+
+def test_riichi_event_includes_score_and_sticks() -> None:
+    engine = MahjongEngine()
+    engine.pop_events()  # clear start_game
+    start_score = engine.state.players[0].score
+    engine.declare_riichi(0)
+    events = engine.pop_events()
+    riichi_evt = next(e for e in events if e.name == "riichi")
+    assert riichi_evt.payload["score"] == start_score - 1000
+    assert riichi_evt.payload["riichi_sticks"] == 1
+
+
+def test_discard_requires_tsumogiri_after_riichi() -> None:
+    engine = MahjongEngine()
+    player = engine.state.players[0]
+    tile_to_discard = player.hand.tiles[0]
+    engine.declare_riichi(0)
+    with pytest.raises(ValueError):
+        engine.discard_tile(0, tile_to_discard)
+
+
+def test_tsumogiri_allowed_after_riichi() -> None:
+    engine = MahjongEngine()
+    player = engine.state.players[0]
+    drawn = player.hand.tiles[-1]
+    engine.declare_riichi(0)
+    engine.discard_tile(0, drawn)
+    assert drawn in player.river
+    assert not player.must_tsumogiri
 
 
 def test_tsumo_updates_scores_and_emits_event() -> None:

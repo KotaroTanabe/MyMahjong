@@ -27,6 +27,7 @@ Future work will expand these components.
 - [x] Basic MJAI event serialization
 - [x] GameState JSON serialization
 - [x] Tenhou.net/6 log export ([format described](docs/tenhou-json.md))
+- [x] Copy Tenhou log after each hand
 - [ ] Full Tenhou log features (meld notation, yaku info)
 - [x] RuleSet interface for scoring
 - [x] Local single-player play via CLI
@@ -34,6 +35,7 @@ Future work will expand these components.
 - [x] Join remote games via CLI
 - [x] Draw tile in remote games via CLI
 - [x] View remote game state via CLI
+- [x] Display player hand shanten via CLI
 - [x] Remote server health check via CLI
 - [x] REST + WebSocket API
 - [x] Basic REST endpoints (create game, fetch game, health)
@@ -51,7 +53,7 @@ Future work will expand these components.
 - [x] Tile image rendering in GUI with alt text
 - [x] Adjustable tile font size (default 1.5x)
 - [x] Peek at opponents' hands option
-- [x] Riipai (sort hand) button in GUI
+- [x] Riipai (sort hand) button in GUI (enabled by default and used in Practice and Shanten Quiz)
 - [x] Accessible tile buttons with aria-labels
 - [x] Basic draw control via REST API
 - [x] Automatic draw on turn start
@@ -107,12 +109,16 @@ Future work will expand these components.
 - [x] end_game
 - [x] start_kyoku
 - [x] ryukyoku detection
+- [x] Noten penalty scoring on draws
+- [x] Draw result modal in GUI
 - [x] standard wall initialization
 - [x] dead wall & dora indicator tracking
 - [x] wanpai separation and yama remaining count
 - [x] configurable ruleset
 - [x] event log
 - [x] current player tracking
+- [x] Enforce tsumogiri after riichi
+- [x] Riichi event includes player score and stick count
 - [x] action dispatch helper
 - [x] seat wind tracking
 

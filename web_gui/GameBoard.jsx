@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import CenterDisplay from './CenterDisplay.jsx';
 import PlayerPanel from './PlayerPanel.jsx';
-import { tileToEmoji, sortTiles } from './tileUtils.js';
+import { tileToEmoji, sortTiles, sortTilesExceptLast } from './tileUtils.js';
 import ErrorModal from './ErrorModal.jsx';
+import ResultModal from './ResultModal.jsx';
 
 function tileLabel(tile) {
   return tileToEmoji(tile);
@@ -22,6 +23,7 @@ export default function GameBoard({
 
   const prevPlayer = useRef(null);
   const [error, setError] = useState(null);
+  const [result, setResult] = useState(null);
   // Players 1-3 (west, north, east) act as AI by default
   const [aiPlayers, setAiPlayers] = useState([false, true, true, true]);
   const [aiTypes] = useState(['simple', 'simple', 'simple', 'simple']);
@@ -70,6 +72,22 @@ export default function GameBoard({
     }
   }, [state?.current_player, gameId, server, state?.players, aiPlayers, aiTypes]);
 
+  useEffect(() => {
+    setResult(state?.result ?? null);
+  }, [state?.result]);
+
+  async function copyLog() {
+    if (!gameId) return;
+    try {
+      const resp = await fetch(`${server.replace(/\/$/, '')}/games/${gameId}/log`);
+      if (!resp.ok) return;
+      const data = await resp.json();
+      await navigator.clipboard.writeText(data.log);
+    } catch {
+      /* ignore */
+    }
+  }
+
   const defaultHand = Array(13).fill('🀫');
 
   function concealedHand(p) {
@@ -86,7 +104,7 @@ export default function GameBoard({
   const southTiles = south?.hand?.tiles ?? null;
   const southHand = southTiles
     ? sortHand
-      ? sortTiles(southTiles)
+      ? sortTilesExceptLast(southTiles)
       : southTiles
     : defaultHand;
 
@@ -186,6 +204,11 @@ export default function GameBoard({
         toggleAI={toggleAI}
       />
     </div>
+    <ResultModal
+      result={result}
+      onClose={() => setResult(null)}
+      onCopyLog={copyLog}
+    />
     <ErrorModal message={error} onClose={() => setError(null)} />
     </>
   );

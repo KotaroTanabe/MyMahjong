@@ -20,6 +20,12 @@ def test_player_declare_riichi() -> None:
     assert player.score == start_score - 1000
 
 
+def test_riichi_sets_tsumogiri_flag() -> None:
+    player = Player(name="Test")
+    player.declare_riichi()
+    assert player.must_tsumogiri
+
+
 def test_discard_removes_specific_instance() -> None:
     player = Player(name="Test")
     tile1 = Tile(suit="man", value=1)

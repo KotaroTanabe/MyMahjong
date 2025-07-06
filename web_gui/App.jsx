@@ -19,7 +19,7 @@ export default function App() {
   const [events, setEvents] = useState([]);
   const [mode, setMode] = useState('game');
   const [peek, setPeek] = useState(false);
-  const [sortHand, setSortHand] = useState(false);
+  const [sortHand, setSortHand] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
   const wsRef = useRef(null);
 
@@ -267,9 +267,9 @@ export default function App() {
           sortHand={sortHand}
         />
       ) : mode === 'practice' ? (
-        <Practice server={server} />
+        <Practice server={server} sortHand={sortHand} />
       ) : (
-        <ShantenQuiz server={server} />
+        <ShantenQuiz server={server} sortHand={sortHand} />
       )}
       {mode === 'game' && (
         <div className="event-log">
