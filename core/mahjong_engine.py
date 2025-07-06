@@ -18,6 +18,9 @@ class MahjongEngine:
         self.state.players = [Player(name=f"Player {i}") for i in range(4)]
         self.state.current_player = 0
         self.events: list[GameEvent] = []
+        self._pending_callers: list[int] = []
+        self._call_skips: set[int] = set()
+        self._next_player_after_call: int | None = None
         self._emit("start_game", {"state": self.state})
         self.start_kyoku(dealer=0, round_number=1)
 
@@ -63,6 +66,30 @@ class MahjongEngine:
             counts[_tile_to_index(player.hand.tiles[-1])] -= 1
         return Shanten().calculate_shanten(counts) == 0
 
+    def _find_callers(self, tile: Tile, discarder: int) -> list[int]:
+        """Return indices of players who could call the discarded ``tile``."""
+        callers: list[int] = []
+        for i, p in enumerate(self.state.players):
+            if i == discarder:
+                continue
+            # check pon/kan opportunities
+            count = sum(1 for t in p.hand.tiles if t.suit == tile.suit and t.value == tile.value)
+            if count >= 2:
+                callers.append(i)
+                continue
+            if i == (discarder + 1) % len(self.state.players) and tile.suit in {"man", "pin", "sou"}:
+                vals = [t.value for t in p.hand.tiles if t.suit == tile.suit]
+                if tile.value - 2 in vals and tile.value - 1 in vals:
+                    callers.append(i)
+                    continue
+                if tile.value - 1 in vals and tile.value + 1 in vals:
+                    callers.append(i)
+                    continue
+                if tile.value + 1 in vals and tile.value + 2 in vals:
+                    callers.append(i)
+                    continue
+        return callers
+
     def _resolve_ryukyoku(self, reason: str) -> None:
         """Handle a draw, apply noten penalties and advance the hand."""
         tenpai = [self._is_tenpai(p) for p in self.state.players]
@@ -103,6 +130,9 @@ class MahjongEngine:
         self.state.last_discard = None
         self.state.last_discard_player = None
         self.state.kan_count = 0
+        self._pending_callers = []
+        self._call_skips = set()
+        self._next_player_after_call = None
         winds = ["east", "south", "west", "north"]
         self.state.seat_winds = []
         for i, p in enumerate(self.state.players):
@@ -145,6 +175,8 @@ class MahjongEngine:
 
     def draw_tile(self, player_index: int) -> Tile:
         """Draw a tile for the specified player."""
+        if self._pending_callers:
+            raise RuntimeError("Cannot draw during call resolution")
         assert self.state.wall is not None
         tile = self.state.wall.draw_tile()
         self.state.players[player_index].draw(tile)
@@ -162,9 +194,15 @@ class MahjongEngine:
         """Discard a tile from the specified player's hand."""
         self.state.players[player_index].discard(tile)
         self._emit("discard", {"player_index": player_index, "tile": tile})
-        self.state.current_player = (player_index + 1) % len(self.state.players)
         self.state.last_discard = tile
         self.state.last_discard_player = player_index
+        callers = self._find_callers(tile, player_index)
+        if callers:
+            self._pending_callers = callers
+            self._call_skips = set()
+            self._next_player_after_call = (player_index + 1) % len(self.state.players)
+        else:
+            self.state.current_player = (player_index + 1) % len(self.state.players)
 
     def declare_riichi(self, player_index: int) -> None:
         """Declare riichi for the given player."""
@@ -223,6 +261,10 @@ class MahjongEngine:
         self.state.last_discard = None
         self.state.last_discard_player = None
         self._emit("meld", {"player_index": player_index, "meld": meld})
+        self._pending_callers = []
+        self._call_skips = set()
+        self._next_player_after_call = None
+        self.state.current_player = player_index
 
     def call_pon(self, player_index: int, tiles: list[Tile]) -> None:
         """Form a pon meld using the given tiles."""
@@ -271,6 +313,10 @@ class MahjongEngine:
         self.state.last_discard = None
         self.state.last_discard_player = None
         self._emit("meld", {"player_index": player_index, "meld": meld})
+        self._pending_callers = []
+        self._call_skips = set()
+        self._next_player_after_call = None
+        self.state.current_player = player_index
 
     def call_kan(self, player_index: int, tiles: list[Tile]) -> None:
         """Form a kan meld. Supports open, closed and added kan."""
@@ -321,6 +367,10 @@ class MahjongEngine:
             self.state.kan_count += 1
             if self.state.kan_count >= 4:
                 self._resolve_ryukyoku("four_kans")
+            self._pending_callers = []
+            self._call_skips = set()
+            self._next_player_after_call = None
+            self.state.current_player = player_index
             return
 
         # Added kan upgrade from an existing pon
@@ -345,6 +395,10 @@ class MahjongEngine:
                 self.state.kan_count += 1
                 if self.state.kan_count >= 4:
                     self._resolve_ryukyoku("four_kans")
+                self._pending_callers = []
+                self._call_skips = set()
+                self._next_player_after_call = None
+                self.state.current_player = player_index
                 return
 
         # Closed kan from hand
@@ -367,6 +421,10 @@ class MahjongEngine:
         self.state.kan_count += 1
         if self.state.kan_count >= 4:
             self._resolve_ryukyoku("four_kans")
+        self._pending_callers = []
+        self._call_skips = set()
+        self._next_player_after_call = None
+        self.state.current_player = player_index
 
     def declare_tsumo(self, player_index: int, win_tile: Tile) -> HandResponse:
         """Declare a self-drawn win and return scoring info."""
@@ -417,12 +475,36 @@ class MahjongEngine:
 
     def skip(self, player_index: int) -> None:
         """Skip action for the specified player."""
+        if self._pending_callers:
+            if player_index not in self._pending_callers or player_index in self._call_skips:
+                return
+            self._call_skips.add(player_index)
+            if len(self._call_skips) == len(self._pending_callers):
+                if self._next_player_after_call is not None:
+                    self.state.current_player = self._next_player_after_call
+                self._pending_callers = []
+                self._call_skips = set()
+                self._next_player_after_call = None
+            self._emit(
+                "skip",
+                {
+                    "player_index": player_index,
+                    "next_player": self.state.current_player,
+                },
+            )
+            return
         if player_index != self.state.current_player:
             return
         self.state.current_player = (self.state.current_player + 1) % len(
             self.state.players
         )
-        self._emit("skip", {"player_index": player_index})
+        self._emit(
+            "skip",
+            {
+                "player_index": player_index,
+                "next_player": self.state.current_player,
+            },
+        )
 
     def advance_hand(self, winner_index: int | None = None) -> None:
         """Move to the next hand and handle dealer rotation."""
@@ -456,4 +538,7 @@ class MahjongEngine:
         self.state.seat_winds = []
         self.state.last_discard = None
         self.state.last_discard_player = None
+        self._pending_callers = []
+        self._call_skips = set()
+        self._next_player_after_call = None
         return final_state

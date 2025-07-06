@@ -22,10 +22,17 @@ export function applyEvent(state, event) {
         if (idx !== -1) p.hand.tiles.splice(idx, 1);
         p.river.push(tile);
       }
-      newState.current_player =
-        (event.payload.player_index + 1) % newState.players.length;
       newState.last_discard = event.payload.tile;
       newState.last_discard_player = event.payload.player_index;
+      break;
+    }
+    case 'skip': {
+      if (typeof event.payload.next_player === 'number') {
+        newState.current_player = event.payload.next_player;
+      } else if (event.payload.player_index === newState.current_player) {
+        const next = (event.payload.player_index + 1) % newState.players.length;
+        newState.current_player = next;
+      }
       break;
     }
     case 'meld': {
@@ -58,11 +65,6 @@ export function applyEvent(state, event) {
         });
       }
       newState.result = { type: 'ryukyoku', ...event.payload };
-      break;
-    }
-    case 'skip': {
-      const next = (event.payload.player_index + 1) % newState.players.length;
-      newState.current_player = next;
       break;
     }
     default:

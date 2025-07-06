@@ -29,7 +29,7 @@ def test_skip_updates_current_player() -> None:
     code = (
         "import { applyEvent } from './web_gui/applyEvent.js';\n"
         "const state = {current_player: 0, players: [{}, {}]};\n"
-        "const evt = {name: 'skip', payload: {player_index: 0}};\n"
+        "const evt = {name: 'skip', payload: {player_index: 0, next_player: 1}};\n"
         "const newState = applyEvent(state, evt);\n"
         "console.log(newState.current_player);"
     )
@@ -48,7 +48,7 @@ def test_discard_advances_turn_and_adds_river() -> None:
         "console.log(newState.current_player + ':' + newState.players[0].river.length);"
     )
     output = run_node(code)
-    assert output == '1:1'
+    assert output == '0:1'
 
 def test_ryukyoku_sets_result_and_scores() -> None:
     code = (

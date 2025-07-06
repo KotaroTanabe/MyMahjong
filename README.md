@@ -104,6 +104,7 @@ Future work will expand these components.
 - [x] declare_ron
 - [x] declare_riichi
 - [x] skip
+- [x] wait for calls until all players skip
 - [x] end_game
 - [x] start_kyoku
 - [x] ryukyoku detection

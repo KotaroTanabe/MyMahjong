@@ -187,6 +187,7 @@ def test_skip_advances_turn_and_emits_event() -> None:
     assert engine.state.current_player == 1
     events = engine.pop_events()
     assert events and events[0].name == "skip"
+    assert events[0].payload.get("next_player") == 1
 
 
 def test_skip_ignored_if_not_players_turn() -> None:
@@ -195,6 +196,18 @@ def test_skip_ignored_if_not_players_turn() -> None:
     engine.skip(1)
     assert engine.state.current_player == 0
     assert not engine.pop_events()
+
+
+def test_skip_after_discard_advances_when_all_pass() -> None:
+    engine = MahjongEngine()
+    engine.pop_events()
+    tile = Tile("pin", 5)
+    engine.state.players[0].hand.tiles = [tile]
+    engine.state.players[1].hand.tiles = [Tile("pin", 5), Tile("pin", 5)]
+    engine.discard_tile(0, tile)
+    assert engine.state.current_player == 0
+    engine.skip(1)
+    assert engine.state.current_player == 1
 
 
 def test_start_kyoku_resets_state_and_emits_event() -> None:
