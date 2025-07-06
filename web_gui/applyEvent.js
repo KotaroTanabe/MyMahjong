@@ -22,6 +22,10 @@ export function applyEvent(state, event) {
         if (idx !== -1) p.hand.tiles.splice(idx, 1);
         p.river.push(tile);
       }
+      newState.current_player =
+        (event.payload.player_index + 1) % newState.players.length;
+      newState.last_discard = event.payload.tile;
+      newState.last_discard_player = event.payload.player_index;
       break;
     }
     case 'meld': {
