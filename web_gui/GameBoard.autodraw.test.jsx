@@ -25,8 +25,8 @@ describe('GameBoard auto draw', () => {
     rerender(<GameBoard state={state} server="http://s" gameId="1" />);
     await Promise.resolve();
     expect(fetchMock).toHaveBeenCalledTimes(2);
-    expect(JSON.parse(fetchMock.mock.calls[1][1].body)).toEqual({ player_index: 1, action: 'draw' });
-    fireEvent.click(getAllByLabelText('Enable AI')[3]);
+    expect(JSON.parse(fetchMock.mock.calls[1][1].body)).toEqual({ player_index: 1, action: 'auto' });
+    fireEvent.click(getAllByLabelText('Enable AI')[0]);
     await Promise.resolve();
     state.current_player = 0;
     rerender(<GameBoard state={state} server="http://s" gameId="1" />);
