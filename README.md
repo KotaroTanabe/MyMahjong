@@ -71,6 +71,7 @@ Future work will expand these components.
 - [x] Responsive layout for narrow screens
 - [x] Icon buttons using react-icons
 - [x] Highlight active player on board
+- [x] 6x4 discard grid rendering
 - [x] 何切る問題 mode
   - [x] CLI practice command
   - [x] AI recommendation

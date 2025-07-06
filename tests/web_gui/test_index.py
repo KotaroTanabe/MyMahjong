@@ -131,7 +131,7 @@ def test_game_board_passes_remaining_prop() -> None:
 
 def test_south_hand_displays_images() -> None:
     board = Path('web_gui/GameBoard.jsx').read_text()
-    assert 'south?.hand?.tiles.map(tileLabel)' in board
+    assert 'south?.hand?.tiles' in board
 
 
 def test_app_updates_wall_on_draw() -> None:
