@@ -77,6 +77,7 @@ Future work will expand these components.
 - [x] Highlight active player on board
 - [x] 6x4 discard grid rendering
 - [x] Modal error display on failed discard actions
+- [x] Setup controls hidden after game start with modal access
 - [x] 何切る問題 mode
   - [x] CLI practice command
   - [x] AI recommendation
