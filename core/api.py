@@ -53,8 +53,20 @@ def get_state() -> GameState:
 
 
 def call_chi(player_index: int, tiles: list[Tile]) -> None:
-    """Public wrapper for MahjongEngine.call_chi."""
+    """Public wrapper for MahjongEngine.call_chi.
+
+    ``tiles`` may contain either the full meld including the discarded tile or
+    just the two tiles from the caller's hand. When only two tiles are
+    provided the current discard is automatically inserted to form the meld.
+    """
     assert _engine is not None, "Game not started"
+
+    if len(tiles) == 2:
+        last_tile = _engine.state.last_discard
+        if last_tile is None:
+            raise ValueError("No discard available for chi")
+        tiles = sorted(tiles + [last_tile], key=lambda t: t.value)
+
     _engine.call_chi(player_index, tiles)
 
 

@@ -44,6 +44,19 @@ def test_call_pon() -> None:
     assert caller.hand.melds[0].type == "pon"
 
 
+def test_call_chi_missing_discard() -> None:
+    state = api.start_game(["A", "B", "C", "D"])
+    tile = models.Tile("man", 3)
+    discarder = state.players[0]
+    caller = state.players[1]
+    discarder.hand.tiles.append(tile)
+    api.discard_tile(0, tile)
+    caller.hand.tiles.extend([models.Tile("man", 1), models.Tile("man", 2)])
+    api.call_chi(1, [models.Tile("man", 1), models.Tile("man", 2)])
+    assert len(caller.hand.melds) == 1
+    assert caller.hand.melds[0].type == "chi"
+
+
 def test_end_game_creates_new_state() -> None:
     state = api.start_game(["A", "B", "C", "D"])
     finished = api.end_game()
