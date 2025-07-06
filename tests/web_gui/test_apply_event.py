@@ -35,3 +35,17 @@ def test_skip_updates_current_player() -> None:
     )
     output = run_node(code)
     assert output == '1'
+
+
+def test_discard_advances_turn_and_adds_river() -> None:
+    code = (
+        "import { applyEvent } from './web_gui/applyEvent.js';\n"
+        "const state = {current_player: 0, players: [\n"
+        "  {hand: {tiles: [{suit: 'pin', value: 1}]}, river: []}, {}\n"
+        "]};\n"
+        "const evt = {name: 'discard', payload: {player_index: 0, tile: {suit: 'pin', value: 1}}};\n"
+        "const newState = applyEvent(state, evt);\n"
+        "console.log(newState.current_player + ':' + newState.players[0].river.length);"
+    )
+    output = run_node(code)
+    assert output == '1:1'
