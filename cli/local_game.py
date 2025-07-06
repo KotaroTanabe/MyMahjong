@@ -26,8 +26,8 @@ def run_game(players: list[str]) -> None:
         try:
             api.discard_tile(turn, tile)
         except ValueError:
-            # skip invalid discards if the tile vanished somehow
-            pass
+            # Tile may have already been removed; end the loop gracefully
+            break
         click.echo(f"{name} discarded {tile.suit}{tile.value}")
         turn = (turn + 1) % len(state.players)
     api.end_game()

@@ -4,6 +4,7 @@ import Practice from './Practice.jsx';
 import { applyEvent } from './applyEvent.js';
 import Button from './Button.jsx';
 import './style.css';
+import { FiRefreshCw, FiEye, FiEyeOff } from "react-icons/fi";
 
 export default function App() {
   const [server, setServer] = useState(
@@ -121,7 +122,7 @@ export default function App() {
           />
         </label>
         <div className="control">
-          <Button aria-label="Retry" onClick={fetchStatus}>🔄</Button>
+          <Button aria-label="Retry" onClick={fetchStatus}><FiRefreshCw /></Button>
         </div>
       </div>
       <div className="field">
@@ -142,7 +143,7 @@ export default function App() {
             aria-label="Toggle peek"
             onClick={() => setPeek(!peek)}
           >
-            {peek ? '🙈' : '👁️'}
+            {peek ? <FiEyeOff /> : <FiEye />}
           </Button>
         </div>
       </div>
