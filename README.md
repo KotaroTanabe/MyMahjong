@@ -148,7 +148,7 @@ remain to be built:
 - [x] Tracking honba and riichi sticks in `GameState`.
 - [ ] Automatic round progression with dealer repeats and hanchan end
   detection.
-- [ ] Exhaustive draw conditions such as four kans and nine terminals.
+- [x] Exhaustive draw conditions such as four kans and nine terminals.
 - [ ] Complete MJAI protocol adapter for external AIs.
 - [ ] External AI integration using the adapter.
 

@@ -17,8 +17,40 @@ class MahjongEngine:
         self.state.players = [Player(name=f"Player {i}") for i in range(4)]
         self.state.current_player = 0
         self.events: list[GameEvent] = []
+        self.kan_count = 0
+        self.riichi_count = 0
         self._emit("start_game", {"state": self.state})
         self.start_kyoku(dealer=0, round_number=1)
+
+    def _handle_kan_declared(self) -> None:
+        """Increment kan count and emit exhaustive draw if needed."""
+        self.kan_count += 1
+        if self.kan_count >= 4:
+            self._emit("ryukyoku", {"reason": "four_kans"})
+
+    def _handle_riichi_declared(self) -> None:
+        """Check riichi declarations for exhaustive draw condition."""
+        self.riichi_count = sum(1 for p in self.state.players if p.riichi)
+        if self.riichi_count >= 4:
+            self._emit("ryukyoku", {"reason": "four_riichi"})
+
+    def abort_nine_terminals(self, player_index: int) -> None:
+        """Abort the hand if the player has nine different terminals/honors."""
+        player = self.state.players[player_index]
+        tiles = player.hand.tiles
+        terminal_tiles = [
+            t
+            for t in tiles
+            if t.suit in {"wind", "dragon"} or t.value in {1, 9}
+        ]
+        unique = {(t.suit, t.value) for t in terminal_tiles}
+        if len(unique) >= 9:
+            self._emit(
+                "ryukyoku",
+                {"reason": "nine_terminals", "player_index": player_index},
+            )
+        else:
+            raise ValueError("Nine terminals conditions not met")
 
     def _draw_replacement_tile(self, player: Player) -> None:
         """Draw a replacement tile from the dead wall and reveal new dora."""
@@ -59,6 +91,8 @@ class MahjongEngine:
             p.riichi = False
         self.state.last_discard = None
         self.state.last_discard_player = None
+        self.kan_count = 0
+        self.riichi_count = 0
         winds = ["east", "south", "west", "north"]
         self.state.seat_winds = []
         for i, p in enumerate(self.state.players):
@@ -124,6 +158,7 @@ class MahjongEngine:
         player.declare_riichi()
         self.state.riichi_sticks += 1
         self._emit("riichi", {"player_index": player_index})
+        self._handle_riichi_declared()
 
     def calculate_score(
         self, player_index: int, win_tile: Tile
@@ -270,6 +305,7 @@ class MahjongEngine:
             self.state.last_discard_player = None
             self._draw_replacement_tile(player)
             self._emit("meld", {"player_index": player_index, "meld": meld})
+            self._handle_kan_declared()
             return
 
         # Added kan upgrade from an existing pon
@@ -291,6 +327,7 @@ class MahjongEngine:
                 meld.type = "added_kan"
                 self._draw_replacement_tile(player)
                 self._emit("meld", {"player_index": player_index, "meld": meld})
+                self._handle_kan_declared()
                 return
 
         # Closed kan from hand
@@ -310,6 +347,7 @@ class MahjongEngine:
         player.hand.melds.append(meld)
         self._draw_replacement_tile(player)
         self._emit("meld", {"player_index": player_index, "meld": meld})
+        self._handle_kan_declared()
 
     def declare_tsumo(self, player_index: int, win_tile: Tile) -> HandResponse:
         """Declare a self-drawn win and return scoring info."""
