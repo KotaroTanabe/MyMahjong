@@ -208,3 +208,14 @@ def test_practice_endpoints_external(monkeypatch) -> None:
     data = prob.json()
     resp = client.post("/practice/suggest?ai=true", json={"hand": data["hand"]})
     assert resp.status_code == 200
+
+
+def test_auto_action_endpoint() -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    resp = client.post(
+        "/games/1/action",
+        json={"player_index": 0, "action": "auto"},
+    )
+    assert resp.status_code == 200
+    tile = resp.json()
+    assert "suit" in tile and "value" in tile

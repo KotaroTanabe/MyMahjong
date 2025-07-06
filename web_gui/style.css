@@ -150,6 +150,15 @@
   background-color: #fff4ce;
 }
 
+.player-header .ai-btn {
+  margin-left: auto;
+  padding: 0.25rem;
+}
+
+.ai-btn.active {
+  background-color: #28a745;
+}
+
 @media (max-width: 600px) {
   .board-grid {
     grid-template-areas:
