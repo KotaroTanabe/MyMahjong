@@ -208,7 +208,11 @@ def game_action(game_id: int, req: ActionRequest) -> dict:
         return {"status": "ok"}
     if req.action == "auto":
         ai_type = req.ai_type or "simple"
-        tile = api.auto_play_turn(req.player_index, ai_type=ai_type)
+        tile = api.auto_play_turn(
+            req.player_index,
+            ai_type=ai_type,
+            claim_players=[req.player_index],
+        )
         return asdict(tile)
     raise HTTPException(status_code=400, detail="Unknown action")
 
