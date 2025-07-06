@@ -88,21 +88,40 @@ def skip(player_index: int) -> None:
     _engine.skip(player_index)
 
 
-def auto_play_turn(player_index: int | None = None, ai_type: str = "simple") -> Tile:
-    """Have the specified AI draw and discard for ``player_index``."""
+def auto_play_turn(
+    player_index: int | None = None,
+    ai_type: str = "simple",
+    *,
+    claim_players: list[int] | None = None,
+) -> Tile:
+    """Have the specified AI draw and discard for ``player_index``.
+
+    ``claim_players`` limits which players will automatically claim or skip a
+    discard when waiting for calls.  By default all players are processed to
+    preserve the original behaviour used by the CLI game loop.
+    """
 
     assert _engine is not None, "Game not started"
     idx = player_index if player_index is not None else _engine.state.current_player
     ai = AI_REGISTRY.get(ai_type)
     if ai is None:
         raise ValueError(f"Unknown ai_type: {ai_type}")
-    for p in list(_engine.state.waiting_for_claims):
+
+    claim_list = list(_engine.state.waiting_for_claims)
+    if claim_players is not None:
+        claim_list = [p for p in claim_list if p in claim_players]
+
+    for p in claim_list:
         if ai_type == "simple":
             from .simple_ai import claim_meld
 
             if claim_meld(_engine, p):
                 continue
         _engine.skip(p)
+    if _engine.state.waiting_for_claims:
+        assert _engine.state.last_discard is not None
+        return _engine.state.last_discard
+
     return ai(_engine, idx)
 
 
