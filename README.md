@@ -78,8 +78,9 @@ Future work will expand these components.
   - [x] CLI practice command
   - [x] AI recommendation
   - [x] Web UI support
- - [x] シャンテン数クイズ
-   - [x] CLI quiz command
+- [x] シャンテン数クイズ
+  - [x] CLI quiz command
+  - [x] Web UI support
 
 ### Core engine capabilities
 

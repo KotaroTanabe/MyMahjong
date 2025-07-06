@@ -219,3 +219,15 @@ def test_auto_action_endpoint() -> None:
     assert resp.status_code == 200
     tile = resp.json()
     assert "suit" in tile and "value" in tile
+
+
+def test_shanten_quiz_endpoints() -> None:
+    quiz = client.get("/shanten-quiz")
+    assert quiz.status_code == 200
+    data = quiz.json()
+    assert "hand" in data
+
+    resp = client.post("/shanten-quiz/check", json={"hand": data["hand"], "guess": 0})
+    assert resp.status_code == 200
+    result = resp.json()
+    assert "actual" in result and "correct" in result

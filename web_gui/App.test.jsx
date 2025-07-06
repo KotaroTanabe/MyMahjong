@@ -74,6 +74,33 @@ describe('App practice mode', () => {
   });
 });
 
+describe('App shanten quiz mode', () => {
+  it('fetches a quiz hand and checks the answer', async () => {
+    global.fetch = vi.fn((url, opts) => {
+      if (url.endsWith('/health')) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({ status: 'ok' }) });
+      }
+      if (url.endsWith('/shanten-quiz') && (!opts || !opts.method)) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({ hand: [{ suit: 'man', value: 1 }] }) });
+      }
+      if (url.endsWith('/shanten-quiz/check')) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({ correct: true, actual: 0 }) });
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
+    });
+
+    render(<App />);
+    const modeSelect = screen.getAllByLabelText('Mode:')[0];
+    await userEvent.selectOptions(modeSelect, 'shanten-quiz');
+    await screen.findByText('Next Hand');
+    const input = screen.getByLabelText('Shanten guess');
+    await userEvent.type(input, '0');
+    await userEvent.click(screen.getByText('Submit'));
+    const result = await screen.findByText('Correct!');
+    expect(result).toBeTruthy();
+  });
+});
+
 describe('App reload', () => {
   it('restores server and game id from localStorage', async () => {
     localStorage.setItem('serverUrl', 'http://localhost:5678');

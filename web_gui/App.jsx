@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import GameBoard from './GameBoard.jsx';
 import Practice from './Practice.jsx';
+import ShantenQuiz from './ShantenQuiz.jsx';
 import { applyEvent } from './applyEvent.js';
 import Button from './Button.jsx';
 import './style.css';
@@ -146,6 +147,7 @@ export default function App() {
             <select value={mode} onChange={(e) => setMode(e.target.value)}>
               <option value="game">Game</option>
               <option value="practice">Practice</option>
+              <option value="shanten-quiz">Shanten Quiz</option>
             </select>
           </span>
         </label>
@@ -198,8 +200,10 @@ export default function App() {
           gameId={gameId}
           peek={peek}
         />
-      ) : (
+      ) : mode === 'practice' ? (
         <Practice server={server} />
+      ) : (
+        <ShantenQuiz server={server} />
       )}
       {mode === 'game' && (
         <div className="event-log">
