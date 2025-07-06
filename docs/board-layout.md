@@ -31,6 +31,23 @@ Each seat has one meld zone. The North player's hand is drawn just above the riv
   +---------------+----------------------+---------------+
 ```
 
+### Player Panel Layout
+
+An alternative layout treats each player area as a self-contained panel:
+
+```
++---------------+---------------------+
+| Toimen panel  | Shimocha panel      |
++---------------+---------------------+
+| Kamicha panel | Jicha panel (self)  |
++---------------+---------------------+
+```
+
+Each panel stacks a thin riichi stick area with the seat name and score, a river
+display that grows up to four rows of six tiles, then a combined hand and meld
+section. The panels themselves are arranged in a 2x2 grid. A setting in the GUI
+allows switching between this design and the classic layout above.
+
 Discard piles surround the center while each player's opened sets cluster in the
 corners. The central area holds the remaining wall tiles and dora indicator display.
 

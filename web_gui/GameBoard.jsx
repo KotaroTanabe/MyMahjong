@@ -9,7 +9,13 @@ import { tileToEmoji, tileDescription } from './tileUtils.js';
 function tileLabel(tile) {
   return tileToEmoji(tile);
 }
-export default function GameBoard({ state, server, gameId, peek = false }) {
+export default function GameBoard({
+  state,
+  server,
+  gameId,
+  peek = false,
+  layout = 'classic',
+}) {
   const players = state?.players ?? [];
   const south = players[0];
   const west = players[1];
@@ -69,8 +75,35 @@ export default function GameBoard({ state, server, gameId, peek = false }) {
     }
   }
 
+  const boardClass = layout === 'classic' ? 'board-grid' : 'board-grid-alt';
+
+  if (layout !== 'classic') {
+    const panel = (p, hand, melds, riverTiles, seat, onDiscard) => (
+      <div className={`${seat} seat player-panel`}>
+        <div className="player-header">
+          <span className="riichi-stick">{p?.riichi ? '|' : '\u00a0'}</span>
+          <span>{(p ? p.name : seat) + (p ? ` ${p.score}` : '')}</span>
+        </div>
+        <River tiles={riverTiles} />
+        <div className="hand-with-melds">
+          <Hand tiles={hand} onDiscard={onDiscard} />
+          <MeldArea melds={melds} />
+        </div>
+      </div>
+    );
+
+    return (
+      <div className={boardClass}>
+        {panel(north, northHand, northMelds, (north?.river ?? []).map(tileLabel), 'north')}
+        {panel(east, eastHand, eastMelds, (east?.river ?? []).map(tileLabel), 'east')}
+        {panel(west, westHand, westMelds, (west?.river ?? []).map(tileLabel), 'west')}
+        {panel(south, southHand, southMelds, (south?.river ?? []).map(tileLabel), 'south', discard)}
+      </div>
+    );
+  }
+
   return (
-    <div className="board-grid">
+    <div className={boardClass}>
       <div className="north seat">
         <div>{nameWithRiichi(north) || 'North'}</div>
         <MeldArea melds={northMelds} />
