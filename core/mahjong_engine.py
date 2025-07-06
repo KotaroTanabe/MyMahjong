@@ -18,6 +18,7 @@ class MahjongEngine:
         self.state.players = [Player(name=f"Player {i}") for i in range(4)]
         self.state.current_player = 0
         self.events: list[GameEvent] = []
+        self.event_history: list[GameEvent] = []
         self._emit("start_game", {"state": self.state})
         self.start_kyoku(dealer=0, round_number=1)
 
@@ -49,7 +50,9 @@ class MahjongEngine:
             self._resolve_ryukyoku("nine_terminals")
 
     def _emit(self, name: str, payload: dict) -> None:
-        self.events.append(GameEvent(name=name, payload=payload))
+        evt = GameEvent(name=name, payload=payload)
+        self.events.append(evt)
+        self.event_history.append(evt)
 
     def _is_tenpai(self, player: Player) -> bool:
         """Return True if ``player`` is in tenpai."""
@@ -87,6 +90,10 @@ class MahjongEngine:
         events = self.events[:]
         self.events.clear()
         return events
+
+    def get_event_history(self) -> list[GameEvent]:
+        """Return all events emitted since the engine was created."""
+        return self.event_history[:]
 
     def start_kyoku(self, dealer: int, round_number: int) -> None:
         """Begin a new hand with fresh tiles."""

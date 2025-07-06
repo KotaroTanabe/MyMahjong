@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function ResultModal({ result, onClose }) {
+export default function ResultModal({ result, onClose, onCopyLog }) {
   if (!result) return null;
   const { scores, tenpai, reason } = result;
   return (
@@ -17,6 +17,11 @@ export default function ResultModal({ result, onClose }) {
                 </li>
               ))}
             </ul>
+          )}
+          {onCopyLog && (
+            <button className="button mt-2" onClick={onCopyLog}>
+              Copy Log
+            </button>
           )}
         </div>
       </div>

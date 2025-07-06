@@ -59,6 +59,17 @@ def get_game(game_id: int) -> dict:
         raise HTTPException(status_code=404, detail="Game not started")
 
 
+@app.get("/games/{game_id}/log")
+def get_log(game_id: int) -> dict:
+    """Return the Tenhou-format log for the current game."""
+    _ = game_id  # placeholder for future multi-game support
+    try:
+        data = api.get_tenhou_log()
+    except AssertionError:
+        raise HTTPException(status_code=404, detail="Game not started")
+    return {"log": data}
+
+
 @app.get("/practice")
 def practice_problem() -> dict:
     """Return a random practice problem."""
