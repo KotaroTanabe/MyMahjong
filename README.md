@@ -144,7 +144,7 @@ remain to be built:
 
 - [x] Closed and added kan support with replacement draws and new dora
   indicators.
-- [ ] Tracking honba and riichi sticks in `GameState`.
+- [x] Tracking honba and riichi sticks in `GameState`.
 - [ ] Automatic round progression with dealer repeats and hanchan end
   detection.
 - [ ] Exhaustive draw conditions such as four kans and nine terminals.
