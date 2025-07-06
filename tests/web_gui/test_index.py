@@ -57,9 +57,14 @@ def test_game_board_references_center_display() -> None:
     assert 'CenterDisplay' in board
 
 
-def test_game_board_references_controls() -> None:
+def test_game_board_uses_player_panel() -> None:
     board = Path('web_gui/GameBoard.jsx').read_text()
-    assert 'Controls' in board
+    assert 'PlayerPanel' in board
+
+
+def test_player_panel_component_exists() -> None:
+    panel = Path('web_gui/PlayerPanel.jsx')
+    assert panel.is_file(), 'PlayerPanel.jsx missing'
 
 
 def test_style_css_exists() -> None:
@@ -148,8 +153,8 @@ def test_app_handles_new_events() -> None:
         assert evt in text
 
 
-def test_game_board_marks_riichi() -> None:
-    text = Path('web_gui/GameBoard.jsx').read_text()
+def test_controls_include_riichi() -> None:
+    text = Path('web_gui/Controls.jsx').read_text()
     assert 'Riichi' in text
 
 

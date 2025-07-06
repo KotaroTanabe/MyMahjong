@@ -17,7 +17,6 @@ export default function App() {
   const [events, setEvents] = useState([]);
   const [mode, setMode] = useState('game');
   const [peek, setPeek] = useState(false);
-  const [layout, setLayout] = useState('classic');
   const wsRef = useRef(null);
 
   useEffect(() => {
@@ -148,17 +147,6 @@ export default function App() {
           </Button>
         </div>
       </div>
-      <div className="field">
-        <label className="label">
-          Layout:
-          <span className="select ml-2">
-            <select value={layout} onChange={(e) => setLayout(e.target.value)}>
-              <option value="classic">Classic</option>
-              <option value="panels">Player Panels</option>
-            </select>
-          </span>
-        </label>
-      </div>
       <div className="field is-grouped is-align-items-flex-end">
         <label className="label mr-2">
           Players:
@@ -195,7 +183,6 @@ export default function App() {
           server={server}
           gameId={gameId}
           peek={peek}
-          layout={layout}
         />
       ) : (
         <Practice server={server} />

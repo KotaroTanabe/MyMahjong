@@ -1,10 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-import Hand from './Hand.jsx';
-import River from './River.jsx';
-import MeldArea from './MeldArea.jsx';
 import CenterDisplay from './CenterDisplay.jsx';
-import Controls from './Controls.jsx';
-import { tileToEmoji, tileDescription } from './tileUtils.js';
+import PlayerPanel from './PlayerPanel.jsx';
+import { tileToEmoji } from './tileUtils.js';
 
 function tileLabel(tile) {
   return tileToEmoji(tile);
@@ -14,7 +11,6 @@ export default function GameBoard({
   server,
   gameId,
   peek = false,
-  layout = 'classic',
 }) {
   const players = state?.players ?? [];
   const south = players[0];
@@ -38,7 +34,6 @@ export default function GameBoard({
     }
   }, [state?.current_player, gameId, server, state?.players]);
 
-  const nameWithRiichi = (p) => (p?.riichi ? `${p.name} (Riichi)` : p?.name);
   const defaultHand = Array(13).fill('🀫');
 
   function concealedHand(p) {
@@ -75,68 +70,54 @@ export default function GameBoard({
     }
   }
 
-  const boardClass = layout === 'classic' ? 'board-grid' : 'board-grid-alt';
-
-  if (layout !== 'classic') {
-    const panel = (p, hand, melds, riverTiles, seat, onDiscard) => (
-      <div className={`${seat} seat player-panel`}>
-        <div className="player-header">
-          <span className="riichi-stick">{p?.riichi ? '|' : '\u00a0'}</span>
-          <span>{(p ? p.name : seat) + (p ? ` ${p.score}` : '')}</span>
-        </div>
-        <River tiles={riverTiles} />
-        <div className="hand-with-melds">
-          <Hand tiles={hand} onDiscard={onDiscard} />
-          <MeldArea melds={melds} />
-        </div>
-      </div>
-    );
-
-    return (
-      <div className={boardClass}>
-        {panel(north, northHand, northMelds, (north?.river ?? []).map(tileLabel), 'north')}
-        {panel(east, eastHand, eastMelds, (east?.river ?? []).map(tileLabel), 'east')}
-        {panel(west, westHand, westMelds, (west?.river ?? []).map(tileLabel), 'west')}
-        {panel(south, southHand, southMelds, (south?.river ?? []).map(tileLabel), 'south', discard)}
-      </div>
-    );
-  }
+  const boardClass = 'board-grid';
 
   return (
     <div className={boardClass}>
-      <div className="north seat">
-        <div>{nameWithRiichi(north) || 'North'}</div>
-        <MeldArea melds={northMelds} />
-        <River tiles={(north?.river ?? []).map(tileLabel)} />
-        <Hand tiles={northHand} />
-      </div>
-
-      <div className="west seat">
-        <div>{nameWithRiichi(west) || 'West'}</div>
-        <MeldArea melds={westMelds} />
-        <River tiles={(west?.river ?? []).map(tileLabel)} />
-        <Hand tiles={westHand} />
-      </div>
-
+      <PlayerPanel
+        seat="north"
+        player={north}
+        hand={northHand}
+        melds={northMelds}
+        riverTiles={(north?.river ?? []).map(tileLabel)}
+        server={server}
+        gameId={gameId}
+        playerIndex={2}
+      />
+      <PlayerPanel
+        seat="east"
+        player={east}
+        hand={eastHand}
+        melds={eastMelds}
+        riverTiles={(east?.river ?? []).map(tileLabel)}
+        server={server}
+        gameId={gameId}
+        playerIndex={3}
+      />
       <div className="center">
         <CenterDisplay remaining={remaining} dora={dora} />
       </div>
-
-      <div className="east seat">
-        <div>{nameWithRiichi(east) || 'East'}</div>
-        <MeldArea melds={eastMelds} />
-        <River tiles={(east?.river ?? []).map(tileLabel)} />
-        <Hand tiles={eastHand} />
-      </div>
-
-      <div className="south seat">
-        <div>{nameWithRiichi(south) || 'South'}</div>
-        <MeldArea melds={southMelds} />
-        <River tiles={(south?.river ?? []).map(tileLabel)} />
-        <Hand tiles={southHand} onDiscard={discard} />
-        <Controls server={server} gameId={gameId} />
-        <MeldArea melds={southMelds} />
-      </div>
+      <PlayerPanel
+        seat="west"
+        player={west}
+        hand={westHand}
+        melds={westMelds}
+        riverTiles={(west?.river ?? []).map(tileLabel)}
+        server={server}
+        gameId={gameId}
+        playerIndex={1}
+      />
+      <PlayerPanel
+        seat="south"
+        player={south}
+        hand={southHand}
+        melds={southMelds}
+        riverTiles={(south?.river ?? []).map(tileLabel)}
+        onDiscard={discard}
+        server={server}
+        gameId={gameId}
+        playerIndex={0}
+      />
     </div>
   );
 }
