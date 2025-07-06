@@ -51,6 +51,7 @@ Future work will expand these components.
 - [x] Tile image rendering in GUI with alt text
 - [x] Adjustable tile font size (default 1.5x)
 - [x] Peek at opponents' hands option
+- [x] Riipai (sort hand) button in GUI
 - [x] Accessible tile buttons with aria-labels
 - [x] Basic draw control via REST API
 - [x] Automatic draw on turn start
@@ -71,6 +72,7 @@ Future work will expand these components.
 - [x] Stylish form inputs with Bulma CSS
 - [x] Responsive layout for narrow screens
 - [x] Icon buttons using react-icons
+- [x] Favicon with mahjong emoji
 - [x] Highlight active player on board
 - [x] 6x4 discard grid rendering
 - [x] Modal error display on failed discard actions
@@ -159,7 +161,9 @@ remain to be built:
 - [x] Tracking honba and riichi sticks in `GameState`.
 - [x] Automatic round progression with dealer repeats and hanchan end
   detection.
-- [x] Exhaustive draw condition: four kans (nine terminals pending).
+- [x] Exhaustive draw conditions: four kans and nine terminals detection.
+- [ ] Chankan ron on kan declarations.
+- [ ] Exhaustive draw condition: four riichi.
 - [ ] Complete MJAI protocol adapter for external AIs.
 - [ ] External AI integration using the adapter.
 
@@ -195,7 +199,7 @@ Two API endpoints are provided:
 ## Shanten quiz
 
 This quiz shows a random hand and asks for the shanten number.
-Run it with:
+Run it from the CLI with:
 
 ```bash
 python -m cli.main shanten-quiz
@@ -204,6 +208,10 @@ python -m cli.main shanten-quiz
 1. Generate a 13-tile starting hand.
 2. Display the tiles in short form.
 3. Prompt for the shanten number and reveal the answer.
+
+The web UI provides the same quiz. Select **Shanten Quiz** from the mode
+dropdown to fetch a hand from `/shanten-quiz` and submit your guess to
+`/shanten-quiz/check`.
 
 ## Running locally
 

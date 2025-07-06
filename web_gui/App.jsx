@@ -5,7 +5,7 @@ import ShantenQuiz from './ShantenQuiz.jsx';
 import { applyEvent } from './applyEvent.js';
 import Button from './Button.jsx';
 import './style.css';
-import { FiRefreshCw, FiEye, FiEyeOff, FiCheck } from "react-icons/fi";
+import { FiRefreshCw, FiEye, FiEyeOff, FiCheck, FiShuffle } from "react-icons/fi";
 
 export default function App() {
   const [server, setServer] = useState(
@@ -19,6 +19,7 @@ export default function App() {
   const [events, setEvents] = useState([]);
   const [mode, setMode] = useState('game');
   const [peek, setPeek] = useState(false);
+  const [sortHand, setSortHand] = useState(false);
   const wsRef = useRef(null);
 
   useEffect(() => {
@@ -116,7 +117,6 @@ export default function App() {
 
   return (
     <>
-      <h1>MyMahjong GUI</h1>
       <div className="field is-grouped is-align-items-flex-end">
         <label className="label mr-2">
           Server:
@@ -164,6 +164,17 @@ export default function App() {
         </div>
       </div>
       <div className="field is-grouped is-align-items-flex-end">
+        <label className="label mr-2">Sort:</label>
+        <div className="control">
+          <Button
+            aria-label="Toggle sort"
+            onClick={() => setSortHand(!sortHand)}
+          >
+            <FiShuffle />
+          </Button>
+        </div>
+      </div>
+      <div className="field is-grouped is-align-items-flex-end">
         <label className="label mr-2">
           Players:
           <input
@@ -199,6 +210,7 @@ export default function App() {
           server={server}
           gameId={gameId}
           peek={peek}
+          sortHand={sortHand}
         />
       ) : mode === 'practice' ? (
         <Practice server={server} />

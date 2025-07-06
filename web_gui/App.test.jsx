@@ -160,3 +160,12 @@ describe('App connection status indicator', () => {
     expect(msg.textContent).toMatch(/Failed to contact server/);
   });
 });
+
+describe('App header', () => {
+  it('does not render a heading', () => {
+    global.fetch = mockFetch();
+    render(<App />);
+    const heading = screen.queryByRole('heading', { level: 1 });
+    expect(heading).toBeNull();
+  });
+});
