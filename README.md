@@ -122,7 +122,7 @@ Future work will expand these components.
 - [x] dead wall & dora indicator tracking
 - [x] wanpai separation and yama remaining count
 - [x] configurable ruleset
-- [x] event log
+- [x] detailed event log (player actions and backend responses)
 - [x] current player tracking
 - [x] Wait for all players to skip before next draw
 - [x] Enforce tsumogiri after riichi
