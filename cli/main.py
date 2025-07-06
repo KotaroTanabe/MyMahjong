@@ -2,7 +2,7 @@ import click
 
 from . import remote_game
 from .local_game import run_game
-from core import practice, models
+from core import practice, models, shanten_quiz
 
 
 @click.group()
@@ -111,6 +111,25 @@ def practice_cmd(ai: bool) -> None:
     click.echo(f"You discarded {fmt(chosen)}")
     ai_suggestion = practice.suggest_discard(problem.hand, use_ai=ai)
     click.echo(f"AI suggests discarding {fmt(ai_suggestion)}")
+
+
+@cli.command(name="shanten-quiz")
+def shanten_quiz_cmd() -> None:
+    """Run a simple shanten number quiz."""
+
+    hand = shanten_quiz.generate_hand()
+
+    def fmt(tile: models.Tile) -> str:
+        return f"{tile.suit[0]}{tile.value}"
+
+    hand_str = " ".join(fmt(t) for t in hand)
+    click.echo(f"Hand: {hand_str}")
+    guess = click.prompt("Shanten number?", type=int)
+    actual = shanten_quiz.calculate_shanten(hand)
+    if guess == actual:
+        click.echo("Correct!")
+    else:
+        click.echo(f"Incorrect. Shanten is {actual}")
 
 
 if __name__ == "__main__":
