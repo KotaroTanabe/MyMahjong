@@ -1,7 +1,8 @@
 from core.mahjong_engine import MahjongEngine
-from core.models import Tile
+from core.models import Tile, Meld
 from core.rules import RuleSet
 from mahjong.hand_calculating.hand_response import HandResponse
+import pytest
 
 
 def test_engine_initialization() -> None:
@@ -105,6 +106,22 @@ def test_remaining_yama_tiles_property() -> None:
 def test_declare_riichi() -> None:
     engine = MahjongEngine()
     player = engine.state.players[0]
+    player.hand.tiles = [
+        Tile("man", 1),
+        Tile("man", 2),
+        Tile("man", 3),
+        Tile("man", 4),
+        Tile("man", 5),
+        Tile("man", 6),
+        Tile("man", 7),
+        Tile("man", 7),
+        Tile("pin", 7),
+        Tile("pin", 8),
+        Tile("pin", 9),
+        Tile("sou", 5),
+        Tile("wind", 1),
+        Tile("wind", 1),
+    ]
     start_score = player.score
     engine.declare_riichi(0)
     assert player.riichi
@@ -117,6 +134,22 @@ def test_tsumo_updates_scores_and_emits_event() -> None:
     engine.pop_events()
     tile = Tile("man", 1)
     engine.state.players[0].hand.tiles.append(tile)
+    engine.state.players[1].hand.tiles = [
+        Tile("man", 1),
+        Tile("man", 2),
+        Tile("man", 3),
+        Tile("man", 4),
+        Tile("man", 5),
+        Tile("man", 6),
+        Tile("man", 7),
+        Tile("man", 7),
+        Tile("pin", 7),
+        Tile("pin", 8),
+        Tile("pin", 9),
+        Tile("sou", 5),
+        Tile("wind", 1),
+        Tile("wind", 1),
+    ]
     engine.declare_riichi(1)
     start_score = engine.state.players[0].score
     loser_start = engine.state.players[1].score
@@ -134,6 +167,22 @@ def test_ron_updates_scores_and_emits_event() -> None:
     engine.pop_events()
     tile = Tile("man", 2)
     engine.state.players[0].hand.tiles.append(tile)
+    engine.state.players[2].hand.tiles = [
+        Tile("man", 1),
+        Tile("man", 2),
+        Tile("man", 3),
+        Tile("man", 4),
+        Tile("man", 5),
+        Tile("man", 6),
+        Tile("man", 7),
+        Tile("man", 7),
+        Tile("pin", 7),
+        Tile("pin", 8),
+        Tile("pin", 9),
+        Tile("sou", 5),
+        Tile("wind", 1),
+        Tile("wind", 1),
+    ]
     engine.declare_riichi(2)
     engine.state.players[1].hand.tiles.append(Tile("man", 2))
     engine.discard_tile(1, engine.state.players[1].hand.tiles[-1])
@@ -165,6 +214,22 @@ def test_event_log() -> None:
     engine.state.wall.tiles.append(tile)
     drawn = engine.draw_tile(0)
     engine.discard_tile(0, drawn)
+    engine.state.players[0].hand.tiles = [
+        Tile("man", 1),
+        Tile("man", 2),
+        Tile("man", 3),
+        Tile("man", 4),
+        Tile("man", 5),
+        Tile("man", 6),
+        Tile("man", 7),
+        Tile("man", 7),
+        Tile("pin", 7),
+        Tile("pin", 8),
+        Tile("pin", 9),
+        Tile("sou", 5),
+        Tile("wind", 1),
+        Tile("wind", 1),
+    ]
     engine.declare_riichi(0)
     engine.declare_tsumo(0, drawn)
     engine.end_game()
@@ -226,3 +291,51 @@ def test_ryukyoku_event_on_wall_empty() -> None:
     events = engine.pop_events()
     names = [e.name for e in events]
     assert "ryukyoku" in names
+
+
+def test_declare_riichi_invalid_open_meld() -> None:
+    engine = MahjongEngine()
+    player = engine.state.players[0]
+    player.hand.tiles = [
+        Tile("man", 1),
+        Tile("man", 2),
+        Tile("man", 3),
+        Tile("man", 4),
+        Tile("man", 5),
+        Tile("man", 6),
+        Tile("man", 7),
+        Tile("man", 7),
+        Tile("pin", 7),
+        Tile("pin", 8),
+        Tile("pin", 9),
+        Tile("sou", 5),
+        Tile("wind", 1),
+        Tile("wind", 1),
+    ]
+    player.hand.melds.append(Meld(tiles=[Tile("sou", 1)] * 3, type="pon"))
+    with pytest.raises(ValueError):
+        engine.declare_riichi(0)
+
+
+def test_declare_riichi_invalid_not_tenpai() -> None:
+    engine = MahjongEngine()
+    player = engine.state.players[0]
+    player.hand.tiles = [
+        Tile("man", 1),
+        Tile("man", 1),
+        Tile("man", 2),
+        Tile("man", 3),
+        Tile("man", 4),
+        Tile("man", 5),
+        Tile("man", 6),
+        Tile("pin", 2),
+        Tile("pin", 4),
+        Tile("pin", 6),
+        Tile("sou", 2),
+        Tile("sou", 4),
+        Tile("sou", 6),
+        Tile("wind", 1),
+    ]
+    with pytest.raises(ValueError):
+        engine.declare_riichi(0)
+

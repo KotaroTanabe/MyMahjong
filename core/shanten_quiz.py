@@ -4,13 +4,21 @@ from __future__ import annotations
 
 from mahjong.shanten import Shanten
 
-from .mahjong_engine import MahjongEngine
-from .models import Tile
+from typing import TYPE_CHECKING, Any
+
+from .models import Tile, Meld
 from .rules import _tile_to_index
+
+if TYPE_CHECKING:  # pragma: no cover - for type checking
+    from .mahjong_engine import MahjongEngine
+else:  # placeholder for runtime monkeypatching in tests
+    MahjongEngine: Any | None = None
 
 
 def generate_hand() -> list[Tile]:
     """Return a random 13-tile hand for the quiz."""
+    from .mahjong_engine import MahjongEngine
+
     engine = MahjongEngine()
     engine.pop_events()  # discard start event
     hand = engine.state.players[0].hand.tiles.copy()
@@ -30,3 +38,11 @@ def calculate_shanten(hand: list[Tile]) -> int:
     """Return the shanten number for ``hand``."""
     counts = _hand_counts(hand)
     return Shanten().calculate_shanten(counts)
+
+
+def is_tenpai(hand_tiles: list[Tile], melds: list[Meld]) -> bool:
+    """Return ``True`` if the hand is in tenpai."""
+
+    counts = _hand_counts(hand_tiles)
+    shanten = Shanten().calculate_shanten(counts)
+    return shanten == 0

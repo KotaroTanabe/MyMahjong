@@ -132,6 +132,23 @@ def test_additional_action_endpoints() -> None:
     )
     assert resp.status_code == 200
 
+    state.players[0].hand.melds.clear()
+    state.players[0].hand.tiles = [
+        models.Tile("man", 1),
+        models.Tile("man", 2),
+        models.Tile("man", 3),
+        models.Tile("man", 4),
+        models.Tile("man", 5),
+        models.Tile("man", 6),
+        models.Tile("man", 7),
+        models.Tile("man", 7),
+        models.Tile("pin", 7),
+        models.Tile("pin", 8),
+        models.Tile("pin", 9),
+        models.Tile("sou", 5),
+        models.Tile("wind", 1),
+        models.Tile("wind", 1),
+    ]
     resp = client.post(
         "/games/1/action",
         json={"player_index": 0, "action": "riichi"},

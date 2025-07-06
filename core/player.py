@@ -39,3 +39,8 @@ class Player:
             return
         self.score -= 1000
         self.riichi = True
+
+    def has_open_melds(self) -> bool:
+        """Return ``True`` if the player has any open melds."""
+
+        return any(m.type in {"chi", "pon", "kan", "added_kan"} for m in self.hand.melds)

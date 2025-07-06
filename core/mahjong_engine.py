@@ -5,6 +5,7 @@ from .models import GameState, Tile, Meld, GameEvent
 from .player import Player
 from .wall import Wall
 from .rules import RuleSet, StandardRuleSet
+from .shanten_quiz import is_tenpai
 from mahjong.hand_calculating.hand_response import HandResponse
 
 
@@ -137,7 +138,11 @@ class MahjongEngine:
 
     def declare_riichi(self, player_index: int) -> None:
         """Declare riichi for the given player."""
+
         player = self.state.players[player_index]
+        if player.has_open_melds() or not is_tenpai(player.hand.tiles, player.hand.melds):
+            raise ValueError("Player cannot declare riichi")
+
         player.declare_riichi()
         self.state.riichi_sticks += 1
         self._emit("riichi", {"player_index": player_index})

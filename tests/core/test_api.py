@@ -1,4 +1,5 @@
 from core import api, models, practice
+import pytest
 
 
 def test_start_game() -> None:
@@ -55,10 +56,34 @@ def test_end_game_creates_new_state() -> None:
 def test_declare_riichi_api() -> None:
     state = api.start_game(["A", "B", "C", "D"])
     player = state.players[0]
+    player.hand.tiles = [
+        models.Tile("man", 1),
+        models.Tile("man", 2),
+        models.Tile("man", 3),
+        models.Tile("man", 4),
+        models.Tile("man", 5),
+        models.Tile("man", 6),
+        models.Tile("man", 7),
+        models.Tile("man", 7),
+        models.Tile("pin", 7),
+        models.Tile("pin", 8),
+        models.Tile("pin", 9),
+        models.Tile("sou", 5),
+        models.Tile("wind", 1),
+        models.Tile("wind", 1),
+    ]
     score = player.score
     api.declare_riichi(0)
     assert player.riichi
     assert player.score == score - 1000
+
+
+def test_declare_riichi_api_invalid() -> None:
+    state = api.start_game(["A", "B", "C", "D"])
+    player = state.players[0]
+    player.hand.tiles = [models.Tile("man", 1) for _ in range(14)]
+    with pytest.raises(ValueError):
+        api.declare_riichi(0)
 
 
 def test_start_kyoku_api() -> None:
@@ -92,3 +117,4 @@ def test_practice_api_external(monkeypatch) -> None:
     monkeypatch.setattr(practice, "suggest_discard", fake_suggest)
     tile = api.suggest_practice_discard(prob.hand, use_ai=True)
     assert tile.suit == "man"
+
