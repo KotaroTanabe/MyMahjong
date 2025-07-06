@@ -53,7 +53,10 @@ def create_game(req: CreateGameRequest) -> dict:
 def get_game(game_id: int) -> dict:
     """Return basic game state for the given game id."""
     # For now we ignore game_id and return the singleton engine state
-    return asdict(api.get_state())
+    try:
+        return asdict(api.get_state())
+    except AssertionError:
+        raise HTTPException(status_code=404, detail="Game not started")
 
 
 @app.get("/practice")
