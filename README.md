@@ -61,6 +61,7 @@ Future work will expand these components.
 - [x] Discard tiles via GUI
 - [x] Display hand shanten count via GUI
 - [x] Allowed actions API
+- [x] Next actions API
 - [x] GUI follows next actions from core
 - [x] Meld and win actions via GUI
 - [x] Start game via GUI
@@ -137,17 +138,17 @@ response cycle. The sequence is:
 
 ```mermaid
 flowchart TD
-    A[GUI reads current_player from GameState] --> B[Fetch allowed actions]
-    B --> C{Only draw allowed?}
-    C -- yes --> D[POST draw] --> A
-    C -- no --> E{AI controlled?}
-    E -- yes --> F[POST auto play] --> G
-    E -- no --> G[Enable buttons]
-    G --> H[POST chosen action]
-    H --> I[Receive events via WebSocket]
-    I --> J{Hand ends?}
-    J -- yes --> K[Show result]
-    J -- no --> A
+    A[GUI requests next actions] --> B{Core replies with player & actions}
+    B -- draw only --> C[Core auto draws] --> A
+    B -- others --> D{Player is AI?}
+    D -- yes --> E[Request AI action]
+    D -- no --> F[Enable human controls]
+    E --> G[POST chosen action]
+    F --> G
+    G --> H[Receive events]
+    H --> I{Hand ends?}
+    I -- yes --> J[Show result]
+    I -- no --> A
 ```
 
 ## Implementation plan progress

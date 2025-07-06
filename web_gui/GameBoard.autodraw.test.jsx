@@ -27,7 +27,9 @@ describe('GameBoard auto draw', () => {
     state.waiting_for_claims = [1, 2, 3];
     rerender(<GameBoard state={state} server="http://s" gameId="1" />);
     await Promise.resolve();
-    const bodies = fetchMock.mock.calls.map(c => JSON.parse(c[1].body));
+    const bodies = fetchMock.mock.calls
+      .filter(c => c[1] && c[1].body)
+      .map(c => JSON.parse(c[1].body));
     expect(bodies).toContainEqual({ player_index: 1, action: 'auto', ai_type: 'simple' });
     expect(bodies).toContainEqual({ player_index: 2, action: 'auto', ai_type: 'simple' });
     expect(bodies).toContainEqual({ player_index: 3, action: 'auto', ai_type: 'simple' });
@@ -38,7 +40,9 @@ describe('GameBoard auto draw', () => {
     state.current_player = 0;
     rerender(<GameBoard state={state} server="http://s" gameId="1" />);
     await Promise.resolve();
-    const bodies2 = fetchMock.mock.calls.map(c => JSON.parse(c[1].body));
+    const bodies2 = fetchMock.mock.calls
+      .filter(c => c[1] && c[1].body)
+      .map(c => JSON.parse(c[1].body));
     expect(bodies2).toContainEqual({ player_index: 0, action: 'auto', ai_type: 'simple' });
   });
 
