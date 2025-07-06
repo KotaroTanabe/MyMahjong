@@ -116,6 +116,7 @@ Future work will expand these components.
 - [x] configurable ruleset
 - [x] event log
 - [x] current player tracking
+- [x] Enforce tsumogiri after riichi
 - [x] action dispatch helper
 - [x] seat wind tracking
 
