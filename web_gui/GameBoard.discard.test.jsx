@@ -17,6 +17,8 @@ describe('GameBoard discard', () => {
     global.fetch = fetchMock;
     const state = { current_player: 0, players: mockPlayers(), wall: { tiles: [] } };
     render(<GameBoard state={state} server="http://s" gameId="1" />);
+    await Promise.resolve();
+    fetchMock.mockClear();
     const label = `Discard ${tileDescription({ suit: 'man', value: 1 })}`;
     const btn = screen.getAllByRole('button', { name: label })[0];
     await userEvent.click(btn);
@@ -29,6 +31,8 @@ describe('GameBoard discard', () => {
     global.fetch = fetchMock;
     const state = { current_player: 1, players: mockPlayers(), wall: { tiles: [] } };
     const { container } = render(<GameBoard state={state} server="http://s" gameId="1" />);
+    await Promise.resolve();
+    fetchMock.mockClear();
     const btn = container.querySelector('.south .hand button');
     expect(btn).toBeNull();
     expect(fetchMock).not.toHaveBeenCalled();

@@ -247,3 +247,21 @@ def test_shanten_endpoint() -> None:
     assert resp.status_code == 200
     data = resp.json()
     assert "shanten" in data and isinstance(data["shanten"], int)
+
+
+def test_allowed_actions_endpoint() -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    state = api.get_state()
+    for p in state.players:
+        p.hand.tiles = []
+    tile = {"suit": "man", "value": 2}
+    state.players[0].hand.tiles = [models.Tile(**tile)]
+    client.post(
+        "/games/1/action",
+        json={"player_index": 0, "action": "discard", "tile": tile},
+    )
+    state.players[1].hand.tiles = [models.Tile("man", 1), models.Tile("man", 3)]
+    resp = client.get("/games/1/allowed-actions/1")
+    assert resp.status_code == 200
+    actions = resp.json().get("actions")
+    assert "chi" in actions and "skip" in actions

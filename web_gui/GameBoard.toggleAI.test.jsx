@@ -25,6 +25,8 @@ describe('GameBoard AI toggle mid-turn', () => {
     const { getAllByLabelText } = render(
       <GameBoard state={state} server="http://s" gameId="1" />,
     );
+    await Promise.resolve();
+    fetchMock.mockClear();
     // no request on mount because hand has 14 tiles
     expect(fetchMock).toHaveBeenCalledTimes(0);
     fireEvent.click(getAllByLabelText('Enable AI')[0]);
