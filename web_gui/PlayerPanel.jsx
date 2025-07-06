@@ -14,6 +14,7 @@ export default function PlayerPanel({
   melds,
   riverTiles,
   onDiscard,
+  drawn = false,
   server,
   gameId,
   playerIndex,
@@ -42,7 +43,7 @@ export default function PlayerPanel({
         style={{ marginBottom: 'calc(var(--tile-font-size) * 0.8)' }}
       />
       <div className="hand-with-melds" style={{ position: 'relative', zIndex: 1 }}>
-        <Hand tiles={hand} onDiscard={onDiscard} />
+        <Hand tiles={hand} onDiscard={onDiscard} drawn={drawn} />
         <MeldArea melds={melds} />
       </div>
       <Controls

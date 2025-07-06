@@ -92,6 +92,12 @@ export default function GameBoard({
 
   const defaultHand = Array(13).fill('🀫');
 
+  function hasDrawnTile(player, index) {
+    if (!player || state?.current_player !== index) return false;
+    const count = player.hand?.tiles?.length ?? 0;
+    return count % 3 === 2;
+  }
+
   function concealedHand(p) {
     const count = p?.hand?.tiles?.length ?? 13;
     return Array(count).fill('🀫');
@@ -109,6 +115,11 @@ export default function GameBoard({
       ? sortTilesExceptLast(southTiles)
       : southTiles
     : defaultHand;
+
+  const northDrawn = hasDrawnTile(north, 2);
+  const westDrawn = hasDrawnTile(west, 1);
+  const eastDrawn = hasDrawnTile(east, 3);
+  const southDrawn = hasDrawnTile(south, 0);
 
   const northMelds = north?.hand?.melds.map((m) => m.tiles.map(tileLabel)) ?? [];
   const westMelds = west?.hand?.melds.map((m) => m.tiles.map(tileLabel)) ?? [];
@@ -150,6 +161,7 @@ export default function GameBoard({
         seat="north"
         player={north}
         hand={northHand}
+        drawn={northDrawn}
         melds={northMelds}
         riverTiles={(north?.river ?? []).map(tileLabel)}
         state={state}
@@ -164,6 +176,7 @@ export default function GameBoard({
         seat="west"
         player={west}
         hand={westHand}
+        drawn={westDrawn}
         melds={westMelds}
         riverTiles={(west?.river ?? []).map(tileLabel)}
         state={state}
@@ -178,6 +191,7 @@ export default function GameBoard({
         seat="east"
         player={east}
         hand={eastHand}
+        drawn={eastDrawn}
         melds={eastMelds}
         riverTiles={(east?.river ?? []).map(tileLabel)}
         state={state}
@@ -192,6 +206,7 @@ export default function GameBoard({
         seat="south"
         player={south}
         hand={southHand}
+        drawn={southDrawn}
         melds={southMelds}
         riverTiles={(south?.river ?? []).map(tileLabel)}
         onDiscard={
