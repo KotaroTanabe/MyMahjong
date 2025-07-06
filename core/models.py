@@ -15,6 +15,12 @@ class Tile:
     suit: str
     value: int
 
+    def is_terminal_or_honor(self) -> bool:
+        """Return True if the tile is a terminal or honor."""
+        if self.suit in {"wind", "dragon"}:
+            return True
+        return self.value in {1, 9}
+
 
 @dataclass
 class Meld:
