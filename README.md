@@ -60,6 +60,7 @@ Future work will expand these components.
 - [x] Start game via GUI
 - [x] Simple tsumogiri AI for automated turns
 - [x] Toggle simple AI per player from GUI
+- [x] Players 2-4 use AI by default in GUI
 - [x] Handle start_kyoku event in GUI
 - [x] Join game by ID via GUI
 - [x] Reconnect to running game after reload
