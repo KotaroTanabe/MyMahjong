@@ -162,6 +162,40 @@ def get_allowed_actions(player_index: int) -> list[str]:
     return _engine.get_allowed_actions(player_index)
 
 
+def _player_actions(player_index: int) -> list[str]:
+    """Return full action list for ``player_index`` including draw/discard."""
+
+    assert _engine is not None, "Game not started"
+    actions = set(_engine.get_allowed_actions(player_index))
+    state = _engine.state
+    if not state.waiting_for_claims and player_index == state.current_player:
+        player = state.players[player_index]
+        if len(player.hand.tiles) % 3 == 1:
+            actions.add("draw")
+        else:
+            actions.add("discard")
+    return sorted(actions)
+
+
+def get_next_actions() -> tuple[int, list[str]]:
+    """Return the next actor and their allowed actions.
+
+    If the only available action is ``draw`` it is performed automatically and
+    the next actor is returned instead.
+    """
+
+    assert _engine is not None, "Game not started"
+
+    while True:
+        state = _engine.state
+        idx = state.waiting_for_claims[0] if state.waiting_for_claims else state.current_player
+        actions = _player_actions(idx)
+        if actions == ["draw"]:
+            _engine.draw_tile(idx)
+            continue
+        return idx, actions
+
+
 def apply_action(action: GameAction) -> object | None:
     """Apply ``action`` to the running engine and return any result."""
 

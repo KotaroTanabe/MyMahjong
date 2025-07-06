@@ -4,6 +4,7 @@ import PlayerPanel from './PlayerPanel.jsx';
 import { tileToEmoji, sortTiles, sortTilesExceptLast } from './tileUtils.js';
 import ErrorModal from './ErrorModal.jsx';
 import ResultModal from './ResultModal.jsx';
+import { getNextActions } from './nextActions.js';
 
 function tileLabel(tile) {
   return tileToEmoji(tile);
@@ -58,6 +59,20 @@ export default function GameBoard({
 
   useEffect(() => {
     if (!gameId || result || state?.result) return;
+    getNextActions(server, gameId).then((data) => {
+      if (!data || !Array.isArray(data.actions)) return;
+      const { player_index, actions } = data;
+      if (actions.length === 1 && actions[0] === 'draw') {
+        const ai = aiPlayers[player_index];
+        const body = { player_index, action: ai ? 'auto' : 'draw' };
+        if (ai) body.ai_type = aiTypes[player_index];
+        fetch(`${server.replace(/\/$/, '')}/games/${gameId}/action`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        }).catch(() => {});
+      }
+    });
     const waiting = state?.waiting_for_claims ?? [];
     if (waiting.length > 0) {
       if (JSON.stringify(waiting) !== JSON.stringify(prevWaiting.current)) {

@@ -22,10 +22,13 @@ Each component receives only the data it needs so the interface remains simple a
 1. After the page loads, `App` fetches the current game state via `GET /games/{id}`.
 2. `App` opens a WebSocket to `/ws/{id}` and listens for events.
 3. Incoming events update the React state, which re-renders the `GameBoard`.
-4. When `current_player` changes, `GameBoard` posts `{action: 'draw'}` for that player.
-   If the AI toggle is enabled for the seat it instead posts `{action: 'auto'}`
-   so drawing and discarding happen automatically.
-5. User actions send POST requests back to the server using the REST API.
+4. The GUI queries `/games/{id}/next-actions` to determine which player acts next
+   and what actions are possible.
+5. If the only action is `draw`, the server performs it automatically and returns
+   the subsequent player instead.
+6. Otherwise the GUI checks if that player is AI-controlled and either requests
+   an AI move or enables the relevant buttons for a human.
+7. User or AI actions are sent back via `POST /games/{id}/action`.
 
 ## Future Enhancements
 

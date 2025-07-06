@@ -265,3 +265,18 @@ def test_allowed_actions_endpoint() -> None:
     assert resp.status_code == 200
     actions = resp.json().get("actions")
     assert "chi" in actions and "skip" in actions
+
+
+def test_next_actions_endpoint_autodraw() -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    state = api.get_state()
+    state.current_player = 1
+    state.players[1].hand.tiles = [models.Tile("man", i + 1) for i in range(9)] + [
+        models.Tile("pin", i + 1) for i in range(4)
+    ]
+    state.players[1].riichi = True
+    state.wall.tiles = [models.Tile("sou", 9)]
+    resp = client.get("/games/1/next-actions")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "player_index" in data and "actions" in data

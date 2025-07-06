@@ -31,7 +31,7 @@ describe('GameBoard AI toggle mid-turn', () => {
     expect(fetchMock).toHaveBeenCalledTimes(0);
     fireEvent.click(getAllByLabelText('Enable AI')[0]);
     await Promise.resolve();
-    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock.mock.calls.filter(c => c[1] && c[1].body).length).toBe(1);
     expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({
       player_index: 0,
       action: 'discard',
