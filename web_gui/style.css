@@ -5,9 +5,9 @@
 .board-grid {
   display: grid;
   grid-template-areas:
-    'north center west'
-    'east center south';
-  grid-template-columns: 1fr 1fr 1fr;
+    'north west'
+    'east south';
+  grid-template-columns: 1fr 1fr;
   grid-template-rows: auto auto;
   gap: 0.5rem;
   text-align: center;
@@ -42,7 +42,6 @@
 
 .north { grid-area: north; }
 .west { grid-area: west; }
-.center { grid-area: center; }
 .center-display {
   display: flex;
   flex-direction: column;
@@ -146,10 +145,9 @@
     grid-template-areas:
       'north'
       'west'
-      'center'
       'east'
       'south';
     grid-template-columns: 1fr;
-    grid-template-rows: repeat(5, auto);
+    grid-template-rows: repeat(4, auto);
   }
 }
