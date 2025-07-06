@@ -30,7 +30,9 @@ class MahjongEngine:
         if self.state.dead_wall:
             self.state.dead_wall.pop(0)
         # Reveal next dora indicator if available
-        if len(self.state.wall.dead_wall) >= 5 + len(self.state.dora_indicators):
+        if len(self.state.wall.dead_wall) >= (
+            5 + len(self.state.dora_indicators)
+        ):
             new_dora = self.state.wall.dead_wall[
                 -(5 + len(self.state.dora_indicators))
             ]
