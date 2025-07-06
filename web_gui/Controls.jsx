@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Button from './Button.jsx';
 
-export default function Controls({ server, gameId }) {
+export default function Controls({ server, gameId, playerIndex = 0 }) {
   const [message, setMessage] = useState('');
 
 
@@ -10,7 +10,7 @@ export default function Controls({ server, gameId }) {
       await fetch(`${server.replace(/\/$/, '')}/games/${gameId}/action`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ player_index: 0, action, ...payload }),
+        body: JSON.stringify({ player_index: playerIndex, action, ...payload }),
       });
       setMessage(action);
     } catch {

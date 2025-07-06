@@ -18,6 +18,7 @@ class MahjongEngine:
         self.state.current_player = 0
         self.kans_this_hand = 0
         self.riichi_this_hand = 0
+        self._first_draw_done = [False] * 4
         self.events: list[GameEvent] = []
         self._emit("start_game", {"state": self.state})
         self.start_kyoku(dealer=0, round_number=1)
@@ -29,16 +30,13 @@ class MahjongEngine:
             return tile.value in (1, 9)
         return tile.suit in ("wind", "dragon")
 
-    def _check_nine_terminals(self) -> None:
-        """Check for nine terminals/honors and abort the hand if present."""
-        for i, player in enumerate(self.state.players):
-            count = sum(
-                1 for t in player.hand.tiles if self._is_terminal_or_honor(t)
-            )
-            if count >= 9:
-                self._emit("ryukyoku", {"reason": "nine_terminals", "player_index": i})
-                self.advance_hand(None)
-                break
+    def _check_nine_terminals_for(self, player_index: int) -> None:
+        """Check nine terminals for ``player_index`` and abort the hand if found."""
+        player = self.state.players[player_index]
+        count = sum(1 for t in player.hand.tiles if self._is_terminal_or_honor(t))
+        if count >= 9:
+            self._emit("ryukyoku", {"reason": "nine_terminals", "player_index": player_index})
+            self.advance_hand(None)
 
     def _draw_replacement_tile(self, player: Player) -> None:
         """Draw a replacement tile from the dead wall and reveal new dora."""
@@ -90,12 +88,15 @@ class MahjongEngine:
         self.state.current_player = dealer
         self.kans_this_hand = 0
         self.riichi_this_hand = 0
+        self._first_draw_done = [False] * 4
         self.deal_initial_hands()
         self._emit(
             "start_kyoku",
             {"dealer": dealer, "round": round_number, "state": self.state},
         )
-        self._check_nine_terminals()
+        # Dealer already has their first draw after the deal
+        self._first_draw_done[dealer] = True
+        self._check_nine_terminals_for(dealer)
 
     def deal_initial_hands(self) -> None:
         """Deal initial tiles: 14 for the dealer and 13 for others."""
@@ -126,6 +127,9 @@ class MahjongEngine:
         assert self.state.wall is not None
         tile = self.state.wall.draw_tile()
         self.state.players[player_index].draw(tile)
+        if not self._first_draw_done[player_index]:
+            self._first_draw_done[player_index] = True
+            self._check_nine_terminals_for(player_index)
         self._emit("draw_tile", {"player_index": player_index, "tile": tile})
         if self.state.wall.remaining_tiles == 0:
             self._emit("ryukyoku", {"reason": "wall_empty"})
