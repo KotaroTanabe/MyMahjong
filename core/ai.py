@@ -6,10 +6,10 @@ from typing import Callable, Dict
 
 from .mahjong_engine import MahjongEngine
 from .models import Tile
-from .simple_ai import tsumogiri_turn
+from .simple_ai import smart_turn
 
 AI_REGISTRY: Dict[str, Callable[[MahjongEngine, int], Tile]] = {
-    "simple": tsumogiri_turn,
+    "simple": smart_turn,
 }
 
 

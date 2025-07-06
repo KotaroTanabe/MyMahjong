@@ -1,18 +1,26 @@
 from core import api, models
+from core.shanten_quiz import calculate_shanten
 
 
-def test_auto_play_turn_discards_drawn_tile() -> None:
+HAND_14 = [
+    models.Tile("man", 1), models.Tile("man", 2), models.Tile("man", 3),
+    models.Tile("pin", 1), models.Tile("pin", 2), models.Tile("pin", 3),
+    models.Tile("sou", 1), models.Tile("sou", 2), models.Tile("sou", 3),
+    models.Tile("man", 7), models.Tile("man", 8), models.Tile("man", 9),
+    models.Tile("pin", 9), models.Tile("sou", 9),
+]
+
+
+def test_auto_play_turn_discards_without_increasing_shanten() -> None:
     state = api.start_game(["A", "B", "C", "D"])
-    assert state.wall is not None
-    tile = models.Tile(suit="man", value=9)
-    state.wall.tiles.append(tile)
     player = state.current_player
-    hand_len = len(state.players[player].hand.tiles)
+    state.players[player].hand.tiles = HAND_14.copy()
+    before = calculate_shanten(state.players[player].hand.tiles)
 
-    discarded = api.auto_play_turn()
+    discarded = api.auto_play_turn(player)
 
-    # With a full hand, the AI should discard without drawing
+    after = calculate_shanten(state.players[player].hand.tiles)
+    assert after <= before
     assert discarded == state.players[player].river[-1]
-    assert len(state.players[player].hand.tiles) == hand_len - 1
     assert state.current_player == (player + 1) % 4
 

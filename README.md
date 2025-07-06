@@ -61,7 +61,7 @@ Future work will expand these components.
 - [x] Display hand shanten count via GUI
 - [x] Meld and win actions via GUI
 - [x] Start game via GUI
-- [x] Simple tsumogiri AI for automated turns
+- [x] Simple shanten-based AI for automated turns
 - [x] Toggle AI per player from GUI
 - [x] AI type selection framework (currently only 'simple')
 - [x] Players 2-4 use AI by default in GUI
@@ -149,8 +149,8 @@ Future work will expand these components.
  - [x] **10. Connect GUI state** – update React components to fetch the initial game,
   handle WebSocket events and send player actions.
  - [ ] **11. Provide a mock AI** – run a simple MJAI-compatible process through the
-  adapter with an interface that later swaps in a stronger engine. A minimal
-  tsumogiri AI exists for local automation.
+  adapter with an interface that later swaps in a stronger engine. A simple
+  shanten-based AI exists for local automation.
 - [ ] **12. Write end-to-end tests** – cover REST routes, WebSocket updates and basic
   GUI interactions.
  - [x] **13. Add `何切る問題` mode** – offer a practice scenario with a random seat wind
