@@ -591,7 +591,7 @@ class MahjongEngine:
             if counts[key] >= 4:
                 actions.add("kan")
 
-        if not player.riichi:
+        if not player.riichi and self._is_tenpai(player):
             actions.add("riichi")
 
         return sorted(actions)

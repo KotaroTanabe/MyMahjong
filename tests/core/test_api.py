@@ -119,3 +119,35 @@ def test_get_allowed_actions_api() -> None:
     state.players[1].hand.tiles = [models.Tile("man", 1), models.Tile("man", 3)]
     actions = api.get_allowed_actions(1)
     assert "chi" in actions and "pon" not in actions and "skip" in actions
+
+
+TENPAI_TILES = [
+    models.Tile("man", 1), models.Tile("man", 1),
+    models.Tile("man", 2), models.Tile("man", 2),
+    models.Tile("man", 3), models.Tile("man", 3),
+    models.Tile("pin", 4), models.Tile("pin", 4),
+    models.Tile("pin", 5), models.Tile("pin", 5),
+    models.Tile("sou", 6), models.Tile("sou", 6),
+    models.Tile("sou", 7), models.Tile("sou", 8),
+]
+
+
+def test_allowed_actions_include_riichi_when_tenpai() -> None:
+    state = api.start_game(["A", "B", "C", "D"])
+    state.players[0].hand.tiles = TENPAI_TILES.copy()
+    actions = api.get_allowed_actions(0)
+    assert "riichi" in actions
+
+
+def test_allowed_actions_exclude_riichi_when_not_tenpai() -> None:
+    state = api.start_game(["A", "B", "C", "D"])
+    tiles = [
+        models.Tile("man", 1), models.Tile("man", 1), models.Tile("man", 1),
+        models.Tile("man", 2), models.Tile("man", 3), models.Tile("man", 4),
+        models.Tile("man", 5), models.Tile("man", 6), models.Tile("man", 7),
+        models.Tile("pin", 1), models.Tile("pin", 2), models.Tile("sou", 3),
+        models.Tile("sou", 4), models.Tile("sou", 6),
+    ]
+    state.players[0].hand.tiles = tiles
+    actions = api.get_allowed_actions(0)
+    assert "riichi" not in actions
