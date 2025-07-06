@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import CenterDisplay from './CenterDisplay.jsx';
 import PlayerPanel from './PlayerPanel.jsx';
-import { tileToEmoji, sortTiles } from './tileUtils.js';
+import { tileToEmoji, sortTiles, sortTilesExceptLast } from './tileUtils.js';
 import ErrorModal from './ErrorModal.jsx';
 
 function tileLabel(tile) {
@@ -86,7 +86,7 @@ export default function GameBoard({
   const southTiles = south?.hand?.tiles ?? null;
   const southHand = southTiles
     ? sortHand
-      ? sortTiles(southTiles)
+      ? sortTilesExceptLast(southTiles)
       : southTiles
     : defaultHand;
 

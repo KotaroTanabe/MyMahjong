@@ -116,6 +116,10 @@
   transform: translateY(-2px);
 }
 
+.drawn-tile {
+  margin-left: calc(var(--tile-font-size) * 0.5);
+}
+
 .mj-tile img {
   width: 100%;
   height: 100%;

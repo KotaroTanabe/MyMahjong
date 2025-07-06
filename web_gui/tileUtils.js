@@ -41,3 +41,10 @@ export function sortTiles(tiles) {
       return a.value - b.value;
     });
 }
+
+export function sortTilesExceptLast(tiles) {
+  if (tiles.length <= 1) return tiles.slice();
+  const head = sortTiles(tiles.slice(0, -1));
+  head.push(tiles[tiles.length - 1]);
+  return head;
+}
