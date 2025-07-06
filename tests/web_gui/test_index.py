@@ -143,7 +143,7 @@ def test_controls_include_extra_actions() -> None:
 
 
 def test_app_handles_new_events() -> None:
-    text = Path('web_gui/App.jsx').read_text()
+    text = Path('web_gui/applyEvent.js').read_text()
     for evt in ['meld', 'riichi', 'tsumo', 'ron', 'skip']:
         assert evt in text
 
