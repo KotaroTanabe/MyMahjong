@@ -147,7 +147,10 @@ def game_action(game_id: int, req: ActionRequest) -> dict:
         api.call_kan(req.player_index, tiles)
         return {"status": "ok"}
     if req.action == "riichi":
-        api.declare_riichi(req.player_index)
+        try:
+            api.declare_riichi(req.player_index)
+        except ValueError as e:
+            raise HTTPException(status_code=409, detail=str(e))
         return {"status": "ok"}
     if req.action == "tsumo" and req.tile:
         tile = models.Tile(**req.tile)

@@ -55,6 +55,15 @@ def test_end_game_creates_new_state() -> None:
 def test_declare_riichi_api() -> None:
     state = api.start_game(["A", "B", "C", "D"])
     player = state.players[0]
+    player.hand.tiles = [
+        models.Tile("man", 1), models.Tile("man", 1),
+        models.Tile("man", 2), models.Tile("man", 2),
+        models.Tile("man", 3), models.Tile("man", 3),
+        models.Tile("pin", 4), models.Tile("pin", 4),
+        models.Tile("pin", 5), models.Tile("pin", 5),
+        models.Tile("sou", 6), models.Tile("sou", 6),
+        models.Tile("sou", 7), models.Tile("sou", 8),
+    ]
     score = player.score
     api.declare_riichi(0)
     assert player.riichi

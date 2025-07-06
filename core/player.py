@@ -34,6 +34,13 @@ class Player:
             self.hand.tiles.remove(tile)
         self.river.append(tile)
 
+    def has_open_melds(self) -> bool:
+        """Return ``True`` if the player has chi, pon or open kan melds."""
+        return any(
+            meld.type in {"chi", "pon", "kan", "added_kan"}
+            for meld in self.hand.melds
+        )
+
     def declare_riichi(self) -> None:
         """Declare riichi and pay the 1000 point stick."""
         if self.riichi:
