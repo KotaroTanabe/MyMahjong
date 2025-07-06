@@ -7,6 +7,12 @@ from core import api, models
 client = TestClient(app)
 
 
+def test_get_game_returns_404_when_not_started() -> None:
+    api._engine = None  # type: ignore[assignment]
+    response = client.get("/games/1")
+    assert response.status_code == 404
+
+
 def test_health_endpoint() -> None:
     response = client.get("/health")
     assert response.status_code == 200
