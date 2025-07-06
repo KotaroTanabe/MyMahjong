@@ -109,6 +109,15 @@ describe('App icons', () => {
     await userEvent.click(peekButton);
     expect(peekButton.innerHTML).not.toBe(first);
   });
+
+  it('toggles sort icon', async () => {
+    global.fetch = mockFetch();
+    render(<App />);
+    const sortButton = screen.getByLabelText('Toggle sort');
+    const first = sortButton.innerHTML;
+    await userEvent.click(sortButton);
+    expect(sortButton.innerHTML).not.toBe(first);
+  });
 });
 
 describe('App settings modal', () => {
