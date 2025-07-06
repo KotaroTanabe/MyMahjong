@@ -62,7 +62,12 @@ export function applyEvent(state, event) {
     }
     case 'tsumo':
     case 'ron': {
-      newState.result = event.payload;
+      if (Array.isArray(event.payload.scores)) {
+        newState.players.forEach((p, i) => {
+          if (p) p.score = event.payload.scores[i];
+        });
+      }
+      newState.result = { type: event.name, ...event.payload };
       newState.waiting_for_claims = [];
       break;
     }

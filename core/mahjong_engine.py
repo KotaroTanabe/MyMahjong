@@ -7,6 +7,21 @@ from .wall import Wall
 from .rules import RuleSet, StandardRuleSet, _tile_to_index
 from mahjong.shanten import Shanten
 from mahjong.hand_calculating.hand_response import HandResponse
+from dataclasses import asdict
+from typing import Any
+
+
+def _hand_response_dict(resp: HandResponse) -> dict[str, Any]:
+    """Return a JSON serializable representation of ``resp``."""
+    return {
+        "han": resp.han,
+        "fu": resp.fu,
+        "cost": resp.cost,
+        "yaku": [y.name for y in resp.yaku] if resp.yaku else None,
+        "fu_details": resp.fu_details,
+        "error": resp.error,
+        "is_open_hand": resp.is_open_hand,
+    }
 
 
 class MahjongEngine:
@@ -422,7 +437,9 @@ class MahjongEngine:
             "tsumo",
             {
                 "player_index": player_index,
-                "result": result,
+                "win_tile": win_tile,
+                "hand": asdict(player.hand),
+                "result": _hand_response_dict(result),
                 "scores": scores,
             },
         )
@@ -446,7 +463,13 @@ class MahjongEngine:
         scores = [p.score for p in self.state.players]
         self._emit(
             "ron",
-            {"player_index": player_index, "result": result, "scores": scores},
+            {
+                "player_index": player_index,
+                "win_tile": win_tile,
+                "hand": asdict(player.hand),
+                "result": _hand_response_dict(result),
+                "scores": scores,
+            },
         )
         self.state.waiting_for_claims = []
         self.advance_hand(player_index)

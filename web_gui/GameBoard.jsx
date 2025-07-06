@@ -57,6 +57,7 @@ export default function GameBoard({
 
   useEffect(() => {
     const current = state?.current_player;
+    if (result || state?.result) return;
     if (!gameId || current == null || current === prevPlayer.current) return;
     prevPlayer.current = current;
     const tiles = state?.players?.[current]?.hand?.tiles ?? [];
@@ -70,7 +71,7 @@ export default function GameBoard({
         body: JSON.stringify(body),
       }).catch(() => {});
     }
-  }, [state?.current_player, gameId, server, state?.players, aiPlayers, aiTypes]);
+  }, [state?.current_player, gameId, server, state?.players, aiPlayers, aiTypes, result]);
 
   useEffect(() => {
     if (state?.result) {
