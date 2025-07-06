@@ -151,21 +151,25 @@ export default function GameBoard({
     north?.hand?.melds.map((m) => ({
       tiles: m.tiles.map(tileLabel),
       calledIndex: m.called_index ?? null,
+      calledFrom: m.called_from ?? null,
     })) ?? [];
   const westMelds =
     west?.hand?.melds.map((m) => ({
       tiles: m.tiles.map(tileLabel),
       calledIndex: m.called_index ?? null,
+      calledFrom: m.called_from ?? null,
     })) ?? [];
   const eastMelds =
     east?.hand?.melds.map((m) => ({
       tiles: m.tiles.map(tileLabel),
       calledIndex: m.called_index ?? null,
+      calledFrom: m.called_from ?? null,
     })) ?? [];
   const southMelds =
     south?.hand?.melds.map((m) => ({
       tiles: m.tiles.map(tileLabel),
       calledIndex: m.called_index ?? null,
+      calledFrom: m.called_from ?? null,
     })) ?? [];
 
   const remaining = state?.wall?.tiles?.length ?? 0;

@@ -28,6 +28,7 @@ class Meld:
     tiles: List[Tile]
     type: str
     called_index: int | None = None
+    called_from: int | None = None
 
 
 @dataclass

@@ -137,7 +137,28 @@
   transform: rotate(90deg);
 }
 
+.called-from-left.called-tile {
+  transform: rotate(-90deg);
+}
+
+.called-from-opposite.called-tile {
+  transform: rotate(180deg);
+}
+
+.called-from-right.called-tile {
+  transform: rotate(90deg);
+}
+
 .called-tile:hover {
+  transform: rotate(90deg) translateY(-2px);
+}
+.called-from-left.called-tile:hover {
+  transform: rotate(-90deg) translateY(-2px);
+}
+.called-from-opposite.called-tile:hover {
+  transform: rotate(180deg) translateY(-2px);
+}
+.called-from-right.called-tile:hover {
   transform: rotate(90deg) translateY(-2px);
 }
 .flat-btn {
