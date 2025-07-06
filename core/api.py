@@ -96,6 +96,8 @@ def auto_play_turn(player_index: int | None = None, ai_type: str = "simple") -> 
     ai = AI_REGISTRY.get(ai_type)
     if ai is None:
         raise ValueError(f"Unknown ai_type: {ai_type}")
+    for p in list(_engine.state.waiting_for_claims):
+        _engine.skip(p)
     return ai(_engine, idx)
 
 
