@@ -27,3 +27,13 @@ describe('PlayerPanel AI button icon', () => {
     expect(getByLabelText('Disable AI').innerHTML).not.toBe(first);
   });
 });
+
+describe('PlayerPanel layout styles', () => {
+  it('sets river margin and hand z-index', () => {
+    const { container } = render(panel(false));
+    const river = container.querySelector('.river');
+    const hand = container.querySelector('.hand-with-melds');
+    expect(river.style.marginBottom).toBe('calc(var(--tile-font-size) * 0.8)');
+    expect(hand.style.zIndex).toBe('1');
+  });
+});

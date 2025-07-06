@@ -34,8 +34,11 @@ export default function PlayerPanel({
           {aiActive ? <FaRobot /> : <FaUser />}
         </Button>
       </div>
-      <River tiles={riverTiles} />
-      <div className="hand-with-melds">
+      <River
+        tiles={riverTiles}
+        style={{ marginBottom: 'calc(var(--tile-font-size) * 0.8)' }}
+      />
+      <div className="hand-with-melds" style={{ position: 'relative', zIndex: 1 }}>
         <Hand tiles={hand} onDiscard={onDiscard} />
         <MeldArea melds={melds} />
       </div>
