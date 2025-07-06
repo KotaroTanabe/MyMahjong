@@ -210,6 +210,18 @@ def test_practice_endpoints_external(monkeypatch) -> None:
     assert resp.status_code == 200
 
 
+def test_shanten_quiz_endpoints() -> None:
+    hand_resp = client.get("/shanten-quiz")
+    assert hand_resp.status_code == 200
+    hand = hand_resp.json()
+    assert isinstance(hand, list)
+
+    check = client.post("/shanten-quiz/check", json={"hand": hand})
+    assert check.status_code == 200
+    data = check.json()
+    assert "shanten" in data
+
+
 def test_auto_action_endpoint() -> None:
     client.post("/games", json={"players": ["A", "B", "C", "D"]})
     resp = client.post(

@@ -7,7 +7,7 @@ import asyncio
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from core import api, models
+from core import api, models, shanten_quiz
 
 app = FastAPI()
 # very small in-memory id tracker until multi-game support exists
@@ -74,6 +74,29 @@ def practice_suggest(req: SuggestRequest, ai: bool = False) -> dict:
     hand = [models.Tile(**t) for t in req.hand]
     tile = api.suggest_practice_discard(hand, use_ai=ai)
     return asdict(tile)
+
+
+class QuizRequest(BaseModel):
+    """Request body for shanten quiz check."""
+
+    hand: list[dict]
+
+
+@app.get("/shanten-quiz")
+def shanten_quiz_hand() -> list[dict]:
+    """Return a random hand for the shanten quiz."""
+
+    hand = shanten_quiz.generate_hand()
+    return [asdict(t) for t in hand]
+
+
+@app.post("/shanten-quiz/check")
+def shanten_quiz_check(req: QuizRequest) -> dict:
+    """Return the shanten number for the provided hand."""
+
+    hand = [models.Tile(**t) for t in req.hand]
+    value = shanten_quiz.calculate_shanten(hand)
+    return {"shanten": value}
 
 
 class ActionRequest(BaseModel):
