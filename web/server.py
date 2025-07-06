@@ -122,6 +122,9 @@ def game_action(game_id: int, req: ActionRequest) -> dict:
     if req.action == "skip":
         api.skip(req.player_index)
         return {"status": "ok"}
+    if req.action == "auto":
+        tile = api.auto_play_turn(req.player_index)
+        return asdict(tile)
     raise HTTPException(status_code=400, detail="Unknown action")
 
 

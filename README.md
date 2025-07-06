@@ -58,6 +58,7 @@ Future work will expand these components.
 - [x] Meld and win actions via GUI
 - [x] Start game via GUI
 - [x] Simple tsumogiri AI for automated turns
+- [x] Toggle simple AI per player from GUI
 - [x] Handle start_kyoku event in GUI
 - [x] Join game by ID via GUI
 - [x] Reconnect to running game after reload

@@ -21,6 +21,15 @@ export default function GameBoard({
 
   const prevPlayer = useRef(null);
   const [error, setError] = useState(null);
+  const [aiPlayers, setAiPlayers] = useState([false, false, false, false]);
+
+  function toggleAI(idx) {
+    setAiPlayers((a) => {
+      const arr = a.slice();
+      arr[idx] = !arr[idx];
+      return arr;
+    });
+  }
 
   useEffect(() => {
     const current = state?.current_player;
@@ -28,13 +37,14 @@ export default function GameBoard({
     prevPlayer.current = current;
     const tiles = state?.players?.[current]?.hand?.tiles ?? [];
     if (tiles.length === 13) {
+      const action = aiPlayers[current] ? 'auto' : 'draw';
       fetch(`${server.replace(/\/$/, '')}/games/${gameId}/action`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ player_index: current, action: 'draw' }),
+        body: JSON.stringify({ player_index: current, action }),
       }).catch(() => {});
     }
-  }, [state?.current_player, gameId, server, state?.players]);
+  }, [state?.current_player, gameId, server, state?.players, aiPlayers]);
 
   const defaultHand = Array(13).fill('🀫');
 
@@ -97,6 +107,8 @@ export default function GameBoard({
         gameId={gameId}
         playerIndex={2}
         activePlayer={state?.current_player}
+        aiActive={aiPlayers[2]}
+        toggleAI={toggleAI}
       />
       <PlayerPanel
         seat="west"
@@ -108,6 +120,8 @@ export default function GameBoard({
         gameId={gameId}
         playerIndex={1}
         activePlayer={state?.current_player}
+        aiActive={aiPlayers[1]}
+        toggleAI={toggleAI}
       />
       <PlayerPanel
         seat="east"
@@ -119,6 +133,8 @@ export default function GameBoard({
         gameId={gameId}
         playerIndex={3}
         activePlayer={state?.current_player}
+        aiActive={aiPlayers[3]}
+        toggleAI={toggleAI}
       />
       <PlayerPanel
         seat="south"
@@ -131,6 +147,8 @@ export default function GameBoard({
         gameId={gameId}
         playerIndex={0}
         activePlayer={state?.current_player}
+        aiActive={aiPlayers[0]}
+        toggleAI={toggleAI}
       />
     </div>
     <ErrorModal message={error} onClose={() => setError(null)} />

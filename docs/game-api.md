@@ -34,6 +34,7 @@ The following classes defined in `core.models` are used throughout the API:
 | `declare_ron`      | `player_index`, `Tile`                  | Win on another player's discard. |
 | `declare_tsumo`    | `player_index`, `Tile`                  | Win on self-drawn tile. |
 | `skip`             | `player_index`                          | Pass on an action. |
+| `auto_play_turn`   | `player_index`                          | Draw and discard using the simple AI. |
 | `end_game`         | none                                    | Terminate the current game. |
 | `get_state`        | none                                    | Retrieve the current `GameState`. |
 
