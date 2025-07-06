@@ -107,6 +107,8 @@ Future work will expand these components.
 - [x] end_game
 - [x] start_kyoku
 - [x] ryukyoku detection
+- [x] Noten penalty scoring on draws
+- [x] Draw result modal in GUI
 - [x] standard wall initialization
 - [x] dead wall & dora indicator tracking
 - [x] wanpai separation and yama remaining count

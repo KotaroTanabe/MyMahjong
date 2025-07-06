@@ -179,3 +179,12 @@ def test_app_uses_local_storage_for_server() -> None:
     assert "localStorage.getItem('serverUrl')" in text
     assert "localStorage.setItem('serverUrl'" in text
     assert "localStorage.setItem('gameId'" in text
+
+def test_result_modal_component_exists() -> None:
+    modal = Path('web_gui/ResultModal.jsx')
+    assert modal.is_file(), 'ResultModal.jsx missing'
+
+
+def test_game_board_references_result_modal() -> None:
+    board = Path('web_gui/GameBoard.jsx').read_text()
+    assert 'ResultModal' in board

@@ -3,6 +3,7 @@ import CenterDisplay from './CenterDisplay.jsx';
 import PlayerPanel from './PlayerPanel.jsx';
 import { tileToEmoji, sortTiles } from './tileUtils.js';
 import ErrorModal from './ErrorModal.jsx';
+import ResultModal from './ResultModal.jsx';
 
 function tileLabel(tile) {
   return tileToEmoji(tile);
@@ -22,6 +23,7 @@ export default function GameBoard({
 
   const prevPlayer = useRef(null);
   const [error, setError] = useState(null);
+  const [result, setResult] = useState(null);
   // Players 1-3 (west, north, east) act as AI by default
   const [aiPlayers, setAiPlayers] = useState([false, true, true, true]);
   const [aiTypes] = useState(['simple', 'simple', 'simple', 'simple']);
@@ -69,6 +71,10 @@ export default function GameBoard({
       }).catch(() => {});
     }
   }, [state?.current_player, gameId, server, state?.players, aiPlayers, aiTypes]);
+
+  useEffect(() => {
+    setResult(state?.result ?? null);
+  }, [state?.result]);
 
   const defaultHand = Array(13).fill('🀫');
 
@@ -186,6 +192,7 @@ export default function GameBoard({
         toggleAI={toggleAI}
       />
     </div>
+    <ResultModal result={result} onClose={() => setResult(null)} />
     <ErrorModal message={error} onClose={() => setError(null)} />
     </>
   );

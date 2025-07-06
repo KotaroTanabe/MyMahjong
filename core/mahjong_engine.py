@@ -4,7 +4,8 @@ from __future__ import annotations
 from .models import GameState, Tile, Meld, GameEvent
 from .player import Player
 from .wall import Wall
-from .rules import RuleSet, StandardRuleSet
+from .rules import RuleSet, StandardRuleSet, _tile_to_index
+from mahjong.shanten import Shanten
 from mahjong.hand_calculating.hand_response import HandResponse
 
 
@@ -45,11 +46,42 @@ class MahjongEngine:
             if t.is_terminal_or_honor()
         )
         if len(unique) >= 9:
-            self._emit("ryukyoku", {"reason": "nine_terminals"})
-            self.advance_hand(None)
+            self._resolve_ryukyoku("nine_terminals")
 
     def _emit(self, name: str, payload: dict) -> None:
         self.events.append(GameEvent(name=name, payload=payload))
+
+    def _is_tenpai(self, player: Player) -> bool:
+        """Return True if ``player`` is in tenpai."""
+        counts = [0] * 34
+        for t in player.hand.tiles:
+            counts[_tile_to_index(t)] += 1
+        for meld in player.hand.melds:
+            for t in meld.tiles:
+                counts[_tile_to_index(t)] += 1
+        if sum(counts) > 14 and player.hand.tiles:
+            counts[_tile_to_index(player.hand.tiles[-1])] -= 1
+        return Shanten().calculate_shanten(counts) == 0
+
+    def _resolve_ryukyoku(self, reason: str) -> None:
+        """Handle a draw, apply noten penalties and advance the hand."""
+        tenpai = [self._is_tenpai(p) for p in self.state.players]
+        tenpai_players = [i for i, t in enumerate(tenpai) if t]
+        noten_players = [i for i, t in enumerate(tenpai) if not t]
+        if tenpai_players and noten_players:
+            pool = 3000
+            per_tenpai = pool // len(tenpai_players)
+            per_noten = pool // len(noten_players)
+            for i in tenpai_players:
+                self.state.players[i].score += per_tenpai
+            for i in noten_players:
+                self.state.players[i].score -= per_noten
+        scores = [p.score for p in self.state.players]
+        self._emit(
+            "ryukyoku",
+            {"reason": reason, "tenpai": tenpai, "scores": scores},
+        )
+        self.advance_hand(None)
 
     def pop_events(self) -> list[GameEvent]:
         events = self.events[:]
@@ -121,8 +153,7 @@ class MahjongEngine:
         if len(player.river) == 0 and not player.hand.melds:
             self._check_nine_terminals(player)
         if self.state.wall.remaining_tiles == 0:
-            self._emit("ryukyoku", {"reason": "wall_empty"})
-            self.advance_hand(None)
+            self._resolve_ryukyoku("wall_empty")
         else:
             self.state.current_player = (player_index + 1) % len(self.state.players)
         return tile
@@ -289,8 +320,7 @@ class MahjongEngine:
             self._emit("meld", {"player_index": player_index, "meld": meld})
             self.state.kan_count += 1
             if self.state.kan_count >= 4:
-                self._emit("ryukyoku", {"reason": "four_kans"})
-                self.advance_hand(None)
+                self._resolve_ryukyoku("four_kans")
             return
 
         # Added kan upgrade from an existing pon
@@ -314,8 +344,7 @@ class MahjongEngine:
                 self._emit("meld", {"player_index": player_index, "meld": meld})
                 self.state.kan_count += 1
                 if self.state.kan_count >= 4:
-                    self._emit("ryukyoku", {"reason": "four_kans"})
-                    self.advance_hand(None)
+                    self._resolve_ryukyoku("four_kans")
                 return
 
         # Closed kan from hand
@@ -337,8 +366,7 @@ class MahjongEngine:
         self._emit("meld", {"player_index": player_index, "meld": meld})
         self.state.kan_count += 1
         if self.state.kan_count >= 4:
-            self._emit("ryukyoku", {"reason": "four_kans"})
-            self.advance_hand(None)
+            self._resolve_ryukyoku("four_kans")
 
     def declare_tsumo(self, player_index: int, win_tile: Tile) -> HandResponse:
         """Declare a self-drawn win and return scoring info."""
