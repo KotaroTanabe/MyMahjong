@@ -87,6 +87,13 @@ def skip(player_index: int) -> None:
     _engine.skip(player_index)
 
 
+def advance_hand(winner_index: int | None = None) -> GameState:
+    """Advance to the next hand and return the updated state."""
+    assert _engine is not None, "Game not started"
+    _engine.advance_hand(winner_index)
+    return _engine.state
+
+
 def end_game() -> GameState:
     """End the current game and reset the engine."""
     assert _engine is not None, "Game not started"
@@ -155,6 +162,9 @@ def apply_action(action: GameAction) -> object | None:
     if action.type == "start_kyoku":
         assert action.dealer is not None and action.round_number is not None
         _engine.start_kyoku(action.dealer, action.round_number)
+        return None
+    if action.type == "advance_hand":
+        _engine.advance_hand(action.player_index)
         return None
     if action.type == "end_game":
         return _engine.end_game()

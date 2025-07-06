@@ -106,6 +106,7 @@ class MahjongEngine:
         self._emit("draw_tile", {"player_index": player_index, "tile": tile})
         if self.state.wall.remaining_tiles == 0:
             self._emit("ryukyoku", {"reason": "wall_empty"})
+            self.advance_hand(None)
         else:
             self.state.current_player = (player_index + 1) % len(self.state.players)
         return tile
@@ -333,6 +334,7 @@ class MahjongEngine:
                 "scores": scores,
             },
         )
+        self.advance_hand(player_index)
         return result
 
     def declare_ron(self, player_index: int, win_tile: Tile) -> HandResponse:
@@ -352,6 +354,7 @@ class MahjongEngine:
             "ron",
             {"player_index": player_index, "result": result, "scores": scores},
         )
+        self.advance_hand(player_index)
         return result
 
     def skip(self, player_index: int) -> None:
@@ -362,6 +365,20 @@ class MahjongEngine:
             self.state.players
         )
         self._emit("skip", {"player_index": player_index})
+
+    def advance_hand(self, winner_index: int | None = None) -> None:
+        """Move to the next hand and handle dealer rotation."""
+        if winner_index is None or winner_index == self.state.dealer:
+            self.state.honba += 1
+        else:
+            self.state.honba = 0
+            self.state.dealer = (self.state.dealer + 1) % len(self.state.players)
+            self.state.round_number += 1
+
+        if self.state.round_number > 8:
+            self.end_game()
+        else:
+            self.start_kyoku(self.state.dealer, self.state.round_number)
 
     def end_game(self) -> GameState:
         """Reset the engine and return the final state."""

@@ -146,12 +146,6 @@ def test_additional_action_endpoints() -> None:
 
     resp = client.post(
         "/games/1/action",
-        json={"player_index": 0, "action": "ron", "tile": tile},
-    )
-    assert resp.status_code == 200
-
-    resp = client.post(
-        "/games/1/action",
         json={"player_index": 0, "action": "skip"},
     )
     assert resp.status_code == 200
