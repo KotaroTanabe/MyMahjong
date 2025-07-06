@@ -1,7 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import CenterDisplay from './CenterDisplay.jsx';
 import PlayerPanel from './PlayerPanel.jsx';
 import { tileToEmoji } from './tileUtils.js';
+import ErrorModal from './ErrorModal.jsx';
 
 function tileLabel(tile) {
   return tileToEmoji(tile);
@@ -19,6 +20,7 @@ export default function GameBoard({
   const east = players[3];
 
   const prevPlayer = useRef(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const current = state?.current_player;
@@ -61,13 +63,16 @@ export default function GameBoard({
     try {
       if (!gameId) return;
       if (typeof tile === 'string') return;
-      await fetch(`${server.replace(/\/$/, '')}/games/${gameId}/action`, {
+      const resp = await fetch(`${server.replace(/\/$/, '')}/games/${gameId}/action`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ player_index: 0, action: 'discard', tile }),
       });
+      if (!resp.ok) {
+        setError(`Discard failed: ${resp.status}`);
+      }
     } catch {
-      // ignore errors for now
+      setError('Failed to contact server');
     }
   }
 
@@ -128,6 +133,7 @@ export default function GameBoard({
         activePlayer={state?.current_player}
       />
     </div>
+    <ErrorModal message={error} onClose={() => setError(null)} />
     </>
   );
 }

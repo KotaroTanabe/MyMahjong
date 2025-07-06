@@ -72,6 +72,7 @@ Future work will expand these components.
 - [x] Icon buttons using react-icons
 - [x] Highlight active player on board
 - [x] 6x4 discard grid rendering
+- [x] Modal error display on failed discard actions
 - [x] 何切る問題 mode
   - [x] CLI practice command
   - [x] AI recommendation

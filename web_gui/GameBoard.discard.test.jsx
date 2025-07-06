@@ -18,7 +18,7 @@ describe('GameBoard discard', () => {
     const state = { current_player: 0, players: mockPlayers(), wall: { tiles: [] } };
     render(<GameBoard state={state} server="http://s" gameId="1" />);
     const label = `Discard ${tileDescription({ suit: 'man', value: 1 })}`;
-    const btn = screen.getByRole('button', { name: label });
+    const btn = screen.getAllByRole('button', { name: label })[0];
     await userEvent.click(btn);
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({ player_index: 0, action: 'discard', tile: { suit: 'man', value: 1 } });
@@ -32,5 +32,17 @@ describe('GameBoard discard', () => {
     const btn = container.querySelector('.south .hand button');
     expect(btn).toBeNull();
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('shows modal on server error', async () => {
+    const fetchMock = vi.fn(() => Promise.resolve({ ok: false, status: 409 }));
+    global.fetch = fetchMock;
+    const state = { current_player: 0, players: mockPlayers(), wall: { tiles: [] } };
+    render(<GameBoard state={state} server="http://s" gameId="1" />);
+    const label = `Discard ${tileDescription({ suit: 'man', value: 1 })}`;
+    const btn = screen.getAllByRole('button', { name: label })[0];
+    await userEvent.click(btn);
+    const modal = await screen.findByText('Discard failed: 409');
+    expect(modal).toBeTruthy();
   });
 });
