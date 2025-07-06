@@ -117,3 +117,19 @@ describe('App icons', () => {
     expect(peekButton.innerHTML).not.toBe(first);
   });
 });
+
+describe('App connection status indicator', () => {
+  it('shows green check mark when server is reachable', async () => {
+    global.fetch = mockFetch();
+    render(<App />);
+    const icon = await screen.findByLabelText('Server ok');
+    expect(icon.querySelector('svg')).toBeTruthy();
+  });
+
+  it('shows error message when server is unreachable', async () => {
+    global.fetch = vi.fn(() => Promise.reject(new Error('fail')));
+    render(<App />);
+    const msg = await screen.findByLabelText('Server error');
+    expect(msg.textContent).toMatch(/Failed to contact server/);
+  });
+});
