@@ -148,6 +148,10 @@
 .flat-btn:active {
   background-color: #004a99;
 }
+.flat-btn:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+}
 
 .active-player .player-header {
   font-weight: bold;

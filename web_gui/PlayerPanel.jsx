@@ -39,7 +39,13 @@ export default function PlayerPanel({
         <Hand tiles={hand} onDiscard={onDiscard} />
         <MeldArea melds={melds} />
       </div>
-      <Controls server={server} gameId={gameId} playerIndex={playerIndex} />
+      <Controls
+        server={server}
+        gameId={gameId}
+        playerIndex={playerIndex}
+        activePlayer={activePlayer}
+        aiActive={aiActive}
+      />
     </div>
   );
 }
