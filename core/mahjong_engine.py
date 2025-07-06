@@ -16,9 +16,29 @@ class MahjongEngine:
         self.state = GameState(wall=Wall())
         self.state.players = [Player(name=f"Player {i}") for i in range(4)]
         self.state.current_player = 0
+        self.kans_this_hand = 0
+        self.riichi_this_hand = 0
         self.events: list[GameEvent] = []
         self._emit("start_game", {"state": self.state})
         self.start_kyoku(dealer=0, round_number=1)
+
+    @staticmethod
+    def _is_terminal_or_honor(tile: Tile) -> bool:
+        """Return True if tile is a terminal or honor."""
+        if tile.suit in ("man", "pin", "sou"):
+            return tile.value in (1, 9)
+        return tile.suit in ("wind", "dragon")
+
+    def _check_nine_terminals(self) -> None:
+        """Check for nine terminals/honors and abort the hand if present."""
+        for i, player in enumerate(self.state.players):
+            count = sum(
+                1 for t in player.hand.tiles if self._is_terminal_or_honor(t)
+            )
+            if count >= 9:
+                self._emit("ryukyoku", {"reason": "nine_terminals", "player_index": i})
+                self.advance_hand(None)
+                break
 
     def _draw_replacement_tile(self, player: Player) -> None:
         """Draw a replacement tile from the dead wall and reveal new dora."""
@@ -68,11 +88,14 @@ class MahjongEngine:
         self.state.dealer = dealer
         self.state.round_number = round_number
         self.state.current_player = dealer
+        self.kans_this_hand = 0
+        self.riichi_this_hand = 0
         self.deal_initial_hands()
         self._emit(
             "start_kyoku",
             {"dealer": dealer, "round": round_number, "state": self.state},
         )
+        self._check_nine_terminals()
 
     def deal_initial_hands(self) -> None:
         """Deal initial tiles: 14 for the dealer and 13 for others."""
@@ -122,9 +145,15 @@ class MahjongEngine:
     def declare_riichi(self, player_index: int) -> None:
         """Declare riichi for the given player."""
         player = self.state.players[player_index]
+        already = player.riichi
         player.declare_riichi()
-        self.state.riichi_sticks += 1
+        if not already:
+            self.state.riichi_sticks += 1
+            self.riichi_this_hand += 1
         self._emit("riichi", {"player_index": player_index})
+        if self.riichi_this_hand >= 4:
+            self._emit("ryukyoku", {"reason": "four_riichi"})
+            self.advance_hand(None)
 
     def calculate_score(
         self, player_index: int, win_tile: Tile
@@ -271,6 +300,10 @@ class MahjongEngine:
             self.state.last_discard_player = None
             self._draw_replacement_tile(player)
             self._emit("meld", {"player_index": player_index, "meld": meld})
+            self.kans_this_hand += 1
+            if self.kans_this_hand >= 4:
+                self._emit("ryukyoku", {"reason": "four_kans"})
+                self.advance_hand(None)
             return
 
         # Added kan upgrade from an existing pon
@@ -292,6 +325,10 @@ class MahjongEngine:
                 meld.type = "added_kan"
                 self._draw_replacement_tile(player)
                 self._emit("meld", {"player_index": player_index, "meld": meld})
+                self.kans_this_hand += 1
+                if self.kans_this_hand >= 4:
+                    self._emit("ryukyoku", {"reason": "four_kans"})
+                    self.advance_hand(None)
                 return
 
         # Closed kan from hand
@@ -311,6 +348,10 @@ class MahjongEngine:
         player.hand.melds.append(meld)
         self._draw_replacement_tile(player)
         self._emit("meld", {"player_index": player_index, "meld": meld})
+        self.kans_this_hand += 1
+        if self.kans_this_hand >= 4:
+            self._emit("ryukyoku", {"reason": "four_kans"})
+            self.advance_hand(None)
 
     def declare_tsumo(self, player_index: int, win_tile: Tile) -> HandResponse:
         """Declare a self-drawn win and return scoring info."""
