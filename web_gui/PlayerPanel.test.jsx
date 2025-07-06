@@ -15,6 +15,7 @@ function panel(aiActive) {
       playerIndex={0}
       activePlayer={0}
       aiActive={aiActive}
+      state={{ players: [{}, {}, {}, {}] }}
     />
   );
 }

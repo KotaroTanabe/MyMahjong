@@ -8,15 +8,42 @@ afterEach(() => {
 
 describe('Controls disabled state', () => {
   it('disables when not active player', () => {
-    render(<Controls server="http://s" gameId="1" playerIndex={0} activePlayer={1} />);
+    render(
+      <Controls
+        server="http://s"
+        gameId="1"
+        playerIndex={0}
+        activePlayer={1}
+        allowedActions={['pon']}
+      />,
+    );
     expect(screen.getByRole('button', { name: 'Pon' }).disabled).toBe(true);
   });
   it('disables when AI is active', () => {
-    render(<Controls server="http://s" gameId="1" playerIndex={0} activePlayer={0} aiActive={true} />);
+    render(
+      <Controls
+        server="http://s"
+        gameId="1"
+        playerIndex={0}
+        activePlayer={0}
+        aiActive={true}
+        allowedActions={['pon']}
+      />,
+    );
     expect(screen.getByRole('button', { name: 'Pon' }).disabled).toBe(true);
   });
-  it('enabled for active human', () => {
-    render(<Controls server="http://s" gameId="1" playerIndex={0} activePlayer={0} aiActive={false} />);
+  it('enabled only for allowed action', () => {
+    render(
+      <Controls
+        server="http://s"
+        gameId="1"
+        playerIndex={0}
+        activePlayer={0}
+        aiActive={false}
+        allowedActions={['pon']}
+      />,
+    );
     expect(screen.getByRole('button', { name: 'Pon' }).disabled).toBe(false);
+    expect(screen.getByRole('button', { name: 'Chi' }).disabled).toBe(true);
   });
 });

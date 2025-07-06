@@ -7,6 +7,7 @@ export default function Controls({
   playerIndex = 0,
   activePlayer = null,
   aiActive = false,
+  allowedActions = [],
 }) {
   const [message, setMessage] = useState('');
 
@@ -52,17 +53,18 @@ export default function Controls({
     simple('skip');
   }
 
-  const disabled = playerIndex !== activePlayer || aiActive;
+  const active = playerIndex === activePlayer && !aiActive;
+  const isAllowed = (action) => active && allowedActions.includes(action);
 
   return (
     <div className="controls">
-      <Button onClick={chi} disabled={disabled}>Chi</Button>
-      <Button onClick={pon} disabled={disabled}>Pon</Button>
-      <Button onClick={kan} disabled={disabled}>Kan</Button>
-      <Button onClick={riichi} disabled={disabled}>Riichi</Button>
-      <Button onClick={tsumo} disabled={disabled}>Tsumo</Button>
-      <Button onClick={ron} disabled={disabled}>Ron</Button>
-      <Button onClick={skip} disabled={disabled}>Skip</Button>
+      <Button onClick={chi} disabled={!isAllowed('chi')}>Chi</Button>
+      <Button onClick={pon} disabled={!isAllowed('pon')}>Pon</Button>
+      <Button onClick={kan} disabled={!isAllowed('kan')}>Kan</Button>
+      <Button onClick={riichi} disabled={!isAllowed('riichi')}>Riichi</Button>
+      <Button onClick={tsumo} disabled={!isAllowed('tsumo')}>Tsumo</Button>
+      <Button onClick={ron} disabled={!isAllowed('ron')}>Ron</Button>
+      <Button onClick={skip} disabled={!isAllowed('skip')}>Skip</Button>
       {message && <div className="message">{message}</div>}
     </div>
   );
