@@ -111,20 +111,6 @@ export default function GameBoard({
         actions={availableActions(state, 2)}
       />
       <PlayerPanel
-        seat="east"
-        player={east}
-        hand={eastHand}
-        melds={eastMelds}
-        riverTiles={(east?.river ?? []).map(tileLabel)}
-        server={server}
-        gameId={gameId}
-        playerIndex={3}
-        actions={availableActions(state, 3)}
-      />
-      <div className="center">
-        <CenterDisplay remaining={remaining} dora={dora} />
-      </div>
-      <PlayerPanel
         seat="west"
         player={west}
         hand={westHand}
@@ -134,6 +120,20 @@ export default function GameBoard({
         gameId={gameId}
         playerIndex={1}
         actions={availableActions(state, 1)}
+      />
+      <div className="center">
+        <CenterDisplay remaining={remaining} dora={dora} />
+      </div>
+      <PlayerPanel
+        seat="east"
+        player={east}
+        hand={eastHand}
+        melds={eastMelds}
+        riverTiles={(east?.river ?? []).map(tileLabel)}
+        server={server}
+        gameId={gameId}
+        playerIndex={3}
+        actions={availableActions(state, 3)}
       />
       <PlayerPanel
         seat="south"

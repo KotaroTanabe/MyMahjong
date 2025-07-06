@@ -5,8 +5,8 @@
 .board-grid {
   display: grid;
   grid-template-areas:
-    'north center east'
-    'west center south';
+    'north center west'
+    'east center south';
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: auto auto;
   gap: 0.5rem;
@@ -145,9 +145,9 @@
   .board-grid {
     grid-template-areas:
       'north'
-      'east'
-      'center'
       'west'
+      'center'
+      'east'
       'south';
     grid-template-columns: 1fr;
     grid-template-rows: repeat(5, auto);
