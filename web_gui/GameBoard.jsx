@@ -73,7 +73,9 @@ export default function GameBoard({
   const boardClass = 'board-grid';
 
   return (
-    <div className={boardClass}>
+    <>
+      <CenterDisplay remaining={remaining} dora={dora} />
+      <div className={boardClass}>
       <PlayerPanel
         seat="north"
         player={north}
@@ -94,9 +96,6 @@ export default function GameBoard({
         gameId={gameId}
         playerIndex={1}
       />
-      <div className="center">
-        <CenterDisplay remaining={remaining} dora={dora} />
-      </div>
       <PlayerPanel
         seat="east"
         player={east}
@@ -119,5 +118,6 @@ export default function GameBoard({
         playerIndex={0}
       />
     </div>
+    </>
   );
 }
