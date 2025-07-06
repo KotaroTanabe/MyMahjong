@@ -51,6 +51,15 @@ export function applyEvent(state, event) {
       newState.result = event.payload;
       break;
     }
+    case 'ryukyoku': {
+      if (Array.isArray(event.payload.scores)) {
+        newState.players.forEach((p, i) => {
+          if (p) p.score = event.payload.scores[i];
+        });
+      }
+      newState.result = { type: 'ryukyoku', ...event.payload };
+      break;
+    }
     case 'skip': {
       const next = (event.payload.player_index + 1) % newState.players.length;
       newState.current_player = next;

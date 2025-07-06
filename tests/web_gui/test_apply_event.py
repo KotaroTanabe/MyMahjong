@@ -49,3 +49,14 @@ def test_discard_advances_turn_and_adds_river() -> None:
     )
     output = run_node(code)
     assert output == '1:1'
+
+def test_ryukyoku_sets_result_and_scores() -> None:
+    code = (
+        "import { applyEvent } from './web_gui/applyEvent.js';\n"
+        "const state = {players: [{score:25000},{score:25000},{score:25000},{score:25000}]};\n"
+        "const evt = {name:'ryukyoku', payload:{reason:'wall_empty', tenpai:[true,false,true,false], scores:[26500,23500,26500,23500]}};\n"
+        "const newState = applyEvent(state, evt);\n"
+        "console.log(newState.result.type + ':' + newState.players[0].score);"
+    )
+    output = run_node(code)
+    assert output == 'ryukyoku:26500'
