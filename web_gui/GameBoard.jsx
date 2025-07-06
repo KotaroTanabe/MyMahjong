@@ -74,7 +74,12 @@ export default function GameBoard({
 
   return (
     <>
-      <CenterDisplay remaining={remaining} dora={dora} />
+      <CenterDisplay
+        remaining={remaining}
+        dora={dora}
+        honba={state?.honba ?? 0}
+        riichiSticks={state?.riichi_sticks ?? 0}
+      />
       <div className={boardClass}>
       <PlayerPanel
         seat="north"
