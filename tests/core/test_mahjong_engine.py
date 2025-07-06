@@ -84,6 +84,8 @@ def test_end_game_resets_state() -> None:
     finished = engine.end_game()
     assert finished is old_state
     assert engine.state is not old_state
+    assert engine.state.honba == 0
+    assert engine.state.riichi_sticks == 0
 
 
 def test_remaining_tiles_property() -> None:
@@ -107,6 +109,7 @@ def test_declare_riichi() -> None:
     engine.declare_riichi(0)
     assert player.riichi
     assert player.score == start_score - 1000
+    assert engine.state.riichi_sticks == 1
 
 
 def test_tsumo_updates_scores_and_emits_event() -> None:
@@ -114,12 +117,16 @@ def test_tsumo_updates_scores_and_emits_event() -> None:
     engine.pop_events()
     tile = Tile("man", 1)
     engine.state.players[0].hand.tiles.append(tile)
+    engine.declare_riichi(1)
     start_score = engine.state.players[0].score
+    loser_start = engine.state.players[1].score
     engine.declare_tsumo(0, tile)
-    assert engine.state.players[0].score == start_score + 8000
+    assert engine.state.players[0].score == start_score + 8000 + 1000
+    assert engine.state.players[1].score == loser_start - 2666
+    assert engine.state.riichi_sticks == 0
     evt = engine.pop_events()[-1]
     assert evt.name == "tsumo"
-    assert evt.payload["scores"][0] == start_score + 8000
+    assert evt.payload["scores"][0] == start_score + 8000 + 1000
 
 
 def test_ron_updates_scores_and_emits_event() -> None:
@@ -127,12 +134,18 @@ def test_ron_updates_scores_and_emits_event() -> None:
     engine.pop_events()
     tile = Tile("man", 2)
     engine.state.players[0].hand.tiles.append(tile)
+    engine.declare_riichi(2)
+    engine.state.players[1].hand.tiles.append(Tile("man", 2))
+    engine.discard_tile(1, engine.state.players[1].hand.tiles[-1])
     start_score = engine.state.players[0].score
+    loser_start = engine.state.players[1].score
     engine.declare_ron(0, tile)
-    assert engine.state.players[0].score == start_score + 8000
+    assert engine.state.players[0].score == start_score + 8000 + 1000
+    assert engine.state.players[1].score == loser_start - 8000
+    assert engine.state.riichi_sticks == 0
     evt = engine.pop_events()[-1]
     assert evt.name == "ron"
-    assert evt.payload["scores"][0] == start_score + 8000
+    assert evt.payload["scores"][0] == start_score + 8000 + 1000
 
 
 class DummyRuleSet(RuleSet):
