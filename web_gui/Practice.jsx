@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import Hand from './Hand.jsx';
 import Button from './Button.jsx';
-import { tileToEmoji, tileDescription } from './tileUtils.js';
+import { tileToEmoji, tileDescription, sortTilesExceptLast } from './tileUtils.js';
 
-export default function Practice({ server }) {
+export default function Practice({ server, sortHand = true }) {
   const [problem, setProblem] = useState(null);
   const [suggestion, setSuggestion] = useState(null);
   const [chosen, setChosen] = useState(null);
@@ -45,11 +45,13 @@ export default function Practice({ server }) {
     return <div>Loading...</div>;
   }
 
+  const tiles = sortHand ? sortTilesExceptLast(problem.hand) : problem.hand;
+
   return (
     <div className="practice">
       <div>Seat wind: {problem.seat_wind}</div>
       <div> Dora indicator: {tileToEmoji(problem.dora_indicator)} </div>
-      <Hand tiles={problem.hand} onDiscard={choose} />
+      <Hand tiles={tiles} onDiscard={choose} />
       {chosen && (
         <div>You discarded {tileToEmoji(chosen)}</div>
       )}

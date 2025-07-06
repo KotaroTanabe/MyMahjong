@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import Hand from './Hand.jsx';
 import Button from './Button.jsx';
+import { sortTiles } from './tileUtils.js';
 
-export default function ShantenQuiz({ server }) {
+export default function ShantenQuiz({ server, sortHand = true }) {
   const [hand, setHand] = useState(null);
   const [guess, setGuess] = useState('');
   const [answer, setAnswer] = useState(null);
@@ -47,9 +48,11 @@ export default function ShantenQuiz({ server }) {
     return <div>Loading...</div>;
   }
 
+  const tiles = sortHand ? sortTiles(hand) : hand;
+
   return (
     <div className="shanten-quiz">
-      <Hand tiles={hand} />
+      <Hand tiles={tiles} />
       <div className="field is-grouped is-align-items-flex-end">
         <label className="label mr-2">
           Shanten:
