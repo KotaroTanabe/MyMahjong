@@ -130,6 +130,26 @@ Future work will expand these components.
  - [x] action dispatch helper
   - [x] seat wind tracking
 
+## Game mode turn flow
+
+The core engine and React GUI coordinate each turn through a simple request/
+response cycle. The sequence is:
+
+```mermaid
+flowchart TD
+    A[GUI reads current_player from GameState] --> B[Fetch allowed actions]
+    B --> C{Only draw allowed?}
+    C -- yes --> D[POST draw] --> A
+    C -- no --> E{AI controlled?}
+    E -- yes --> F[POST auto play] --> G
+    E -- no --> G[Enable buttons]
+    G --> H[POST chosen action]
+    H --> I[Receive events via WebSocket]
+    I --> J{Hand ends?}
+    J -- yes --> K[Show result]
+    J -- no --> A
+```
+
 ## Implementation plan progress
 
 - [x] **1. Create the game engine** – wrap the Python `mahjong` library and expose
