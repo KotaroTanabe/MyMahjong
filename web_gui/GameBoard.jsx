@@ -122,10 +122,26 @@ export default function GameBoard({
   const eastDrawn = hasDrawnTile(east, 3);
   const southDrawn = hasDrawnTile(south, 0);
 
-  const northMelds = north?.hand?.melds.map((m) => m.tiles.map(tileLabel)) ?? [];
-  const westMelds = west?.hand?.melds.map((m) => m.tiles.map(tileLabel)) ?? [];
-  const eastMelds = east?.hand?.melds.map((m) => m.tiles.map(tileLabel)) ?? [];
-  const southMelds = south?.hand?.melds.map((m) => m.tiles.map(tileLabel)) ?? [];
+  const northMelds =
+    north?.hand?.melds.map((m) => ({
+      tiles: m.tiles.map(tileLabel),
+      calledIndex: m.called_index ?? null,
+    })) ?? [];
+  const westMelds =
+    west?.hand?.melds.map((m) => ({
+      tiles: m.tiles.map(tileLabel),
+      calledIndex: m.called_index ?? null,
+    })) ?? [];
+  const eastMelds =
+    east?.hand?.melds.map((m) => ({
+      tiles: m.tiles.map(tileLabel),
+      calledIndex: m.called_index ?? null,
+    })) ?? [];
+  const southMelds =
+    south?.hand?.melds.map((m) => ({
+      tiles: m.tiles.map(tileLabel),
+      calledIndex: m.called_index ?? null,
+    })) ?? [];
 
   const remaining = state?.wall?.tiles?.length ?? 0;
   const dora = state?.wall?.tiles?.[0] ? [tileLabel(state.wall.tiles[0])] : [];
