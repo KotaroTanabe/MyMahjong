@@ -85,19 +85,6 @@ export default function GameBoard({
         playerIndex={2}
       />
       <PlayerPanel
-        seat="east"
-        player={east}
-        hand={eastHand}
-        melds={eastMelds}
-        riverTiles={(east?.river ?? []).map(tileLabel)}
-        server={server}
-        gameId={gameId}
-        playerIndex={3}
-      />
-      <div className="center">
-        <CenterDisplay remaining={remaining} dora={dora} />
-      </div>
-      <PlayerPanel
         seat="west"
         player={west}
         hand={westHand}
@@ -106,6 +93,19 @@ export default function GameBoard({
         server={server}
         gameId={gameId}
         playerIndex={1}
+      />
+      <div className="center">
+        <CenterDisplay remaining={remaining} dora={dora} />
+      </div>
+      <PlayerPanel
+        seat="east"
+        player={east}
+        hand={eastHand}
+        melds={eastMelds}
+        riverTiles={(east?.river ?? []).map(tileLabel)}
+        server={server}
+        gameId={gameId}
+        playerIndex={3}
       />
       <PlayerPanel
         seat="south"

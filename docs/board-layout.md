@@ -15,22 +15,6 @@ This document outlines how the Mahjong board is arranged in the web UI. The desi
   `.seat-east` rotates 90deg, `.seat-north` 180deg and `.seat-west` -90deg.
 - Melds are drawn in dedicated areas separate from discard piles so rivers remain intact.
 
-### Layout Example
-
-The following ASCII diagram shows where each discard pile (河) and meld area (鳴) is placed.
-Each seat has one meld zone. The North player's hand is drawn just above the river for clarity as `🀫x13`. Other opponents keep their hands outside their rivers though they are omitted from this diagram.
-
-```
-  🀫x13 (North Hand)
-  +---------------+----------------------+---------------+
-  | North Fuuro   | North River          | East Fuuro    |
-  +---------------+----------------------+---------------+
-  | West River    | Wall / Dora / Round  | East River    |
-  +---------------+----------------------+---------------+
-  | West Fuuro    | South River          | South Fuuro   |
-  +---------------+----------------------+---------------+
-```
-
 ### Player Panel Layout
 
 An alternative layout treats each player area as a self-contained panel:
