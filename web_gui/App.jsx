@@ -267,9 +267,9 @@ export default function App() {
           sortHand={sortHand}
         />
       ) : mode === 'practice' ? (
-        <Practice server={server} />
+        <Practice server={server} sortHand={sortHand} />
       ) : (
-        <ShantenQuiz server={server} />
+        <ShantenQuiz server={server} sortHand={sortHand} />
       )}
       {mode === 'game' && (
         <div className="event-log">
