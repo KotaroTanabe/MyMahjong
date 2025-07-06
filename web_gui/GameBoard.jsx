@@ -22,7 +22,8 @@ export default function GameBoard({
 
   const prevPlayer = useRef(null);
   const [error, setError] = useState(null);
-  const [aiPlayers, setAiPlayers] = useState([false, false, false, false]);
+  // Players 1-3 (west, north, east) act as AI by default
+  const [aiPlayers, setAiPlayers] = useState([false, true, true, true]);
 
   function toggleAI(idx) {
     setAiPlayers((a) => {
@@ -162,7 +163,9 @@ export default function GameBoard({
         hand={southHand}
         melds={southMelds}
         riverTiles={(south?.river ?? []).map(tileLabel)}
-        onDiscard={state?.current_player === 0 ? discard : undefined}
+        onDiscard={
+          state?.current_player === 0 && !aiPlayers[0] ? discard : undefined
+        }
         server={server}
         gameId={gameId}
         playerIndex={0}

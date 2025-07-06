@@ -17,3 +17,4 @@ def test_player_panel_accepts_prop() -> None:
     jsx = Path('web_gui/PlayerPanel.jsx').read_text()
     assert 'activePlayer' in jsx
     assert 'active-player' in jsx
+    assert 'aiActive' in jsx

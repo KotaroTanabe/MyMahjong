@@ -60,6 +60,7 @@ Future work will expand these components.
 - [x] Start game via GUI
 - [x] Simple tsumogiri AI for automated turns
 - [x] Toggle simple AI per player from GUI
+- [x] Players 2-4 use AI by default in GUI
 - [x] Handle start_kyoku event in GUI
 - [x] Join game by ID via GUI
 - [x] Reconnect to running game after reload
@@ -72,11 +73,13 @@ Future work will expand these components.
 - [x] Stylish form inputs with Bulma CSS
 - [x] Responsive layout for narrow screens
 - [x] Icon buttons using react-icons
+- [x] Human/robot icons for AI toggle
 - [x] Favicon with mahjong emoji
 - [x] Highlight active player on board
 - [x] Meld/win declaration waiting status display
 - [x] 6x4 discard grid rendering
 - [x] Modal error display on failed discard actions
+- [x] Setup controls hidden after game start with modal access
 - [x] 何切る問題 mode
   - [x] CLI practice command
   - [x] AI recommendation

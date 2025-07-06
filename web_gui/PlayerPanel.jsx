@@ -1,5 +1,5 @@
 import React from 'react';
-import { FiCpu } from 'react-icons/fi';
+import { FaUser, FaRobot } from 'react-icons/fa';
 import Hand from './Hand.jsx';
 import River from './River.jsx';
 import MeldArea from './MeldArea.jsx';
@@ -31,7 +31,7 @@ export default function PlayerPanel({
           className={`ai-btn${aiActive ? ' active' : ''}`}
           onClick={() => toggleAI?.(playerIndex)}
         >
-          <FiCpu />
+          {aiActive ? <FaRobot /> : <FaUser />}
         </Button>
       </div>
       <River tiles={riverTiles} />
@@ -39,7 +39,13 @@ export default function PlayerPanel({
         <Hand tiles={hand} onDiscard={onDiscard} />
         <MeldArea melds={melds} />
       </div>
-      <Controls server={server} gameId={gameId} playerIndex={playerIndex} />
+      <Controls
+        server={server}
+        gameId={gameId}
+        playerIndex={playerIndex}
+        activePlayer={activePlayer}
+        aiActive={aiActive}
+      />
     </div>
   );
 }
