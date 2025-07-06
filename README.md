@@ -65,6 +65,7 @@ Future work will expand these components.
 - [x] Start game via GUI
 - [x] Simple shanten-based AI for automated turns (discards tiles that keep shanten and calls pon/chi when it improves the hand)
 - [x] Toggle AI per player from GUI
+- [x] Only AI-designated players automatically claim or skip melds
 - [x] AI type selection framework (currently only 'simple')
 - [x] Players 2-4 use AI by default in GUI
 - [x] Handle start_kyoku event in GUI

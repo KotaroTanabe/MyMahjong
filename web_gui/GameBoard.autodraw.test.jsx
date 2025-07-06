@@ -26,7 +26,12 @@ describe('GameBoard auto draw', () => {
     rerender(<GameBoard state={state} server="http://s" gameId="1" />);
     await Promise.resolve();
     const autoCall = fetchMock.mock.calls.find(c => c[0].includes('/action'));
-    expect(JSON.parse(autoCall[1].body)).toEqual({ player_index: 1, action: 'auto', ai_type: 'simple' });
+    expect(JSON.parse(autoCall[1].body)).toEqual({
+      player_index: 1,
+      action: 'auto',
+      ai_type: 'simple',
+      ai_players: [1, 2, 3],
+    });
     fetchMock.mockClear();
     fireEvent.click(getAllByLabelText('Enable AI')[0]);
     await Promise.resolve();
@@ -34,7 +39,12 @@ describe('GameBoard auto draw', () => {
     rerender(<GameBoard state={state} server="http://s" gameId="1" />);
     await Promise.resolve();
     const autoCall2 = fetchMock.mock.calls.find(c => c[0].includes('/action'));
-    expect(JSON.parse(autoCall2[1].body)).toEqual({ player_index: 0, action: 'auto', ai_type: 'simple' });
+    expect(JSON.parse(autoCall2[1].body)).toEqual({
+      player_index: 0,
+      action: 'auto',
+      ai_type: 'simple',
+      ai_players: [0, 1, 2, 3],
+    });
   });
 
   it('does not auto play when result is shown', async () => {
