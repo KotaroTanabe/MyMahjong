@@ -22,6 +22,7 @@ export default function GameBoard({
   const east = players[3];
 
   const prevPlayer = useRef(null);
+  const prevWaiting = useRef([]);
   const [error, setError] = useState(null);
   const [result, setResult] = useState(null);
   // Players 1-3 (west, north, east) act as AI by default
@@ -56,9 +57,32 @@ export default function GameBoard({
   }
 
   useEffect(() => {
+    if (!gameId || result || state?.result) return;
+    const waiting = state?.waiting_for_claims ?? [];
+    if (waiting.length > 0) {
+      if (JSON.stringify(waiting) !== JSON.stringify(prevWaiting.current)) {
+        prevWaiting.current = waiting.slice();
+        waiting.forEach((idx) => {
+          if (aiPlayers[idx]) {
+            const body = {
+              player_index: idx,
+              action: 'auto',
+              ai_type: aiTypes[idx],
+            };
+            fetch(`${server.replace(/\/$/, '')}/games/${gameId}/action`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(body),
+            }).catch(() => {});
+          }
+        });
+      }
+      return;
+    }
+    prevWaiting.current = [];
+
     const current = state?.current_player;
-    if (result || state?.result) return;
-    if (!gameId || current == null || current === prevPlayer.current) return;
+    if (current == null || current === prevPlayer.current) return;
     prevPlayer.current = current;
     const tiles = state?.players?.[current]?.hand?.tiles ?? [];
     if (tiles.length === 13) {
@@ -71,7 +95,7 @@ export default function GameBoard({
         body: JSON.stringify(body),
       }).catch(() => {});
     }
-  }, [state?.current_player, gameId, server, state?.players, aiPlayers, aiTypes, result]);
+  }, [state?.current_player, state?.waiting_for_claims, gameId, server, state?.players, aiPlayers, aiTypes, result]);
 
   useEffect(() => {
     if (state?.result) {

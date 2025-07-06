@@ -2,11 +2,12 @@ import { render, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import GameBoard from './GameBoard.jsx';
 
-function mockState(playerIndex = 0) {
+function mockState(playerIndex = 0, waiting = []) {
   return {
     current_player: playerIndex,
     players: new Array(4).fill(0).map(() => ({ hand: { tiles: Array(13), melds: [] }, river: [] })),
     wall: { tiles: [] },
+    waiting_for_claims: waiting,
   };
 }
 
@@ -23,18 +24,22 @@ describe('GameBoard auto draw', () => {
     expect(JSON.parse(drawCall[1].body)).toEqual({ player_index: 0, action: 'draw' });
     fetchMock.mockClear();
     state.current_player = 1;
+    state.waiting_for_claims = [1, 2, 3];
     rerender(<GameBoard state={state} server="http://s" gameId="1" />);
     await Promise.resolve();
-    const autoCall = fetchMock.mock.calls.find(c => c[0].includes('/action'));
-    expect(JSON.parse(autoCall[1].body)).toEqual({ player_index: 1, action: 'auto', ai_type: 'simple' });
+    const bodies = fetchMock.mock.calls.map(c => JSON.parse(c[1].body));
+    expect(bodies).toContainEqual({ player_index: 1, action: 'auto', ai_type: 'simple' });
+    expect(bodies).toContainEqual({ player_index: 2, action: 'auto', ai_type: 'simple' });
+    expect(bodies).toContainEqual({ player_index: 3, action: 'auto', ai_type: 'simple' });
     fetchMock.mockClear();
+    state.waiting_for_claims = [];
     fireEvent.click(getAllByLabelText('Enable AI')[0]);
     await Promise.resolve();
     state.current_player = 0;
     rerender(<GameBoard state={state} server="http://s" gameId="1" />);
     await Promise.resolve();
-    const autoCall2 = fetchMock.mock.calls.find(c => c[0].includes('/action'));
-    expect(JSON.parse(autoCall2[1].body)).toEqual({ player_index: 0, action: 'auto', ai_type: 'simple' });
+    const bodies2 = fetchMock.mock.calls.map(c => JSON.parse(c[1].body));
+    expect(bodies2).toContainEqual({ player_index: 0, action: 'auto', ai_type: 'simple' });
   });
 
   it('does not auto play when result is shown', async () => {
