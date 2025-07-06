@@ -215,6 +215,12 @@ uv pip install -e ./core -e ./web
 uvicorn web.server:app --reload
 ```
 
+If `uvicorn` prints "Unsupported upgrade request" or
+"No supported WebSocket library detected" when starting, ensure the server was
+installed with WebSocket support. Installing the **web** package as shown above
+or running `pip install 'uvicorn[standard]'` will include the required
+`websockets` dependency.
+
 ### Start the web GUI
 
 The front-end is a small React app built with Vite. Start the development server
