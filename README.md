@@ -72,6 +72,8 @@ Future work will expand these components.
   - [x] CLI practice command
   - [x] AI recommendation
   - [x] Web UI support
+ - [x] シャンテン数クイズ
+   - [x] CLI quiz command
 
 ### Core engine capabilities
 
@@ -181,6 +183,19 @@ Two API endpoints are provided:
 
 - `GET /practice` returns a new problem.
 - `POST /practice/suggest` returns the AI's suggested discard.
+
+## Shanten quiz
+
+This quiz shows a random hand and asks for the shanten number.
+Run it with:
+
+```bash
+python -m cli.main shanten-quiz
+```
+
+1. Generate a 13-tile starting hand.
+2. Display the tiles in short form.
+3. Prompt for the shanten number and reveal the answer.
 
 ## Running locally
 
