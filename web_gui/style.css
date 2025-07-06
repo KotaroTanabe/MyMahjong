@@ -5,9 +5,9 @@
 .board-grid {
   display: grid;
   grid-template-areas:
-    'north center east'
-    'west center south';
-  grid-template-columns: 1fr 1fr 1fr;
+    'north west'
+    'east south';
+  grid-template-columns: 1fr 1fr;
   grid-template-rows: auto auto;
   gap: 0.5rem;
   text-align: center;
@@ -37,12 +37,12 @@
 
 .hand-with-melds {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
 }
 
 .north { grid-area: north; }
 .west { grid-area: west; }
-.center { grid-area: center; }
 .center-display {
   display: flex;
   flex-direction: column;
@@ -145,11 +145,10 @@
   .board-grid {
     grid-template-areas:
       'north'
-      'east'
-      'center'
       'west'
+      'east'
       'south';
     grid-template-columns: 1fr;
-    grid-template-rows: repeat(5, auto);
+    grid-template-rows: repeat(4, auto);
   }
 }

@@ -46,6 +46,7 @@ Future work will expand these components.
 - [x] Meld area component
 - [x] Center display (dora & wall count)
 - [x] Meld display from game state
+- [x] Melds positioned to the right of the player's hand
 - [x] Tile image rendering in GUI with alt text
 - [x] Adjustable tile font size (default 1.5x)
 - [x] Peek at opponents' hands option
@@ -223,7 +224,7 @@ uv pip install -e ./core -e ./cli -e ./web
 uv pip install flake8 mypy pytest build
 python -m build core
 python -m build cli
-flake8
+flake8  # uses a very lenient rule set (E9,F63,F7,F82 only)
 mypy core web cli
 pytest -q
 ```
@@ -244,3 +245,5 @@ served from this subpath.
 GitHub Actions run linting, type checking, build and tests for every pull request
 using **uv** to install dependencies. Once these checks succeed, the workflow
 automatically approves and merges the PR.
+The flake8 step runs with only the `E9`, `F63`, `F7` and `F82` checks enabled to
+avoid excessive style warnings.

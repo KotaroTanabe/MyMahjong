@@ -98,7 +98,9 @@ export default function GameBoard({
   const boardClass = 'board-grid';
 
   return (
-    <div className={boardClass}>
+    <>
+      <CenterDisplay remaining={remaining} dora={dora} />
+      <div className={boardClass}>
       <PlayerPanel
         seat="north"
         player={north}
@@ -111,20 +113,6 @@ export default function GameBoard({
         actions={availableActions(state, 2)}
       />
       <PlayerPanel
-        seat="east"
-        player={east}
-        hand={eastHand}
-        melds={eastMelds}
-        riverTiles={(east?.river ?? []).map(tileLabel)}
-        server={server}
-        gameId={gameId}
-        playerIndex={3}
-        actions={availableActions(state, 3)}
-      />
-      <div className="center">
-        <CenterDisplay remaining={remaining} dora={dora} />
-      </div>
-      <PlayerPanel
         seat="west"
         player={west}
         hand={westHand}
@@ -134,6 +122,16 @@ export default function GameBoard({
         gameId={gameId}
         playerIndex={1}
         actions={availableActions(state, 1)}
+      />
+      <PlayerPanel
+        seat="east"
+        player={east}
+        hand={eastHand}
+        melds={eastMelds}
+        riverTiles={(east?.river ?? []).map(tileLabel)}
+        server={server}
+        gameId={gameId}
+        playerIndex={3}
       />
       <PlayerPanel
         seat="south"
@@ -148,5 +146,6 @@ export default function GameBoard({
         actions={availableActions(state, 0)}
       />
     </div>
+    </>
   );
 }

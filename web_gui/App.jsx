@@ -4,13 +4,14 @@ import Practice from './Practice.jsx';
 import { applyEvent } from './applyEvent.js';
 import Button from './Button.jsx';
 import './style.css';
-import { FiRefreshCw, FiEye, FiEyeOff } from "react-icons/fi";
+import { FiRefreshCw, FiEye, FiEyeOff, FiCheck } from "react-icons/fi";
 
 export default function App() {
   const [server, setServer] = useState(
     () => localStorage.getItem('serverUrl') || 'http://localhost:8000',
   );
   const [status, setStatus] = useState('Contacting server...');
+  const [connectionStatus, setConnectionStatus] = useState(null);
   const [players, setPlayers] = useState('A,B,C,D');
   const [gameId, setGameId] = useState(() => localStorage.getItem('gameId') || '');
   const [gameState, setGameState] = useState(null);
@@ -29,16 +30,20 @@ export default function App() {
 
   async function fetchStatus() {
     setStatus('Contacting server...');
+    setConnectionStatus(null);
     try {
       const resp = await fetch(`${server.replace(/\/$/, '')}/health`);
       if (resp.ok) {
         const data = await resp.json();
         setStatus(`Server status: ${data.status} (${server})`);
+        setConnectionStatus('ok');
       } else {
         setStatus(`Server error: ${resp.status} (${server})`);
+        setConnectionStatus(`Server error: ${resp.status}`);
       }
     } catch {
       setStatus(`Failed to contact server at ${server}`);
+      setConnectionStatus('Failed to contact server');
     }
   }
 
@@ -124,6 +129,15 @@ export default function App() {
         <div className="control">
           <Button aria-label="Retry" onClick={fetchStatus}><FiRefreshCw /></Button>
         </div>
+        {connectionStatus === 'ok' ? (
+          <span aria-label="Server ok" className="icon has-text-success ml-2">
+            <FiCheck />
+          </span>
+        ) : connectionStatus ? (
+          <span aria-label="Server error" className="ml-2 has-text-danger">
+            {connectionStatus}
+          </span>
+        ) : null}
       </div>
       <div className="field">
         <label className="label">
