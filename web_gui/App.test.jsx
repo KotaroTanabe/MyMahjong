@@ -1,4 +1,4 @@
-import { render, screen, cleanup, within } from '@testing-library/react';
+import { render, screen, cleanup, within, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Server } from 'mock-socket';
 import { describe, it, vi, expect, afterEach } from 'vitest';
@@ -34,7 +34,7 @@ describe('App websocket', () => {
     await userEvent.clear(input);
     await userEvent.type(input, 'http://localhost:1235');
     await userEvent.click(screen.getByText('Start Game'));
-    const optionsButton = await screen.findByText('Options');
+    const optionsButton = await screen.findByLabelText('Options');
     expect(optionsButton).toBeTruthy();
     server.stop();
   });
@@ -87,7 +87,7 @@ describe('App reload', () => {
     render(<App />);
     await screen.findByText('WebSocket connected');
     expect(screen.getByLabelText('Server:').value).toBe('http://localhost:5678');
-    await userEvent.click(screen.getByText('Options'));
+    await userEvent.click(screen.getByLabelText('Options'));
     expect(screen.getByLabelText('Game ID:').value).toBe('1');
     server.stop();
   });
@@ -101,22 +101,13 @@ describe('App icons', () => {
     expect(refreshButton.querySelector('svg')).toBeTruthy();
   });
 
-  it('toggles peek icon', async () => {
+  it('initial peek and sort states are exposed via aria-pressed', () => {
     global.fetch = mockFetch();
     render(<App />);
     const peekButton = screen.getByLabelText('Toggle peek');
-    const first = peekButton.innerHTML;
-    await userEvent.click(peekButton);
-    expect(peekButton.innerHTML).not.toBe(first);
-  });
-
-  it('toggles sort icon', async () => {
-    global.fetch = mockFetch();
-    render(<App />);
     const sortButton = screen.getByLabelText('Toggle sort');
-    const first = sortButton.innerHTML;
-    await userEvent.click(sortButton);
-    expect(sortButton.innerHTML).not.toBe(first);
+    expect(peekButton.getAttribute('aria-pressed')).toBe('false');
+    expect(sortButton.getAttribute('aria-pressed')).toBe('true');
   });
 });
 
@@ -129,7 +120,7 @@ describe('App settings modal', () => {
     await userEvent.clear(input);
     await userEvent.type(input, 'http://localhost:1234');
     await userEvent.click(screen.getByText('Start Game'));
-    const options = await screen.findByText('Options');
+    const options = await screen.findByLabelText('Options');
     expect(screen.queryByText('Start Game')).toBeNull();
     expect(options).toBeTruthy();
     await userEvent.click(options);

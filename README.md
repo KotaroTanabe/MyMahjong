@@ -77,6 +77,7 @@ Future work will expand these components.
 - [x] Stylish form inputs with Bulma CSS
 - [x] Responsive layout for narrow screens
 - [x] Icon buttons using react-icons
+- [x] Compact header layout with gear icon options
 - [x] Human/robot icons for AI toggle
 - [x] Icon tooltips for peek and sort toggles
 - [x] Favicon with mahjong emoji

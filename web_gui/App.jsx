@@ -5,7 +5,7 @@ import ShantenQuiz from './ShantenQuiz.jsx';
 import { applyEvent } from './applyEvent.js';
 import Button from './Button.jsx';
 import './style.css';
-import { FiRefreshCw, FiEye, FiEyeOff, FiCheck, FiShuffle } from "react-icons/fi";
+import { FiRefreshCw, FiEye, FiEyeOff, FiCheck, FiShuffle, FiSettings } from "react-icons/fi";
 
 export default function App() {
   const [server, setServer] = useState(
@@ -104,47 +104,76 @@ export default function App() {
     wsRef.current = ws;
   }
 
-  function ServerModeFields() {
+  function HeaderBar() {
     return (
-      <>
-        <div className="field is-grouped is-align-items-flex-end">
-          <label className="label mr-2">
-            Server:
-            <input
-              className="input"
-              value={server}
-              onChange={(e) => setServer(e.target.value)}
-              style={{ width: '20em' }}
-            />
-          </label>
-          <div className="control">
-            <Button aria-label="Retry" onClick={fetchStatus}>
-              <FiRefreshCw />
+      <div className="field is-grouped is-align-items-flex-end">
+        <label className="label mr-2">
+          Server:
+          <input
+            className="input"
+            value={server}
+            onChange={(e) => setServer(e.target.value)}
+            style={{ width: '20em' }}
+          />
+        </label>
+        <div className="control">
+          <Button aria-label="Retry" onClick={fetchStatus}>
+            <FiRefreshCw />
+          </Button>
+        </div>
+        {connectionStatus === 'ok' ? (
+          <span aria-label="Server ok" className="icon has-text-success ml-2">
+            <FiCheck />
+          </span>
+        ) : connectionStatus ? (
+          <span aria-label="Server error" className="ml-2 has-text-danger">
+            {connectionStatus}
+          </span>
+        ) : null}
+        <label className="label ml-4">
+          Mode:
+          <span className="select ml-2">
+            <select value={mode} onChange={(e) => setMode(e.target.value)}>
+              <option value="game">Game</option>
+              <option value="practice">Practice</option>
+              <option value="shanten">Shanten Quiz</option>
+            </select>
+          </span>
+        </label>
+        {mode === 'game' && gameState && (
+          <div className="control ml-2">
+            <Button aria-label="Options" onClick={() => setShowSettings(true)}>
+              <FiSettings />
             </Button>
           </div>
-          {connectionStatus === 'ok' ? (
-            <span aria-label="Server ok" className="icon has-text-success ml-2">
-              <FiCheck />
-            </span>
-          ) : connectionStatus ? (
-            <span aria-label="Server error" className="ml-2 has-text-danger">
-              {connectionStatus}
-            </span>
-          ) : null}
-        </div>
-        <div className="field">
-          <label className="label">
-            Mode:
-            <span className="select ml-2">
-              <select value={mode} onChange={(e) => setMode(e.target.value)}>
-                <option value="game">Game</option>
-                <option value="practice">Practice</option>
-                <option value="shanten">Shanten Quiz</option>
-              </select>
-            </span>
-          </label>
-        </div>
-      </>
+        )}
+        {mode === 'game' && (
+          <>
+            <div className="control ml-2">
+            <Button
+              aria-label="Toggle peek"
+              title="Peek at opponents' hands"
+              aria-pressed={peek}
+              className={peek ? 'active' : ''}
+              onClick={() => setPeek(!peek)}
+            >
+              {peek ? <FiEyeOff /> : <FiEye />}
+            </Button>
+            </div>
+            <div className="control ml-2">
+            <Button
+              aria-label="Toggle sort"
+              title="Sort hand"
+              aria-pressed={sortHand}
+              className={sortHand ? 'active' : ''}
+              onClick={() => setSortHand(!sortHand)}
+            >
+              {sortHand ? <FiCheck /> : <FiShuffle />}
+            </Button>
+            </div>
+          </>
+        )}
+      </div>
     );
   }
 
@@ -204,61 +233,23 @@ export default function App() {
 
   return (
     <>
-      <ServerModeFields />
-      {mode === 'game' &&
-        (gameState ? (
-          <>
-            <div className="field">
-              <Button onClick={() => setShowSettings(true)}>Options</Button>
+      <HeaderBar />
+      {mode === 'game' && !gameState && <SetupFields />}
+      {mode === 'game' && gameState && showSettings && (
+        <div className="modal is-active">
+          <div className="modal-background" onClick={() => setShowSettings(false)}></div>
+          <div className="modal-content">
+            <div className="box">
+              <SetupFields />
             </div>
-            {showSettings && (
-              <div className="modal is-active">
-                <div
-                  className="modal-background"
-                  onClick={() => setShowSettings(false)}
-                ></div>
-                <div className="modal-content">
-                  <div className="box">
-                    <SetupFields />
-                  </div>
-                </div>
-                <button
-                  className="modal-close is-large"
-                  aria-label="close"
-                  onClick={() => setShowSettings(false)}
-                ></button>
-              </div>
-            )}
-          </>
-        ) : (
-          <SetupFields />
-        ))}
-      {mode === 'game' && (
-        <div className="field is-grouped is-align-items-flex-end">
-          <div className="control">
-            <Button
-              aria-label="Toggle peek"
-              title="Peek at opponents' hands"
-              className={peek ? 'active' : ''}
-              onClick={() => setPeek(!peek)}
-            >
-              {peek ? <FiEyeOff /> : <FiEye />}
-            </Button>
           </div>
+          <button
+            className="modal-close is-large"
+            aria-label="close"
+            onClick={() => setShowSettings(false)}
+          ></button>
         </div>
       )}
-      <div className="field is-grouped is-align-items-flex-end">
-        <div className="control">
-          <Button
-            aria-label="Toggle sort"
-            title="Sort hand"
-            className={sortHand ? 'active' : ''}
-            onClick={() => setSortHand(!sortHand)}
-          >
-            {sortHand ? <FiCheck /> : <FiShuffle />}
-          </Button>
-        </div>
-      </div>
       {mode === 'game' ? (
         <GameBoard
           state={gameState}
