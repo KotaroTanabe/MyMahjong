@@ -158,7 +158,9 @@ remain to be built:
 - [x] Tracking honba and riichi sticks in `GameState`.
 - [x] Automatic round progression with dealer repeats and hanchan end
   detection.
-- [x] Exhaustive draw condition: four kans (nine terminals pending).
+- [x] Exhaustive draw conditions: four kans and nine terminals detection.
+- [ ] Chankan ron on kan declarations.
+- [ ] Exhaustive draw condition: four riichi.
 - [ ] Complete MJAI protocol adapter for external AIs.
 - [ ] External AI integration using the adapter.
 

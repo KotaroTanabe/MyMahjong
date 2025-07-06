@@ -37,6 +37,17 @@ class MahjongEngine:
             self.state.wall.dora_indicators.append(new_dora)
             self.state.dora_indicators.append(new_dora)
 
+    def _check_nine_terminals(self, player: Player) -> None:
+        """Detect nine terminals/honors and end the hand."""
+        unique = set(
+            (t.suit, t.value)
+            for t in player.hand.tiles
+            if t.is_terminal_or_honor()
+        )
+        if len(unique) >= 9:
+            self._emit("ryukyoku", {"reason": "nine_terminals"})
+            self.advance_hand(None)
+
     def _emit(self, name: str, payload: dict) -> None:
         self.events.append(GameEvent(name=name, payload=payload))
 
@@ -74,6 +85,7 @@ class MahjongEngine:
             "start_kyoku",
             {"dealer": dealer, "round": round_number, "state": self.state},
         )
+        self._check_nine_terminals(self.state.players[dealer])
 
     def deal_initial_hands(self) -> None:
         """Deal initial tiles: 14 for the dealer and 13 for others."""
@@ -105,6 +117,9 @@ class MahjongEngine:
         tile = self.state.wall.draw_tile()
         self.state.players[player_index].draw(tile)
         self._emit("draw_tile", {"player_index": player_index, "tile": tile})
+        player = self.state.players[player_index]
+        if len(player.river) == 0 and not player.hand.melds:
+            self._check_nine_terminals(player)
         if self.state.wall.remaining_tiles == 0:
             self._emit("ryukyoku", {"reason": "wall_empty"})
             self.advance_hand(None)
