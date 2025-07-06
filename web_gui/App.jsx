@@ -180,7 +180,7 @@ export default function App() {
           />
         </label>
         <div className="control">
-          <Button onClick={fetchStatus}>Retry</Button>
+          <Button aria-label="Retry" onClick={fetchStatus}>🔄</Button>
         </div>
       </div>
       <div className="field">
@@ -194,16 +194,16 @@ export default function App() {
           </span>
         </label>
       </div>
-      <div className="field">
-        <label className="checkbox">
-          <input
-            type="checkbox"
-            className="mr-1"
-            checked={peek}
-            onChange={(e) => setPeek(e.target.checked)}
-          />
-          Peek
-        </label>
+      <div className="field is-grouped is-align-items-flex-end">
+        <label className="label mr-2">Peek:</label>
+        <div className="control">
+          <Button
+            aria-label="Toggle peek"
+            onClick={() => setPeek(!peek)}
+          >
+            {peek ? '🙈' : '👁️'}
+          </Button>
+        </div>
       </div>
       <div className="field is-grouped is-align-items-flex-end">
         <label className="label mr-2">

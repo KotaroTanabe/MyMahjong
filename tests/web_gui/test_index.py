@@ -70,7 +70,7 @@ def test_style_css_exists() -> None:
 def test_app_has_server_selection() -> None:
     text = Path('web_gui/App.jsx').read_text()
     assert '<input' in text
-    assert 'Retry' in text
+    assert 'aria-label="Retry"' in text
 
 
 def test_app_can_start_game() -> None:
