@@ -224,22 +224,27 @@ export default function App() {
       )}
       {mode === 'game' && (
         <div className="field is-grouped is-align-items-flex-end">
-          <label className="label mr-2">Peek:</label>
           <div className="control">
-            <Button aria-label="Toggle peek" onClick={() => setPeek(!peek)}>
+            <Button
+              aria-label="Toggle peek"
+              title="Peek at opponents' hands"
+              className={peek ? 'active' : ''}
+              onClick={() => setPeek(!peek)}
+            >
               {peek ? <FiEyeOff /> : <FiEye />}
             </Button>
           </div>
         </div>
       )}
       <div className="field is-grouped is-align-items-flex-end">
-        <label className="label mr-2">Sort:</label>
         <div className="control">
           <Button
             aria-label="Toggle sort"
+            title="Sort hand"
+            className={sortHand ? 'active' : ''}
             onClick={() => setSortHand(!sortHand)}
           >
-            <FiShuffle />
+            {sortHand ? <FiCheck /> : <FiShuffle />}
           </Button>
         </div>
       </div>
