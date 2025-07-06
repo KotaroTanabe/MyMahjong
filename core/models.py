@@ -43,6 +43,7 @@ class GameState:
     round_number: int = 1
     honba: int = 0
     riichi_sticks: int = 0
+    kan_count: int = 0
     seat_winds: list[str] = field(default_factory=list)
     last_discard: Tile | None = None
     last_discard_player: int | None = None

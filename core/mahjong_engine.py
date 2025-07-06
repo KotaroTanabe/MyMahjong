@@ -59,6 +59,7 @@ class MahjongEngine:
             p.riichi = False
         self.state.last_discard = None
         self.state.last_discard_player = None
+        self.state.kan_count = 0
         winds = ["east", "south", "west", "north"]
         self.state.seat_winds = []
         for i, p in enumerate(self.state.players):
@@ -271,6 +272,10 @@ class MahjongEngine:
             self.state.last_discard_player = None
             self._draw_replacement_tile(player)
             self._emit("meld", {"player_index": player_index, "meld": meld})
+            self.state.kan_count += 1
+            if self.state.kan_count >= 4:
+                self._emit("ryukyoku", {"reason": "four_kans"})
+                self.advance_hand(None)
             return
 
         # Added kan upgrade from an existing pon
@@ -292,6 +297,10 @@ class MahjongEngine:
                 meld.type = "added_kan"
                 self._draw_replacement_tile(player)
                 self._emit("meld", {"player_index": player_index, "meld": meld})
+                self.state.kan_count += 1
+                if self.state.kan_count >= 4:
+                    self._emit("ryukyoku", {"reason": "four_kans"})
+                    self.advance_hand(None)
                 return
 
         # Closed kan from hand
@@ -311,6 +320,10 @@ class MahjongEngine:
         player.hand.melds.append(meld)
         self._draw_replacement_tile(player)
         self._emit("meld", {"player_index": player_index, "meld": meld})
+        self.state.kan_count += 1
+        if self.state.kan_count >= 4:
+            self._emit("ryukyoku", {"reason": "four_kans"})
+            self.advance_hand(None)
 
     def declare_tsumo(self, player_index: int, win_tile: Tile) -> HandResponse:
         """Declare a self-drawn win and return scoring info."""
@@ -394,6 +407,7 @@ class MahjongEngine:
         self.state.current_player = 0
         self.state.honba = 0
         self.state.riichi_sticks = 0
+        self.state.kan_count = 0
         self.state.seat_winds = []
         self.state.last_discard = None
         self.state.last_discard_player = None
