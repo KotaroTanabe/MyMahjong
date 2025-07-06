@@ -85,6 +85,7 @@ export default function GameBoard({
         server={server}
         gameId={gameId}
         playerIndex={2}
+        activePlayer={state?.current_player}
       />
       <PlayerPanel
         seat="west"
@@ -95,6 +96,7 @@ export default function GameBoard({
         server={server}
         gameId={gameId}
         playerIndex={1}
+        activePlayer={state?.current_player}
       />
       <PlayerPanel
         seat="east"
@@ -105,6 +107,7 @@ export default function GameBoard({
         server={server}
         gameId={gameId}
         playerIndex={3}
+        activePlayer={state?.current_player}
       />
       <PlayerPanel
         seat="south"
@@ -116,6 +119,7 @@ export default function GameBoard({
         server={server}
         gameId={gameId}
         playerIndex={0}
+        activePlayer={state?.current_player}
       />
     </div>
     </>

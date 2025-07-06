@@ -141,6 +141,11 @@
   background-color: #004a99;
 }
 
+.active-player .player-header {
+  font-weight: bold;
+  background-color: #fff4ce;
+}
+
 @media (max-width: 600px) {
   .board-grid {
     grid-template-areas:
