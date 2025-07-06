@@ -214,7 +214,7 @@ def test_auto_action_endpoint() -> None:
     client.post("/games", json={"players": ["A", "B", "C", "D"]})
     resp = client.post(
         "/games/1/action",
-        json={"player_index": 0, "action": "auto"},
+        json={"player_index": 0, "action": "auto", "ai_type": "simple"},
     )
     assert resp.status_code == 200
     tile = resp.json()

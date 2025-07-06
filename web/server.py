@@ -83,6 +83,7 @@ class ActionRequest(BaseModel):
     action: str
     tile: dict | None = None
     tiles: list[dict] | None = None
+    ai_type: str | None = None
 
 
 @app.post("/games/{game_id}/action")
@@ -126,7 +127,8 @@ def game_action(game_id: int, req: ActionRequest) -> dict:
         api.skip(req.player_index)
         return {"status": "ok"}
     if req.action == "auto":
-        tile = api.auto_play_turn(req.player_index)
+        ai_type = req.ai_type or "simple"
+        tile = api.auto_play_turn(req.player_index, ai_type=ai_type)
         return asdict(tile)
     raise HTTPException(status_code=400, detail="Unknown action")
 

@@ -10,6 +10,7 @@ __all__ = [
     "ai_adapter",
     "ai_runner",
     "simple_ai",
+    "ai",
     "api",
     "tenhou_log",
     "models",

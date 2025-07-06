@@ -24,6 +24,7 @@ export default function GameBoard({
   const [error, setError] = useState(null);
   // Players 1-3 (west, north, east) act as AI by default
   const [aiPlayers, setAiPlayers] = useState([false, true, true, true]);
+  const [aiTypes] = useState(['simple', 'simple', 'simple', 'simple']);
 
   function toggleAI(idx) {
     setAiPlayers((a) => {
@@ -40,13 +41,15 @@ export default function GameBoard({
     const tiles = state?.players?.[current]?.hand?.tiles ?? [];
     if (tiles.length === 13) {
       const action = aiPlayers[current] ? 'auto' : 'draw';
+      const body = { player_index: current, action };
+      if (action === 'auto') body.ai_type = aiTypes[current];
       fetch(`${server.replace(/\/$/, '')}/games/${gameId}/action`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ player_index: current, action }),
+        body: JSON.stringify(body),
       }).catch(() => {});
     }
-  }, [state?.current_player, gameId, server, state?.players, aiPlayers]);
+  }, [state?.current_player, gameId, server, state?.players, aiPlayers, aiTypes]);
 
   const defaultHand = Array(13).fill('🀫');
 
