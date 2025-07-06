@@ -188,3 +188,8 @@ def test_result_modal_component_exists() -> None:
 def test_game_board_references_result_modal() -> None:
     board = Path('web_gui/GameBoard.jsx').read_text()
     assert 'ResultModal' in board
+
+
+def test_result_modal_has_copy_button() -> None:
+    text = Path('web_gui/ResultModal.jsx').read_text()
+    assert 'Copy Log' in text

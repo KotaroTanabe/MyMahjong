@@ -32,6 +32,14 @@ def test_create_and_get_game() -> None:
     assert "players" in data
 
 
+def test_get_log_endpoint() -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    resp = client.get("/games/1/log")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "log" in data and data["log"].startswith("{")
+
+
 def test_draw_action_endpoint() -> None:
     client.post("/games", json={"players": ["A", "B", "C", "D"]})
     resp = client.post(

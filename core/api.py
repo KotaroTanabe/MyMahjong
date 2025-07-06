@@ -118,6 +118,15 @@ def pop_events() -> list[GameEvent]:
     return _engine.pop_events()
 
 
+def get_tenhou_log() -> str:
+    """Return the accumulated event log in Tenhou JSON format."""
+    assert _engine is not None, "Game not started"
+    from .tenhou_log import events_to_tenhou_json
+
+    history = _engine.get_event_history()
+    return events_to_tenhou_json(history)
+
+
 def generate_practice_problem() -> practice.PracticeProblem:
     """Return a new practice problem."""
 

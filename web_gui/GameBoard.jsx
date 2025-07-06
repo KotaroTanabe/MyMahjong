@@ -76,6 +76,18 @@ export default function GameBoard({
     setResult(state?.result ?? null);
   }, [state?.result]);
 
+  async function copyLog() {
+    if (!gameId) return;
+    try {
+      const resp = await fetch(`${server.replace(/\/$/, '')}/games/${gameId}/log`);
+      if (!resp.ok) return;
+      const data = await resp.json();
+      await navigator.clipboard.writeText(data.log);
+    } catch {
+      /* ignore */
+    }
+  }
+
   const defaultHand = Array(13).fill('🀫');
 
   function concealedHand(p) {
@@ -192,7 +204,11 @@ export default function GameBoard({
         toggleAI={toggleAI}
       />
     </div>
-    <ResultModal result={result} onClose={() => setResult(null)} />
+    <ResultModal
+      result={result}
+      onClose={() => setResult(null)}
+      onCopyLog={copyLog}
+    />
     <ErrorModal message={error} onClose={() => setError(null)} />
     </>
   );

@@ -92,3 +92,9 @@ def test_practice_api_external(monkeypatch) -> None:
     monkeypatch.setattr(practice, "suggest_discard", fake_suggest)
     tile = api.suggest_practice_discard(prob.hand, use_ai=True)
     assert tile.suit == "man"
+
+
+def test_get_tenhou_log_api() -> None:
+    api.start_game(["A", "B", "C", "D"])
+    log = api.get_tenhou_log()
+    assert log.startswith("{") and "name" in log
