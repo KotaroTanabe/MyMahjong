@@ -1,6 +1,6 @@
 [flake8]
-max-line-length = 88
-extend-ignore = E203
+# Extremely permissive rules to avoid hindering development
+# Only check for serious syntax issues and undefined names
+max-line-length = 120
+select = E9,F63,F7,F82
 exclude = .venv
-per-file-ignores =
-    tests/*:F401

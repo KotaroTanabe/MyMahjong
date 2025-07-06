@@ -222,7 +222,7 @@ uv pip install -e ./core -e ./cli -e ./web
 uv pip install flake8 mypy pytest build
 python -m build core
 python -m build cli
-flake8
+flake8  # uses a very lenient rule set (E9,F63,F7,F82 only)
 mypy core web cli
 pytest -q
 ```
@@ -243,3 +243,5 @@ served from this subpath.
 GitHub Actions run linting, type checking, build and tests for every pull request
 using **uv** to install dependencies. Once these checks succeed, the workflow
 automatically approves and merges the PR.
+The flake8 step runs with only the `E9`, `F63`, `F7` and `F82` checks enabled to
+avoid excessive style warnings.
