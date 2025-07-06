@@ -8,6 +8,7 @@ function mockState(playerIndex = 0, waiting = []) {
     players: new Array(4).fill(0).map(() => ({ hand: { tiles: Array(13), melds: [] }, river: [] })),
     wall: { tiles: [] },
     waiting_for_claims: waiting,
+    last_discard: { suit: 'man', value: 1 },
   };
 }
 
