@@ -117,6 +117,7 @@ Future work will expand these components.
 - [x] event log
 - [x] current player tracking
 - [x] Enforce tsumogiri after riichi
+- [x] Riichi event includes player score and stick count
 - [x] action dispatch helper
 - [x] seat wind tracking
 

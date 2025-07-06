@@ -60,3 +60,15 @@ def test_ryukyoku_sets_result_and_scores() -> None:
     )
     output = run_node(code)
     assert output == 'ryukyoku:26500'
+
+
+def test_riichi_event_updates_score_and_sticks() -> None:
+    code = (
+        "import { applyEvent } from './web_gui/applyEvent.js';\n"
+        "const state = {players:[{score:25000,riichi:false}],riichi_sticks:0};\n"
+        "const evt = {name:'riichi', payload:{player_index:0, score:24000, riichi_sticks:1}};\n"
+        "const newState = applyEvent(state, evt);\n"
+        "console.log(newState.players[0].score + ':' + newState.riichi_sticks + ':' + newState.players[0].riichi);"
+    )
+    output = run_node(code)
+    assert output == '24000:1:true'
