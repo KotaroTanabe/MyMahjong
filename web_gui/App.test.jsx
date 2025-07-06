@@ -1,4 +1,4 @@
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen, cleanup, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Server } from 'mock-socket';
 import { describe, it, vi, expect, afterEach } from 'vitest';
@@ -86,8 +86,8 @@ describe('App reload', () => {
     const server = new Server('ws://localhost:5678/ws/1');
     render(<App />);
     await screen.findByText('WebSocket connected');
-    await userEvent.click(screen.getByText('Options'));
     expect(screen.getByLabelText('Server:').value).toBe('http://localhost:5678');
+    await userEvent.click(screen.getByText('Options'));
     expect(screen.getByLabelText('Game ID:').value).toBe('1');
     server.stop();
   });
@@ -124,6 +124,8 @@ describe('App settings modal', () => {
     expect(screen.queryByText('Start Game')).toBeNull();
     expect(options).toBeTruthy();
     await userEvent.click(options);
+    const modal = document.querySelector('.modal');
+    expect(within(modal).queryByLabelText('Server:')).toBeNull();
     expect(screen.getByLabelText('Server:')).toBeTruthy();
     server.stop();
   });
