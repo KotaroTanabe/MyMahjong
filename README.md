@@ -42,6 +42,7 @@ Future work will expand these components.
 - [x] GUI server selection and retry
 - [x] React front-end skeleton
 - [x] Basic board layout
+- [x] Alternate player panel layout option
 - [x] Hand & River components
 - [x] Meld area component
 - [x] Center display (dora & wall count)
