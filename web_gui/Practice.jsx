@@ -46,12 +46,13 @@ export default function Practice({ server, sortHand = true }) {
   }
 
   const tiles = sortHand ? sortTilesExceptLast(problem.hand) : problem.hand;
+  const drawn = problem.hand.length % 3 === 2;
 
   return (
     <div className="practice">
       <div>Seat wind: {problem.seat_wind}</div>
       <div> Dora indicator: {tileToEmoji(problem.dora_indicator)} </div>
-      <Hand tiles={tiles} onDiscard={choose} />
+      <Hand tiles={tiles} onDiscard={choose} drawn={drawn} />
       {chosen && (
         <div>You discarded {tileToEmoji(chosen)}</div>
       )}
