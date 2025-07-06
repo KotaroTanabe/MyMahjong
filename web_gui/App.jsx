@@ -103,7 +103,7 @@ export default function App() {
     wsRef.current = ws;
   }
 
-  function SetupFields() {
+  function ServerModeFields() {
     return (
       <>
         <div className="field is-grouped is-align-items-flex-end">
@@ -142,6 +142,13 @@ export default function App() {
             </span>
           </label>
         </div>
+      </>
+    );
+  }
+
+  function SetupFields() {
+    return (
+      <>
         <div className="field is-grouped is-align-items-flex-end">
           <label className="label mr-2">
             Players:
@@ -195,6 +202,7 @@ export default function App() {
 
   return (
     <>
+      <ServerModeFields />
       {gameState ? (
         <>
           <div className="field">
