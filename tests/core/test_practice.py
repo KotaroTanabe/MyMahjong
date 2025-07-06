@@ -20,7 +20,8 @@ def test_suggest_discard(monkeypatch):
 
 
 def test_evaluate_discards(monkeypatch):
-    hand = [Tile("man", i) for i in range(1, 10)] + [Tile("pin", i) for i in range(1, 5)]
+    hand = [Tile("man", i) for i in range(1, 10)] 
+         + [Tile("pin", i) for i in range(1, 5)]
 
     def fake_calc(self, counts):
         return counts[0]
