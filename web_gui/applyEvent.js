@@ -43,7 +43,15 @@ export function applyEvent(state, event) {
     }
     case 'riichi': {
       const p = newState.players[event.payload.player_index];
-      if (p) p.riichi = true;
+      if (p) {
+        p.riichi = true;
+        if (typeof event.payload.score === 'number') {
+          p.score = event.payload.score;
+        }
+      }
+      if (typeof event.payload.riichi_sticks === 'number') {
+        newState.riichi_sticks = event.payload.riichi_sticks;
+      }
       break;
     }
     case 'tsumo':

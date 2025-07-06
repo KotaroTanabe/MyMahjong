@@ -176,7 +176,14 @@ class MahjongEngine:
         player = self.state.players[player_index]
         player.declare_riichi()
         self.state.riichi_sticks += 1
-        self._emit("riichi", {"player_index": player_index})
+        self._emit(
+            "riichi",
+            {
+                "player_index": player_index,
+                "score": player.score,
+                "riichi_sticks": self.state.riichi_sticks,
+            },
+        )
 
     def calculate_score(
         self, player_index: int, win_tile: Tile
