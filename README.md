@@ -117,10 +117,12 @@ Future work will expand these components.
 - [x] configurable ruleset
 - [x] event log
 - [x] current player tracking
+- [x] Wait for all players to skip before next draw
 - [x] Enforce tsumogiri after riichi
 - [x] Riichi event includes player score and stick count
-- [x] action dispatch helper
-- [x] seat wind tracking
+- [x] Validate closed-hand tenpai requirement for riichi
+ - [x] action dispatch helper
+  - [x] seat wind tracking
 
 ## Implementation plan progress
 

@@ -56,15 +56,9 @@ class MahjongEngine:
 
     def _is_tenpai(self, player: Player) -> bool:
         """Return True if ``player`` is in tenpai."""
-        counts = [0] * 34
-        for t in player.hand.tiles:
-            counts[_tile_to_index(t)] += 1
-        for meld in player.hand.melds:
-            for t in meld.tiles:
-                counts[_tile_to_index(t)] += 1
-        if sum(counts) > 14 and player.hand.tiles:
-            counts[_tile_to_index(player.hand.tiles[-1])] -= 1
-        return Shanten().calculate_shanten(counts) == 0
+        from .shanten_quiz import is_tenpai
+
+        return is_tenpai(player.hand.tiles, player.hand.melds)
 
     def _resolve_ryukyoku(self, reason: str) -> None:
         """Handle a draw, apply noten penalties and advance the hand."""
@@ -110,6 +104,7 @@ class MahjongEngine:
             p.must_tsumogiri = False
         self.state.last_discard = None
         self.state.last_discard_player = None
+        self.state.waiting_for_claims = []
         self.state.kan_count = 0
         winds = ["east", "south", "west", "north"]
         self.state.seat_winds = []
@@ -153,6 +148,8 @@ class MahjongEngine:
 
     def draw_tile(self, player_index: int) -> Tile:
         """Draw a tile for the specified player."""
+        if self.state.waiting_for_claims:
+            raise ValueError("Waiting for other players to claim discard")
         assert self.state.wall is not None
         tile = self.state.wall.draw_tile()
         self.state.players[player_index].draw(tile)
@@ -175,12 +172,21 @@ class MahjongEngine:
         player.must_tsumogiri = False
         self._emit("discard", {"player_index": player_index, "tile": tile})
         self.state.current_player = (player_index + 1) % len(self.state.players)
+        self.state.waiting_for_claims = [
+            i for i in range(len(self.state.players)) if i != player_index
+        ]
         self.state.last_discard = tile
         self.state.last_discard_player = player_index
 
     def declare_riichi(self, player_index: int) -> None:
         """Declare riichi for the given player."""
+        from .shanten_quiz import is_tenpai
+
         player = self.state.players[player_index]
+        if player.has_open_melds():
+            raise ValueError("Cannot declare riichi with open melds")
+        if not is_tenpai(player.hand.tiles, player.hand.melds):
+            raise ValueError("Cannot declare riichi when not in tenpai")
         player.declare_riichi()
         self.state.riichi_sticks += 1
         self._emit(
@@ -241,6 +247,8 @@ class MahjongEngine:
         player.hand.melds.append(meld)
         self.state.last_discard = None
         self.state.last_discard_player = None
+        self.state.waiting_for_claims = []
+        self.state.current_player = player_index
         self._emit("meld", {"player_index": player_index, "meld": meld})
 
     def call_pon(self, player_index: int, tiles: list[Tile]) -> None:
@@ -289,6 +297,8 @@ class MahjongEngine:
         player.hand.melds.append(meld)
         self.state.last_discard = None
         self.state.last_discard_player = None
+        self.state.waiting_for_claims = []
+        self.state.current_player = player_index
         self._emit("meld", {"player_index": player_index, "meld": meld})
 
     def call_kan(self, player_index: int, tiles: list[Tile]) -> None:
@@ -336,6 +346,8 @@ class MahjongEngine:
             self.state.last_discard = None
             self.state.last_discard_player = None
             self._draw_replacement_tile(player)
+            self.state.waiting_for_claims = []
+            self.state.current_player = player_index
             self._emit("meld", {"player_index": player_index, "meld": meld})
             self.state.kan_count += 1
             if self.state.kan_count >= 4:
@@ -360,6 +372,8 @@ class MahjongEngine:
                 meld.tiles.append(player.hand.tiles.pop(idx))
                 meld.type = "added_kan"
                 self._draw_replacement_tile(player)
+                self.state.waiting_for_claims = []
+                self.state.current_player = player_index
                 self._emit("meld", {"player_index": player_index, "meld": meld})
                 self.state.kan_count += 1
                 if self.state.kan_count >= 4:
@@ -382,6 +396,8 @@ class MahjongEngine:
         meld = Meld(tiles=meld_tiles, type="closed_kan")
         player.hand.melds.append(meld)
         self._draw_replacement_tile(player)
+        self.state.waiting_for_claims = []
+        self.state.current_player = player_index
         self._emit("meld", {"player_index": player_index, "meld": meld})
         self.state.kan_count += 1
         if self.state.kan_count >= 4:
@@ -410,6 +426,7 @@ class MahjongEngine:
                 "scores": scores,
             },
         )
+        self.state.waiting_for_claims = []
         self.advance_hand(player_index)
         return result
 
@@ -431,11 +448,18 @@ class MahjongEngine:
             "ron",
             {"player_index": player_index, "result": result, "scores": scores},
         )
+        self.state.waiting_for_claims = []
         self.advance_hand(player_index)
         return result
 
     def skip(self, player_index: int) -> None:
         """Skip action for the specified player."""
+        # Waiting for claims from other players
+        if self.state.waiting_for_claims:
+            if player_index in self.state.waiting_for_claims:
+                self.state.waiting_for_claims.remove(player_index)
+                self._emit("skip", {"player_index": player_index})
+            return
         if player_index != self.state.current_player:
             return
         self.state.current_player = (self.state.current_player + 1) % len(

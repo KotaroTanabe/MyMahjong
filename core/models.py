@@ -53,6 +53,7 @@ class GameState:
     seat_winds: list[str] = field(default_factory=list)
     last_discard: Tile | None = None
     last_discard_player: int | None = None
+    waiting_for_claims: list[int] = field(default_factory=list)
 
 
 @dataclass

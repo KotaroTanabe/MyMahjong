@@ -50,6 +50,18 @@ def test_discard_advances_turn_and_adds_river() -> None:
     output = run_node(code)
     assert output == '1:1'
 
+
+def test_discard_sets_waiting_for_claims() -> None:
+    code = (
+        "import { applyEvent } from './web_gui/applyEvent.js';\n"
+        "const state = {current_player:0, players:[{hand:{tiles:[]},river:[]},{hand:{tiles:[]},river:[]},{hand:{tiles:[]},river:[]},{hand:{tiles:[]},river:[]}]};\n"
+        "const evt = {name:'discard', payload:{player_index:0, tile:{suit:'pin', value:1}}};\n"
+        "const newState = applyEvent(state, evt);\n"
+        "console.log(newState.waiting_for_claims.length + ':' + newState.waiting_for_claims.includes(1));"
+    )
+    output = run_node(code)
+    assert output == '3:true'
+
 def test_ryukyoku_sets_result_and_scores() -> None:
     code = (
         "import { applyEvent } from './web_gui/applyEvent.js';\n"

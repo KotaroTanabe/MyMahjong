@@ -73,7 +73,9 @@ export default function GameBoard({
   }, [state?.current_player, gameId, server, state?.players, aiPlayers, aiTypes]);
 
   useEffect(() => {
-    setResult(state?.result ?? null);
+    if (state?.result) {
+      setResult(state.result);
+    }
   }, [state?.result]);
 
   async function copyLog() {
