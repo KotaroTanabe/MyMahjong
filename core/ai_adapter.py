@@ -20,6 +20,59 @@ from .wall import Wall
 from .ai_runner import ExternalAI
 
 
+def _decode_tile(d: dict[str, Any]) -> Tile:
+    return Tile(**d)
+
+
+def _decode_meld(d: dict[str, Any]) -> Meld:
+    return Meld(tiles=[_decode_tile(t) for t in d["tiles"]], type=d["type"])
+
+
+def _decode_hand(d: dict[str, Any]) -> Hand:
+    tiles = [_decode_tile(t) for t in d.get("tiles", [])]
+    melds = [_decode_meld(m) for m in d.get("melds", [])]
+    return Hand(tiles=tiles, melds=melds)
+
+
+def _decode_player(d: dict[str, Any]) -> Player:
+    return Player(
+        name=d.get("name", ""),
+        hand=_decode_hand(d.get("hand", {})),
+        score=d.get("score", 25000),
+        river=[_decode_tile(t) for t in d.get("river", [])],
+        riichi=d.get("riichi", False),
+        seat_wind=d.get("seat_wind", "east"),
+    )
+
+
+def _decode_wall(d: dict[str, Any]) -> Wall:
+    return Wall(
+        tiles=[_decode_tile(t) for t in d.get("tiles", [])],
+        dead_wall=[_decode_tile(t) for t in d.get("dead_wall", [])],
+        dora_indicators=[_decode_tile(t) for t in d.get("dora_indicators", [])],
+        wanpai_size=d.get("wanpai_size", 14),
+    )
+
+
+def _decode_state(d: dict[str, Any]) -> GameState:
+    wall_data = d.get("wall")
+    wall = _decode_wall(wall_data) if wall_data else None
+    return GameState(
+        players=[_decode_player(p) for p in d.get("players", [])],
+        wall=wall,
+        dora_indicators=[_decode_tile(t) for t in d.get("dora_indicators", [])],
+        dead_wall=[_decode_tile(t) for t in d.get("dead_wall", [])],
+        current_player=d.get("current_player", 0),
+        dealer=d.get("dealer", 0),
+        round_number=d.get("round_number", 1),
+        honba=d.get("honba", 0),
+        riichi_sticks=d.get("riichi_sticks", 0),
+        seat_winds=d.get("seat_winds", []),
+        last_discard=_decode_tile(d["last_discard"]) if d.get("last_discard") else None,
+        last_discard_player=d.get("last_discard_player"),
+    )
+
+
 def _encode(obj: Any) -> Any:
     """Recursively convert dataclasses for JSON serialization."""
 
@@ -47,69 +100,39 @@ def json_to_game_state(message: str) -> GameState:
     """Parse ``message`` into a :class:`GameState`."""
 
     data = json.loads(message)
-
-    def decode_tile(d: dict[str, Any]) -> Tile:
-        return Tile(**d)
-
-    def decode_meld(d: dict[str, Any]) -> Meld:
-        return Meld(tiles=[decode_tile(t) for t in d["tiles"]], type=d["type"])
-
-    def decode_hand(d: dict[str, Any]) -> Hand:
-        tiles = [decode_tile(t) for t in d.get("tiles", [])]
-        melds = [decode_meld(m) for m in d.get("melds", [])]
-        return Hand(tiles=tiles, melds=melds)
-
-    def decode_player(d: dict[str, Any]) -> Player:
-        return Player(
-            name=d.get("name", ""),
-            hand=decode_hand(d.get("hand", {})),
-            score=d.get("score", 25000),
-            river=[decode_tile(t) for t in d.get("river", [])],
-            riichi=d.get("riichi", False),
-            seat_wind=d.get("seat_wind", "east"),
-        )
-
-    wall_data = data.get("wall")
-    wall = None
-    if wall_data:
-        wall = Wall(
-            tiles=[decode_tile(t) for t in wall_data.get("tiles", [])],
-            dead_wall=[decode_tile(t) for t in wall_data.get("dead_wall", [])],
-            dora_indicators=[
-                decode_tile(t) for t in wall_data.get("dora_indicators", [])
-            ],
-            wanpai_size=wall_data.get("wanpai_size", 14),
-        )
-
-    state = GameState(
-        players=[decode_player(p) for p in data.get("players", [])],
-        wall=wall,
-        dora_indicators=[decode_tile(t) for t in data.get("dora_indicators", [])],
-        dead_wall=[decode_tile(t) for t in data.get("dead_wall", [])],
-        current_player=data.get("current_player", 0),
-        dealer=data.get("dealer", 0),
-        round_number=data.get("round_number", 1),
-        seat_winds=data.get("seat_winds", []),
-    )
-    return state
+    return _decode_state(data)
 
 
 def event_to_json(event: GameEvent) -> str:
     """Return a JSON message describing ``event``."""
 
     payload = {"type": event.name}
-    payload.update(event.payload)
+    payload.update({k: _encode(v) for k, v in event.payload.items()})
     return json.dumps(payload)
 
 
 def json_to_event(message: str) -> GameEvent:
     """Deserialize an MJAI event message."""
 
+    def decode(value: Any) -> Any:
+        if isinstance(value, dict):
+            if "suit" in value and "value" in value:
+                return _decode_tile(value)
+            if "tiles" in value and "type" in value:
+                return _decode_meld(value)
+            if "players" in value:
+                return _decode_state(value)
+            return {k: decode(v) for k, v in value.items()}
+        if isinstance(value, list):
+            return [decode(v) for v in value]
+        return value
+
     data = json.loads(message)
     if "type" not in data:
         raise ValueError("Missing event type")
     name = data.pop("type")
-    return GameEvent(name=name, payload=data)
+    payload = {k: decode(v) for k, v in data.items()}
+    return GameEvent(name=name, payload=payload)
 
 
 def send_event_to_ai(event: GameEvent, ai: ExternalAI) -> None:
@@ -133,8 +156,8 @@ def json_to_action(message: str) -> GameAction:
     return GameAction(
         type=data["type"],
         player_index=data.get("player_index"),
-        tile=Tile(**tile) if tile else None,
-        tiles=[Tile(**t) for t in tiles] if tiles else None,
+        tile=_decode_tile(tile) if tile else None,
+        tiles=[_decode_tile(t) for t in tiles] if tiles else None,
         dealer=data.get("dealer"),
         round_number=data.get("round_number"),
     )
@@ -144,3 +167,26 @@ def receive_action(ai: ExternalAI) -> GameAction:
     """Receive and deserialize a JSON action from ``ai``."""
 
     return json_to_action(ai.receive())
+
+
+def validate_action(action: GameAction) -> None:
+    """Ensure ``action`` has required fields for its type."""
+
+    required: dict[str, list[str]] = {
+        "draw": ["player_index"],
+        "discard": ["player_index", "tile"],
+        "chi": ["player_index", "tiles"],
+        "pon": ["player_index", "tiles"],
+        "kan": ["player_index", "tiles"],
+        "riichi": ["player_index"],
+        "tsumo": ["player_index", "tile"],
+        "ron": ["player_index", "tile"],
+        "skip": ["player_index"],
+        "start_kyoku": ["dealer", "round_number"],
+        "end_game": [],
+    }
+    if action.type not in required:
+        raise ValueError(f"Unknown action type: {action.type}")
+    for field in required[action.type]:
+        if getattr(action, field) is None:
+            raise ValueError(f"Missing required field {field} for {action.type}")

@@ -149,7 +149,7 @@ remain to be built:
 - [ ] Automatic round progression with dealer repeats and hanchan end
   detection.
 - [ ] Exhaustive draw conditions such as four kans and nine terminals.
-- [ ] Complete MJAI protocol adapter for external AIs.
+- [x] Complete MJAI protocol adapter for external AIs.
 - [ ] External AI integration using the adapter.
 
 See `docs/core-tasks.md` for detailed task descriptions.

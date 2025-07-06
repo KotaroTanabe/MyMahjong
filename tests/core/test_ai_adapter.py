@@ -1,3 +1,5 @@
+import pytest
+
 from core.ai_adapter import (
     game_state_to_json,
     json_to_game_state,
@@ -8,6 +10,7 @@ from core.ai_adapter import (
     action_to_json,
     json_to_action,
     receive_action,
+    validate_action,
 )
 from core import models
 from core.models import GameState, Tile, GameEvent
@@ -93,3 +96,44 @@ def test_send_and_receive_event() -> None:
     assert received.type == "end_game"
     assert received.tile is None
     assert received.tiles is None
+
+
+def test_start_game_event_roundtrip() -> None:
+    state = GameState(players=[Player(name="P")])
+    event = GameEvent(name="start_game", payload={"state": state})
+    msg = event_to_json(event)
+    restored = json_to_event(msg)
+    assert restored.name == "start_game"
+    rst_state = restored.payload["state"]
+    assert isinstance(rst_state, GameState)
+    assert rst_state.players[0].name == "P"
+
+
+def test_meld_event_roundtrip() -> None:
+    meld = models.Meld(
+        tiles=[Tile("man", 1), Tile("man", 2), Tile("man", 3)], type="chi"
+    )
+    event = GameEvent(name="meld", payload={"player_index": 0, "meld": meld})
+    msg = event_to_json(event)
+    restored = json_to_event(msg)
+    assert restored.name == "meld"
+    assert restored.payload["meld"].type == "chi"
+
+
+def test_meld_action_roundtrip() -> None:
+    action = models.GameAction(
+        type="pon",
+        player_index=1,
+        tiles=[Tile("sou", 7), Tile("sou", 7), Tile("sou", 7)],
+    )
+    msg = action_to_json(action)
+    restored = json_to_action(msg)
+    assert restored.type == "pon"
+    assert restored.tiles and len(restored.tiles) == 3
+
+
+def test_validate_action_errors() -> None:
+    with pytest.raises(ValueError):
+        validate_action(models.GameAction(type="discard", player_index=0))
+    with pytest.raises(ValueError):
+        validate_action(models.GameAction(type="foo"))
