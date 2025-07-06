@@ -11,7 +11,6 @@ def run_game(players: list[str]) -> None:
     state = api.start_game(players)
     players_display = ', '.join(p.name for p in state.players)
     click.echo(f"Game started with players: {players_display}")
-    turn = 0
     start_round = state.round_number
     start_honba = state.honba
     while (
@@ -20,15 +19,9 @@ def run_game(players: list[str]) -> None:
         and state.round_number == start_round
         and state.honba == start_honba
     ):
-        tile = api.draw_tile(turn)
-        name = state.players[turn].name
-        click.echo(f"{name} drew {tile.suit}{tile.value}")
-        try:
-            api.discard_tile(turn, tile)
-        except ValueError:
-            # Tile may have already been removed; end the loop gracefully
-            break
-        click.echo(f"{name} discarded {tile.suit}{tile.value}")
-        turn = (turn + 1) % len(state.players)
+        player_index = state.current_player
+        name = state.players[player_index].name
+        tile = api.auto_play_turn()
+        click.echo(f"{name} drew {tile.suit}{tile.value} and discarded it")
     api.end_game()
     click.echo("Game ended")

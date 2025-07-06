@@ -56,6 +56,7 @@ Future work will expand these components.
 - [x] Discard tiles via GUI
 - [x] Meld and win actions via GUI
 - [x] Start game via GUI
+- [x] Simple tsumogiri AI for automated turns
 - [x] Handle start_kyoku event in GUI
 - [x] Join game by ID via GUI
 - [x] Reconnect to running game after reload
@@ -125,8 +126,9 @@ Future work will expand these components.
   the GUI updates instantly.
  - [x] **10. Connect GUI state** – update React components to fetch the initial game,
   handle WebSocket events and send player actions.
-- [ ] **11. Provide a mock AI** – run a simple MJAI-compatible process through the
-  adapter with an interface that later swaps in a stronger engine.
+ - [ ] **11. Provide a mock AI** – run a simple MJAI-compatible process through the
+  adapter with an interface that later swaps in a stronger engine. A minimal
+  tsumogiri AI exists for local automation.
 - [ ] **12. Write end-to-end tests** – cover REST routes, WebSocket updates and basic
   GUI interactions.
  - [x] **13. Add `何切る問題` mode** – offer a practice scenario with a random seat wind
