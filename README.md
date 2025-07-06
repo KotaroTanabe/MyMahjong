@@ -67,6 +67,7 @@ Future work will expand these components.
 - [x] Corrected seat orientation (shimocha right side)
 - [x] Stylish form inputs with Bulma CSS
 - [x] Responsive layout for narrow screens
+- [x] Icon buttons using react-icons
 - [x] 何切る問題 mode
   - [x] CLI practice command
   - [x] AI recommendation

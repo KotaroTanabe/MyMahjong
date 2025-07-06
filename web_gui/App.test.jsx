@@ -99,3 +99,21 @@ describe('App reload', () => {
     server.stop();
   });
 });
+
+describe('App icons', () => {
+  it('renders refresh icon button', () => {
+    global.fetch = mockFetch();
+    render(<App />);
+    const refreshButton = screen.getByLabelText('Retry');
+    expect(refreshButton.querySelector('svg')).toBeTruthy();
+  });
+
+  it('toggles peek icon', async () => {
+    global.fetch = mockFetch();
+    render(<App />);
+    const peekButton = screen.getByLabelText('Toggle peek');
+    const first = peekButton.innerHTML;
+    await userEvent.click(peekButton);
+    expect(peekButton.innerHTML).not.toBe(first);
+  });
+});
