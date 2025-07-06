@@ -43,6 +43,12 @@ export function applyEvent(state, event) {
         });
         p.hand.melds.push(event.payload.meld);
       }
+      if (typeof newState.last_discard_player === 'number') {
+        const d = newState.players[newState.last_discard_player];
+        if (d?.river?.length) d.river.pop();
+      }
+      newState.last_discard = null;
+      newState.last_discard_player = null;
       newState.current_player = event.payload.player_index;
       newState.waiting_for_claims = [];
       break;

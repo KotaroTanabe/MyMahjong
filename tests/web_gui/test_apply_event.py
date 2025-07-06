@@ -62,6 +62,22 @@ def test_discard_sets_waiting_for_claims() -> None:
     output = run_node(code)
     assert output == '3:true'
 
+
+def test_meld_removes_discard_from_river() -> None:
+    code = (
+        "import { applyEvent } from './web_gui/applyEvent.js';\n"
+        "const state = {last_discard:{suit:'man',value:1}, last_discard_player:0, \n"
+        "players:[\n"
+        "  {hand:{tiles:[], melds:[]}, river:[{suit:'man',value:1}]},\n"
+        "  {hand:{tiles:[{suit:'man',value:2},{suit:'man',value:3}], melds:[]}, river:[]}\n"
+        "]};\n"
+        "const evt = {name:'meld', payload:{player_index:1, meld:{tiles:[{suit:'man',value:1},{suit:'man',value:2},{suit:'man',value:3}], type:'chi', called_index:0}}};\n"
+        "const newState = applyEvent(state, evt);\n"
+        "console.log(newState.players[0].river.length + ':' + newState.players[1].hand.melds.length + ':' + newState.last_discard);"
+    )
+    output = run_node(code)
+    assert output == '0:1:null'
+
 def test_ryukyoku_sets_result_and_scores() -> None:
     code = (
         "import { applyEvent } from './web_gui/applyEvent.js';\n"

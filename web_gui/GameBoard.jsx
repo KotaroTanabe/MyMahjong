@@ -85,7 +85,8 @@ export default function GameBoard({
     if (current == null || current === prevPlayer.current) return;
     prevPlayer.current = current;
     const tiles = state?.players?.[current]?.hand?.tiles ?? [];
-    if (tiles.length === 13) {
+    const last = state?.last_discard;
+    if (tiles.length === 13 && last) {
       const action = aiPlayers[current] ? 'auto' : 'draw';
       const body = { player_index: current, action };
       if (action === 'auto') body.ai_type = aiTypes[current];
