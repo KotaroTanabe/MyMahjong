@@ -18,6 +18,8 @@ export function formatEvent(evt) {
       return `Player ${p} wins by ron`;
     case 'skip':
       return `Player ${p} skips`;
+    case 'next_actions':
+      return `Next actions for player ${p}: ${evt.payload.actions.join(', ')}`;
     case 'start_kyoku':
       return `Start hand ${evt.payload.round}`;
     case 'start_game':

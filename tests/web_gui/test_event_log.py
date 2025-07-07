@@ -27,3 +27,12 @@ def test_format_unknown_event() -> None:
     )
     assert run_node(code) == 'foo'
 
+
+def test_format_next_actions_event() -> None:
+    code = (
+        "import { formatEvent } from './web_gui/eventLog.js';\n"
+        "const evt = {name:'next_actions', payload:{player_index:2, actions:['draw','discard']}};\n"
+        "console.log(formatEvent(evt));"
+    )
+    output = run_node(code)
+    assert output.startswith('Next actions for player 2')
