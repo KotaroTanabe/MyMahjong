@@ -53,9 +53,10 @@ def test_draw_action_endpoint() -> None:
 
 def test_discard_action_endpoint() -> None:
     client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    state = api.get_state()
     draw = client.post(
         "/games/1/action",
-        json={"player_index": 0, "action": "draw"},
+        json={"player_index": state.current_player, "action": "draw"},
     )
     tile = draw.json()
     resp = client.post(
@@ -146,21 +147,22 @@ def test_additional_action_endpoints() -> None:
     )
     assert resp.status_code == 409
 
+    state = api.get_state()
     draw = client.post(
         "/games/1/action",
-        json={"player_index": 0, "action": "draw"},
+        json={"player_index": state.current_player, "action": "draw"},
     )
     tile = draw.json()
 
     resp = client.post(
         "/games/1/action",
-        json={"player_index": 0, "action": "tsumo", "tile": tile},
+        json={"player_index": state.current_player, "action": "tsumo", "tile": tile},
     )
     assert resp.status_code == 200
 
     resp = client.post(
         "/games/1/action",
-        json={"player_index": 0, "action": "skip"},
+        json={"player_index": state.current_player, "action": "skip"},
     )
     assert resp.status_code == 200
 

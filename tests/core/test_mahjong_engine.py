@@ -48,6 +48,7 @@ def test_discard_tile_updates_state() -> None:
     tile = Tile(suit="pin", value=4)
     # Add tile to player's hand directly for simplicity
     engine.state.players[1].draw(tile)
+    engine.state.current_player = 1
     engine.discard_tile(1, tile)
     assert all(t is not tile for t in engine.state.players[1].hand.tiles)
     assert tile in engine.state.players[1].river
@@ -185,6 +186,7 @@ def test_ron_updates_scores_and_emits_event() -> None:
     _set_tenpai_hand(engine.state.players[2])
     engine.declare_riichi(2)
     engine.state.players[1].hand.tiles.append(Tile("man", 2))
+    engine.state.current_player = 1
     engine.discard_tile(1, engine.state.players[1].hand.tiles[-1])
     start_score = engine.state.players[0].score
     loser_start = engine.state.players[1].score

@@ -165,6 +165,8 @@ class MahjongEngine:
         """Draw a tile for the specified player."""
         if self.state.waiting_for_claims:
             raise ValueError("Waiting for other players to claim discard")
+        if player_index != self.state.current_player:
+            raise ValueError("Not player's turn")
         assert self.state.wall is not None
         tile = self.state.wall.draw_tile()
         self.state.players[player_index].draw(tile)
@@ -174,12 +176,15 @@ class MahjongEngine:
             self._check_nine_terminals(player)
         if self.state.wall.remaining_tiles == 0:
             self._resolve_ryukyoku("wall_empty")
-        else:
-            self.state.current_player = (player_index + 1) % len(self.state.players)
+        # current_player will advance after the player discards
         return tile
 
     def discard_tile(self, player_index: int, tile: Tile) -> None:
         """Discard a tile from the specified player's hand."""
+        if self.state.waiting_for_claims:
+            raise ValueError("Waiting for other players to claim discard")
+        if player_index != self.state.current_player:
+            raise ValueError("Not player's turn")
         player = self.state.players[player_index]
         if player.must_tsumogiri and player.hand.tiles and player.hand.tiles[-1] is not tile:
             raise ValueError("Must discard the drawn tile after declaring riichi")

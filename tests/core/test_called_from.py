@@ -6,6 +6,7 @@ from core.models import Tile
 def _setup_discard(engine: MahjongEngine, discarder_idx: int, tile: Tile) -> None:
     discarder = engine.state.players[discarder_idx]
     discarder.hand.tiles.append(tile)
+    engine.state.current_player = discarder_idx
     engine.discard_tile(discarder_idx, tile)
 
 

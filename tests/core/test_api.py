@@ -37,6 +37,7 @@ def test_call_pon() -> None:
     discarder = state.players[1]
     caller = state.players[0]
     discarder.hand.tiles.append(tile)
+    state.current_player = 1
     api.discard_tile(1, tile)
     caller.hand.tiles.extend([models.Tile("pin", 1), models.Tile("pin", 1)])
     api.call_pon(0, [models.Tile("pin", 1), models.Tile("pin", 1), tile])
