@@ -71,6 +71,18 @@ def get_log(game_id: int) -> dict:
     return {"log": data}
 
 
+@app.get("/games/{game_id}/events")
+def get_events(game_id: int) -> dict:
+    """Return raw event history."""
+
+    _ = game_id  # placeholder for future multi-game support
+    try:
+        events = [asdict(e) for e in api.get_event_history()]
+    except AssertionError:
+        raise HTTPException(status_code=404, detail="Game not started")
+    return {"events": events}
+
+
 @app.get("/practice")
 def practice_problem() -> dict:
     """Return a random practice problem."""

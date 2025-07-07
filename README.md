@@ -94,6 +94,7 @@ Future work will expand these components.
 - [x] Detailed event log display
 - [x] Copy event log to clipboard
 - [x] MJAI JSON shown alongside log entries
+- [x] Event log modal with copy button
 - [x] Debug logging of GUI API calls
 - [x] 何切る問題 mode
   - [x] CLI practice command

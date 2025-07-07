@@ -4,6 +4,7 @@ import Practice from './Practice.jsx';
 import ShantenQuiz from './ShantenQuiz.jsx';
 import { applyEvent } from './applyEvent.js';
 import Button from './Button.jsx';
+import EventLogModal from './EventLogModal.jsx';
 import { formatEvent, eventToMjaiJson } from './eventLog.js';
 import './style.css';
 import { FiRefreshCw, FiEye, FiEyeOff, FiCheck, FiShuffle, FiSettings, FiCopy } from "react-icons/fi";
@@ -25,6 +26,7 @@ export default function App() {
   const [peek, setPeek] = useState(false);
   const [sortHand, setSortHand] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
+  const [showLog, setShowLog] = useState(false);
   const wsRef = useRef(null);
 
   useEffect(() => {
@@ -131,6 +133,25 @@ export default function App() {
     }
   }
 
+  async function openLogModal() {
+    if (!gameId) return;
+    try {
+      const resp = await fetch(`${server.replace(/\/$/, '')}/games/${gameId}/events`);
+      if (resp.ok) {
+        const data = await resp.json();
+        const lines = data.events.map((evt) => {
+          const text = formatEvent(evt);
+          const json = eventToMjaiJson(evt);
+          return `${text} ${json}`;
+        });
+        setEvents(lines);
+      }
+    } catch {
+      /* ignore */
+    }
+    setShowLog(true);
+  }
+
   function openWebSocket(id = gameId) {
     if (!id) return;
     const url = `${server.replace(/\/$/, '').replace('http', 'ws')}/ws/${id}`;
@@ -177,11 +198,18 @@ export default function App() {
           </span>
         </label>
         {mode === 'game' && gameState && (
-          <div className="control ml-2">
-            <Button aria-label="Options" onClick={() => setShowSettings(true)}>
-              <FiSettings />
-            </Button>
-          </div>
+          <>
+            <div className="control ml-2">
+              <Button aria-label="Options" onClick={() => setShowSettings(true)}>
+                <FiSettings />
+              </Button>
+            </div>
+            <div className="control ml-2">
+              <Button aria-label="Show log" onClick={openLogModal}>
+                Log
+              </Button>
+            </div>
+          </>
         )}
         {mode === 'game' && (
           <>
@@ -300,20 +328,8 @@ export default function App() {
       ) : (
         <ShantenQuiz server={server} sortHand={sortHand} log={log} />
       )}
-      {mode === 'game' && (
-        <div className="event-log">
-          <div className="event-log-header">
-            <h2>Events</h2>
-            <Button aria-label="Copy events" onClick={copyEvents}>
-              <FiCopy />
-            </Button>
-          </div>
-          <ul>
-            {events.map((e, i) => (
-              <li key={i}>{e}</li>
-            ))}
-          </ul>
-        </div>
+      {mode === 'game' && showLog && (
+        <EventLogModal events={events} onClose={() => setShowLog(false)} onCopy={copyEvents} />
       )}
       <p>{status}</p>
     </>

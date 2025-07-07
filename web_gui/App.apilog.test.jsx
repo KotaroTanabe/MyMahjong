@@ -29,6 +29,8 @@ describe('App API logging', () => {
     await userEvent.clear(input);
     await userEvent.type(input, 'http://localhost:1235');
     await userEvent.click(screen.getByText('Start Game'));
+    const showBtn = await screen.findByLabelText('Show log');
+    await userEvent.click(showBtn);
     const logItem = await screen.findByText(/\[debug\] POST \/games/);
     expect(logItem).toBeTruthy();
     server.stop();

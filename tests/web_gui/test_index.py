@@ -121,7 +121,7 @@ def test_hand_uses_tile_to_emoji() -> None:
 def test_app_handles_websocket_events() -> None:
     text = Path('web_gui/App.jsx').read_text()
     assert 'handleMessage' in text
-    assert 'event-log' in text
+    assert 'openLogModal' in text
 
 
 def test_game_board_displays_melds_and_remaining() -> None:
@@ -199,3 +199,8 @@ def test_game_board_references_result_modal() -> None:
 def test_result_modal_has_copy_button() -> None:
     text = Path('web_gui/ResultModal.jsx').read_text()
     assert 'Copy Log' in text
+
+
+def test_event_log_modal_component_exists() -> None:
+    modal = Path('web_gui/EventLogModal.jsx')
+    assert modal.is_file(), 'EventLogModal.jsx missing'
