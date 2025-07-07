@@ -213,6 +213,7 @@ See `docs/core-tasks.md` for detailed task descriptions.
 
 See `docs/detailed-design.md` for an overview of the planned architecture.
 `docs/web-gui-architecture.md` provides more details about the planned React GUI.
+`docs/kyoku-flow.md` illustrates the flow of a single hand and the corresponding engine methods.
 
 ## 何切る問題 mode
 
