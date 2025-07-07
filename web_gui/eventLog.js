@@ -18,6 +18,10 @@ export function formatEvent(evt) {
       return `Player ${p} wins by ron`;
     case 'skip':
       return `Player ${p} skips`;
+    case 'claims_closed':
+      return '捨て牌に対するアクションはありませんでした';
+    case 'turn_start':
+      return `Turn start for player ${p}`;
     case 'next_actions':
       return `Next actions for player ${p}: ${evt.payload.actions.join(', ')}`;
     case 'start_kyoku':
@@ -31,5 +35,11 @@ export function formatEvent(evt) {
     default:
       return evt.name;
   }
+}
+
+export function eventToMjaiJson(evt) {
+  if (!evt || !evt.name) return '';
+  const payload = { type: evt.name, ...(evt.payload || {}) };
+  return JSON.stringify(payload);
 }
 
