@@ -325,4 +325,6 @@ The flake8 step runs with only the `E9`, `F63`, `F7` and `F82` checks enabled to
 avoid excessive style warnings.
 To prevent version drift between CI and local development, all Python
 dependencies are frozen in `requirements.lock` which the workflow installs
-with `uv pip install --system -r requirements.lock`.
+with `uv pip install --system -r requirements.lock`. The lock file pins exact
+package versions and references local packages via relative paths like
+`-e ./core` so it can be used on any machine.
