@@ -90,6 +90,7 @@ Future work will expand these components.
 - [x] Modal error display on failed discard actions
 - [x] Setup controls hidden after game start with modal access
 - [x] Detailed event log display
+- [x] Copy event log to clipboard
 - [x] 何切る問題 mode
   - [x] CLI practice command
   - [x] AI recommendation

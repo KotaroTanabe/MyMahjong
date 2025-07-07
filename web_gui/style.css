@@ -84,6 +84,11 @@
   border: 1px solid #ccc;
   padding: 0.25rem;
 }
+.event-log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
 .controls {
   display: flex;
