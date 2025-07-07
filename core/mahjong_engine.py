@@ -576,12 +576,7 @@ class MahjongEngine:
         last = state.last_discard
         last_player = state.last_discard_player
 
-        if (
-            player_index == state.current_player
-            and last is not None
-            and last_player is not None
-            and last_player != player_index
-        ):
+        if player_index in state.waiting_for_claims:
             actions.add("skip")
 
         if last is not None and last_player is not None and last_player != player_index:

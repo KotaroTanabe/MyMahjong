@@ -280,3 +280,11 @@ def test_next_actions_endpoint_autodraw() -> None:
     assert resp.status_code == 200
     data = resp.json()
     assert "player_index" in data and "actions" in data
+
+def test_next_actions_endpoint_logs_event() -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    api.pop_events()  # clear initial events
+    resp = client.get("/games/1/next-actions")
+    assert resp.status_code == 200
+    events = api.pop_events()
+    assert any(e.name == "next_actions" for e in events)

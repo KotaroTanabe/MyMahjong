@@ -62,6 +62,7 @@ Future work will expand these components.
 - [x] Display hand shanten count via GUI
 - [x] Allowed actions API
 - [x] Next actions API
+- [x] Next actions logged to event history
 - [x] GUI follows next actions from core
 - [x] Meld and win actions via GUI
 - [x] Start game via GUI

@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from core import api, models, shanten_quiz
+from core.models import GameEvent
 
 app = FastAPI()
 # very small in-memory id tracker until multi-game support exists
@@ -150,6 +151,10 @@ def next_actions(game_id: int) -> dict:
         idx, actions = api.get_next_actions()
     except AssertionError:
         raise HTTPException(status_code=404, detail="Game not started")
+    if api._engine is not None:
+        evt = GameEvent(name="next_actions", payload={"player_index": idx, "actions": actions})
+        api._engine.events.append(evt)
+        api._engine.event_history.append(evt)
     return {"player_index": idx, "actions": actions}
 
 
