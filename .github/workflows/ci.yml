@@ -20,6 +20,7 @@ jobs:
         with:
           python-version: '3.11'
       - run: curl -Ls https://astral.sh/uv/install.sh | sh
+      - run: uv pip install --system -r requirements.lock
       - run: uv pip install --system build
       - run: uv pip install --system -e ./core -e ./web -e ./cli
       - run: python -m build core
@@ -34,6 +35,7 @@ jobs:
         with:
           python-version: '3.11'
       - run: curl -Ls https://astral.sh/uv/install.sh | sh
+      - run: uv pip install --system -r requirements.lock
       - run: uv pip install --system -e ./core -e ./web -e ./cli
       - run: uv pip install --system flake8 mypy pytest
       - run: flake8

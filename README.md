@@ -75,6 +75,7 @@ Future work will expand these components.
 - [x] Reconnect to running game after reload
 - [x] Remember server URL and last game ID
 - [x] Continuous integration workflow
+- [x] Pinned Python dependencies for consistent CI
 - [x] Web GUI unit tests
 - [x] Core <-> interface API documented
 - [x] GUI design documented
@@ -322,3 +323,6 @@ using **uv** to install dependencies. Once these checks succeed, the workflow
 automatically approves and merges the PR.
 The flake8 step runs with only the `E9`, `F63`, `F7` and `F82` checks enabled to
 avoid excessive style warnings.
+To prevent version drift between CI and local development, all Python
+dependencies are frozen in `requirements.lock` which the workflow installs
+with `uv pip install --system -r requirements.lock`.
