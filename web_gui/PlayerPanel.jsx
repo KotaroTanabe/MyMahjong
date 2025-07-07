@@ -22,6 +22,7 @@ export default function PlayerPanel({
   aiActive = false,
   toggleAI,
   state,
+  log = () => {},
 }) {
   const active = playerIndex === activePlayer;
   const [allowedActions, setAllowedActions] = useState([]);
@@ -31,7 +32,7 @@ export default function PlayerPanel({
       setAllowedActions([]);
       return;
     }
-    getAllowedActions(server, gameId, playerIndex).then(setAllowedActions);
+    getAllowedActions(server, gameId, playerIndex, log).then(setAllowedActions);
   }, [server, gameId, playerIndex, state]);
   return (
     <div className={`${seat} seat player-panel${active ? ' active-player' : ''}`}> 
@@ -61,6 +62,7 @@ export default function PlayerPanel({
         activePlayer={activePlayer}
         aiActive={aiActive}
         allowedActions={allowedActions}
+        log={log}
       />
     </div>
   );

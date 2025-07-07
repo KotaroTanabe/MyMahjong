@@ -8,12 +8,14 @@ export default function Controls({
   activePlayer = null,
   aiActive = false,
   allowedActions = [],
+  log = () => {},
 }) {
   const [message, setMessage] = useState('');
 
 
   async function simple(action, payload = {}) {
     try {
+      log('debug', `POST /games/${gameId}/action ${action} - control button`);
       await fetch(`${server.replace(/\/$/, '')}/games/${gameId}/action`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -27,6 +29,7 @@ export default function Controls({
 
   async function shanten() {
     try {
+      log('debug', `GET /games/${gameId}/shanten/${playerIndex} - shanten button`);
       const resp = await fetch(
         `${server.replace(/\/$/, '')}/games/${gameId}/shanten/${playerIndex}`
       );

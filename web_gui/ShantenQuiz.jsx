@@ -3,13 +3,14 @@ import Hand from './Hand.jsx';
 import Button from './Button.jsx';
 import { sortTiles } from './tileUtils.js';
 
-export default function ShantenQuiz({ server, sortHand = true }) {
+export default function ShantenQuiz({ server, sortHand = true, log = () => {} }) {
   const [hand, setHand] = useState(null);
   const [guess, setGuess] = useState('');
   const [answer, setAnswer] = useState(null);
 
   async function loadHand() {
     try {
+      log('debug', 'GET /shanten-quiz - new quiz hand');
       const resp = await fetch(`${server.replace(/\/$/, '')}/shanten-quiz`);
       if (resp.ok) {
         setHand(await resp.json());
@@ -23,6 +24,7 @@ export default function ShantenQuiz({ server, sortHand = true }) {
 
   async function check() {
     try {
+      log('debug', 'POST /shanten-quiz/check - submit answer');
       const resp = await fetch(
         `${server.replace(/\/$/, '')}/shanten-quiz/check`,
         {
