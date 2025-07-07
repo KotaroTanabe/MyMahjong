@@ -134,6 +134,9 @@ def auto_play_turn(
         assert _engine.state.last_discard is not None
         return _engine.state.last_discard
 
+    if player_index is None:
+        idx = _engine.state.current_player
+
     return ai(_engine, idx)
 
 

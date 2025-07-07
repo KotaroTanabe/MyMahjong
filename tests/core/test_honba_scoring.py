@@ -27,6 +27,7 @@ def test_ron_honba_bonus() -> None:
     engine.state.honba = 1
     tile = Tile("man", 2)
     engine.state.players[1].hand.tiles.append(tile)
+    engine.state.current_player = 1
     engine.discard_tile(1, tile)
     engine.state.players[0].hand.tiles.append(Tile("man", 2))
     start_scores = [p.score for p in engine.state.players]
