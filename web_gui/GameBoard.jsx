@@ -14,6 +14,7 @@ export default function GameBoard({
   gameId,
   peek = false,
   sortHand = false,
+  log = () => {},
 }) {
   const players = state?.players ?? [];
   const south = players[0];
@@ -44,6 +45,7 @@ export default function GameBoard({
     ) {
       const tiles = state.players[idx].hand.tiles;
       const tile = tiles[tiles.length - 1];
+      log('debug', `POST /games/${gameId}/action discard - enable AI autoplays`);
       fetch(`${server.replace(/\/$/, '')}/games/${gameId}/action`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -69,6 +71,7 @@ export default function GameBoard({
               action: 'auto',
               ai_type: aiTypes[idx],
             };
+            log('debug', `POST /games/${gameId}/action auto - resolve claims`);
             fetch(`${server.replace(/\/$/, '')}/games/${gameId}/action`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -90,6 +93,7 @@ export default function GameBoard({
       const action = aiPlayers[current] ? 'auto' : 'draw';
       const body = { player_index: current, action };
       if (action === 'auto') body.ai_type = aiTypes[current];
+      log('debug', `POST /games/${gameId}/action ${action} - next player action`);
       fetch(`${server.replace(/\/$/, '')}/games/${gameId}/action`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -107,6 +111,7 @@ export default function GameBoard({
   async function copyLog() {
     if (!gameId) return;
     try {
+      log('debug', `GET /games/${gameId}/log - user copied log`);
       const resp = await fetch(`${server.replace(/\/$/, '')}/games/${gameId}/log`);
       if (!resp.ok) return;
       const data = await resp.json();
@@ -179,6 +184,7 @@ export default function GameBoard({
     try {
       if (!gameId) return;
       if (typeof tile === 'string') return;
+      log('debug', `POST /games/${gameId}/action discard - user clicked tile`);
       const resp = await fetch(`${server.replace(/\/$/, '')}/games/${gameId}/action`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

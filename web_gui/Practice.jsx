@@ -3,13 +3,14 @@ import Hand from './Hand.jsx';
 import Button from './Button.jsx';
 import { tileToEmoji, tileDescription, sortTilesExceptLast } from './tileUtils.js';
 
-export default function Practice({ server, sortHand = true }) {
+export default function Practice({ server, sortHand = true, log = () => {} }) {
   const [problem, setProblem] = useState(null);
   const [suggestion, setSuggestion] = useState(null);
   const [chosen, setChosen] = useState(null);
 
   async function loadProblem() {
     try {
+      log('debug', 'GET /practice - load new problem');
       const resp = await fetch(`${server.replace(/\/$/, '')}/practice`);
       if (resp.ok) {
         setProblem(await resp.json());
@@ -24,6 +25,7 @@ export default function Practice({ server, sortHand = true }) {
   async function choose(tile) {
     setChosen(tile);
     try {
+      log('debug', 'POST /practice/suggest - request AI suggestion');
       const resp = await fetch(`${server.replace(/\/$/, '')}/practice/suggest`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
