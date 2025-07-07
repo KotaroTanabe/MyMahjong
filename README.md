@@ -93,6 +93,7 @@ Future work will expand these components.
 - [x] Setup controls hidden after game start with modal access
 - [x] Detailed event log display
 - [x] Copy event log to clipboard
+- [x] Debug logging of GUI API calls
 - [x] 何切る問題 mode
   - [x] CLI practice command
   - [x] AI recommendation

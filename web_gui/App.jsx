@@ -18,6 +18,9 @@ export default function App() {
   const [gameId, setGameId] = useState(() => localStorage.getItem('gameId') || '');
   const [gameState, setGameState] = useState(null);
   const [events, setEvents] = useState([]);
+  function log(level, message) {
+    setEvents((evts) => [...evts.slice(-19), `[${level}] ${message}`]);
+  }
   const [mode, setMode] = useState('game');
   const [peek, setPeek] = useState(false);
   const [sortHand, setSortHand] = useState(true);
@@ -53,6 +56,7 @@ export default function App() {
 
   async function startGame() {
     try {
+      log('debug', 'POST /games - user started a new game');
       const resp = await fetch(`${server.replace(/\/$/, '')}/games`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -76,6 +80,7 @@ export default function App() {
   async function fetchGameState(id = gameId) {
     try {
       if (!id) return;
+      log('debug', `GET /games/${id} - restoring game state`);
       const resp = await fetch(`${server.replace(/\/$/, '')}/games/${id}`);
       if (resp.ok) {
         setGameState(await resp.json());
@@ -91,7 +96,7 @@ export default function App() {
   function handleMessage(e) {
     try {
       const evt = JSON.parse(e.data);
-      setEvents((evts) => [...evts.slice(-9), formatEvent(evt)]);
+      log('info', formatEvent(evt));
       setGameState((s) => applyEvent(s, evt));
     } catch {
       // ignore parse errors
@@ -268,11 +273,12 @@ export default function App() {
           gameId={gameId}
           peek={peek}
           sortHand={sortHand}
+          log={log}
         />
       ) : mode === 'practice' ? (
-        <Practice server={server} sortHand={sortHand} />
+        <Practice server={server} sortHand={sortHand} log={log} />
       ) : (
-        <ShantenQuiz server={server} sortHand={sortHand} />
+        <ShantenQuiz server={server} sortHand={sortHand} log={log} />
       )}
       {mode === 'game' && (
         <div className="event-log">
