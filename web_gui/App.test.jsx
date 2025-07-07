@@ -155,3 +155,13 @@ describe('App header', () => {
     expect(heading).toBeNull();
   });
 });
+
+describe('Event log copy', () => {
+  it('copies log text when button clicked', async () => {
+    global.fetch = mockFetch();
+    Object.assign(navigator, { clipboard: { writeText: vi.fn() } });
+    render(<App />);
+    await userEvent.click(screen.getByLabelText('Copy events'));
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith('');
+  });
+});

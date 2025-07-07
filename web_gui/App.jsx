@@ -6,7 +6,7 @@ import { applyEvent } from './applyEvent.js';
 import Button from './Button.jsx';
 import { formatEvent } from './eventLog.js';
 import './style.css';
-import { FiRefreshCw, FiEye, FiEyeOff, FiCheck, FiShuffle, FiSettings } from "react-icons/fi";
+import { FiRefreshCw, FiEye, FiEyeOff, FiCheck, FiShuffle, FiSettings, FiCopy } from "react-icons/fi";
 
 export default function App() {
   const [server, setServer] = useState(
@@ -95,6 +95,14 @@ export default function App() {
       setGameState((s) => applyEvent(s, evt));
     } catch {
       // ignore parse errors
+    }
+  }
+
+  async function copyEvents() {
+    try {
+      await navigator.clipboard.writeText(events.join('\n'));
+    } catch {
+      /* ignore */
     }
   }
 
@@ -268,7 +276,12 @@ export default function App() {
       )}
       {mode === 'game' && (
         <div className="event-log">
-          <h2>Events</h2>
+          <div className="event-log-header">
+            <h2>Events</h2>
+            <Button aria-label="Copy events" onClick={copyEvents}>
+              <FiCopy />
+            </Button>
+          </div>
           <ul>
             {events.map((e, i) => (
               <li key={i}>{e}</li>
