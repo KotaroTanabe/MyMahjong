@@ -89,6 +89,7 @@ Future work will expand these components.
 - [x] 6x4 discard grid rendering
 - [x] Modal error display on failed discard actions
 - [x] Setup controls hidden after game start with modal access
+- [x] Detailed event log display
 - [x] 何切る問題 mode
   - [x] CLI practice command
   - [x] AI recommendation
@@ -122,7 +123,7 @@ Future work will expand these components.
 - [x] dead wall & dora indicator tracking
 - [x] wanpai separation and yama remaining count
 - [x] configurable ruleset
-- [x] event log
+- [x] detailed event log (player actions and backend responses)
 - [x] current player tracking
 - [x] Wait for all players to skip before next draw
 - [x] Enforce tsumogiri after riichi

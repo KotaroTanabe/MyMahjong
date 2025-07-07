@@ -4,6 +4,7 @@ import Practice from './Practice.jsx';
 import ShantenQuiz from './ShantenQuiz.jsx';
 import { applyEvent } from './applyEvent.js';
 import Button from './Button.jsx';
+import { formatEvent } from './eventLog.js';
 import './style.css';
 import { FiRefreshCw, FiEye, FiEyeOff, FiCheck, FiShuffle, FiSettings } from "react-icons/fi";
 
@@ -85,10 +86,12 @@ export default function App() {
   }
 
 
+
+
   function handleMessage(e) {
     try {
       const evt = JSON.parse(e.data);
-      setEvents((evts) => [...evts.slice(-9), evt.name]);
+      setEvents((evts) => [...evts.slice(-9), formatEvent(evt)]);
       setGameState((s) => applyEvent(s, evt));
     } catch {
       // ignore parse errors
