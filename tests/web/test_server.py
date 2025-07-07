@@ -40,6 +40,14 @@ def test_get_log_endpoint() -> None:
     assert "log" in data and data["log"].startswith("{")
 
 
+def test_get_events_endpoint() -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    resp = client.get("/games/1/events")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "events" in data and isinstance(data["events"], list)
+
+
 def test_draw_action_endpoint() -> None:
     client.post("/games", json={"players": ["A", "B", "C", "D"]})
     resp = client.post(

@@ -159,9 +159,20 @@ describe('App header', () => {
 describe('Event log copy', () => {
   it('copies log text when button clicked', async () => {
     global.fetch = mockFetch();
+    const server = new Server('ws://localhost:1235/ws/1');
     Object.assign(navigator, { clipboard: { writeText: vi.fn() } });
     render(<App />);
+    const input = screen.getByLabelText('Server:');
+    await userEvent.clear(input);
+    await userEvent.type(input, 'http://localhost:1235');
+    await userEvent.click(screen.getByText('Start Game'));
+    await screen.findByLabelText('Options');
+    const showBtn = await screen.findByLabelText('Show log');
+    await userEvent.click(showBtn);
     await userEvent.click(screen.getByLabelText('Copy events'));
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith('');
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
+      expect.stringContaining('POST /games')
+    );
+    server.stop();
   });
 });

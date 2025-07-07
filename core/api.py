@@ -168,6 +168,13 @@ def get_tenhou_log() -> str:
     return events_to_tenhou_json(history)
 
 
+def get_event_history() -> list[GameEvent]:
+    """Return the full event history."""
+
+    assert _engine is not None, "Game not started"
+    return _engine.get_event_history()
+
+
 def generate_practice_problem() -> practice.PracticeProblem:
     """Return a new practice problem."""
 
