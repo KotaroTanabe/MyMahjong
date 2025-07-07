@@ -4,7 +4,7 @@ import Practice from './Practice.jsx';
 import ShantenQuiz from './ShantenQuiz.jsx';
 import { applyEvent } from './applyEvent.js';
 import Button from './Button.jsx';
-import { formatEvent } from './eventLog.js';
+import { formatEvent, eventToMjaiJson } from './eventLog.js';
 import './style.css';
 import { FiRefreshCw, FiEye, FiEyeOff, FiCheck, FiShuffle, FiSettings, FiCopy } from "react-icons/fi";
 
@@ -97,7 +97,27 @@ export default function App() {
     try {
       const evt = JSON.parse(e.data);
       log('info', formatEvent(evt));
-      setGameState((s) => applyEvent(s, evt));
+      setGameState((prev) => {
+        const next = applyEvent(prev, evt);
+        setEvents((evts) => {
+          const lines = [];
+          if (evt.name === 'draw_tile') {
+            lines.push(formatEvent({ name: 'turn_start', payload: { player_index: evt.payload.player_index } }));
+            lines.push(formatEvent(evt));
+          } else if (evt.name === 'discard' || evt.name === 'meld' || evt.name === 'riichi' || evt.name === 'ron' || evt.name === 'tsumo' || evt.name === 'ryukyoku' || evt.name === 'start_kyoku' || evt.name === 'start_game' || evt.name === 'end_game' || evt.name === 'next_actions' || evt.name === 'skip') {
+            lines.push(formatEvent(evt));
+          } else {
+            lines.push(formatEvent(evt));
+          }
+          if (evt.name === 'skip' && prev?.waiting_for_claims?.length && next.waiting_for_claims.length === 0) {
+            lines.push(formatEvent({ name: 'claims_closed' }));
+          }
+          const json = eventToMjaiJson(evt);
+          const withJson = lines.map((l) => `${l} ${json}`);
+          return [...evts.slice(-10 + withJson.length), ...withJson];
+        });
+        return next;
+      });
     } catch {
       // ignore parse errors
     }

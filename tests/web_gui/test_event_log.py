@@ -36,3 +36,23 @@ def test_format_next_actions_event() -> None:
     )
     output = run_node(code)
     assert output.startswith('Next actions for player 2')
+
+
+def test_event_to_mjai_json() -> None:
+    code = (
+        "import { eventToMjaiJson } from './web_gui/eventLog.js';\n"
+        "const evt = {name:'discard', payload:{player_index:1, tile:{suit:'pin', value:3}}};\n"
+        "console.log(eventToMjaiJson(evt));"
+    )
+    output = run_node(code)
+    assert '"type":"discard"' in output
+    assert '"player_index":1' in output
+
+
+def test_format_claims_closed() -> None:
+    code = (
+        "import { formatEvent } from './web_gui/eventLog.js';\n"
+        "console.log(formatEvent({name:'claims_closed'}));"
+    )
+    output = run_node(code)
+    assert output.startswith('捨て牌に対するアクションはありませんでした')

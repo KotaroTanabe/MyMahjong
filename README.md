@@ -93,6 +93,7 @@ Future work will expand these components.
 - [x] Setup controls hidden after game start with modal access
 - [x] Detailed event log display
 - [x] Copy event log to clipboard
+- [x] MJAI JSON shown alongside log entries
 - [x] Debug logging of GUI API calls
 - [x] 何切る問題 mode
   - [x] CLI practice command
@@ -283,6 +284,13 @@ cd web_gui
 npm install
 npx vite --open
 ```
+
+#### Event log
+
+Each message from the server appears in the Events sidebar with a short
+description followed by the exact MJAI JSON for that event. When all
+players pass on a discard, the log shows "捨て牌に対するアクションはありませんでした"
+to indicate the claim window closed without a call.
 
 ### Start both together
 
