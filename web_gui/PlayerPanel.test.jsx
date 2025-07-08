@@ -102,3 +102,27 @@ describe('PlayerPanel AI behaviour', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 });
+
+describe('PlayerPanel error handling', () => {
+  it('shows error when allowed actions fetch fails', async () => {
+    const fetchMock = vi.fn(() => Promise.reject(new Error('fail')));
+    global.fetch = fetchMock;
+    const { findByText } = render(
+      <PlayerPanel
+        seat="east"
+        player={{}}
+        hand={[]}
+        melds={[]}
+        riverTiles={[]}
+        server="http://s"
+        gameId="1"
+        playerIndex={0}
+        activePlayer={0}
+        aiActive={false}
+        state={{}}
+        allowedActions={[]}
+      />,
+    );
+    expect(await findByText('Failed to fetch actions: fail')).toBeTruthy();
+  });
+});

@@ -6,6 +6,7 @@ import MeldArea from './MeldArea.jsx';
 import Controls from './Controls.jsx';
 import Button from './Button.jsx';
 import { getAllowedActions } from './allowedActions.js';
+import ErrorModal from './ErrorModal.jsx';
 
 export default function PlayerPanel({
   seat,
@@ -32,6 +33,7 @@ export default function PlayerPanel({
     [allowedActions.join(',')]
   );
   const [actions, setActions] = useState(allowedActionsMemo);
+  const [error, setError] = useState(null);
   const controllerRef = useRef(null);
 
   useEffect(() => {
@@ -49,9 +51,17 @@ export default function PlayerPanel({
     controllerRef.current = controller;
     getAllowedActions(server, gameId, playerIndex, log, { signal: controller.signal })
       .then((acts) => {
-        if (Array.isArray(acts)) setActions(acts);
+        if (acts && acts.error) {
+          setError(`Failed to fetch actions: ${acts.error}`);
+        } else if (Array.isArray(acts)) {
+          setActions(acts);
+        }
       })
-      .catch(() => {});
+      .catch((err) => {
+        if (err.name !== 'AbortError') {
+          setError(`Failed to fetch actions: ${err.message}`);
+        }
+      });
     return () => controller.abort();
   }, [server, gameId, playerIndex, aiActive]);
   return (
@@ -85,6 +95,9 @@ export default function PlayerPanel({
         allowedActions={actions}
         log={log}
       />
+      {error && (
+        <ErrorModal message={error} onClose={() => setError(null)} />
+      )}
     </div>
   );
 }

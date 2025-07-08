@@ -16,7 +16,7 @@ describe('getAllowedActions', () => {
     const fetchMock = vi.fn(() => Promise.reject(new Error('x')));
     global.fetch = fetchMock;
     const actions = await getAllowedActions('http://s', '1', 0, undefined, { requestId: 'b' });
-    expect(actions).toEqual([]);
+    expect(actions).toEqual({ error: 'x' });
   });
 
   it('aborts previous request with same id', async () => {
