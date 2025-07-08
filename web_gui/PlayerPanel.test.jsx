@@ -101,6 +101,31 @@ describe('PlayerPanel AI behaviour', () => {
     await Promise.resolve();
     expect(fetchMock).not.toHaveBeenCalled();
   });
+
+  it('does not fetch actions when state is null', async () => {
+    const fetchMock = vi.fn(() =>
+      Promise.resolve({ ok: true, json: () => Promise.resolve({ actions: [] }) })
+    );
+    global.fetch = fetchMock;
+    render(
+      <PlayerPanel
+        seat="east"
+        player={{}}
+        hand={[]}
+        melds={[]}
+        riverTiles={[]}
+        server="http://s"
+        gameId="1"
+        playerIndex={0}
+        activePlayer={0}
+        aiActive={false}
+        state={null}
+        allowedActions={[]}
+      />,
+    );
+    await Promise.resolve();
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
 });
 
 describe('PlayerPanel error handling', () => {
