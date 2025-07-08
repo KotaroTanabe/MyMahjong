@@ -133,6 +133,7 @@ Future work will expand these components.
 - [x] detailed event log (player actions and backend responses)
 - [x] current player tracking
 - [x] Wait for all players to skip before next draw
+- [x] `claims_closed` event emitted when the claim window ends
 - [x] Enforce tsumogiri after riichi
 - [x] Riichi event includes player score and stick count
 - [x] Validate closed-hand tenpai requirement for riichi
@@ -291,8 +292,9 @@ npx vite --open
 
 Each message from the server appears in the Events sidebar with a short
 description followed by the exact MJAI JSON for that event. When all
-players pass on a discard, the log shows "捨て牌に対するアクションはありませんでした"
-to indicate the claim window closed without a call.
+players pass on a discard, the server emits a `claims_closed` event.
+The log displays this as "捨て牌に対するアクションはありませんでした" to indicate
+the claim window closed without a call.
 
 ### Start both together
 

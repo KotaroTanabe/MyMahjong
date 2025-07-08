@@ -51,6 +51,7 @@ translate them directly.
 | `draw_tile`        | `player_index`, `Tile`                  | Tile drawn from the wall. |
 | `discard`          | `player_index`, `Tile`                  | Tile placed into the river. |
 | `meld`             | `player_index`, `Meld`                  | Meld call (chi/pon/kan). |
+| `claims_closed`    | none                                    | No player called the discard. |
 | `riichi`           | `player_index`                          | Player declares riichi. |
 | `tsumo`            | `player_index`, `HandResponse`, scores  | Self-drawn win. |
 | `ron`              | `player_index`, `HandResponse`, scores  | Win on discard. |

@@ -112,9 +112,6 @@ export default function App() {
           } else {
             lines.push(formatEvent(evt));
           }
-          if (evt.name === 'skip' && prev?.waiting_for_claims?.length && next.waiting_for_claims.length === 0) {
-            lines.push(formatEvent({ name: 'claims_closed' }));
-          }
           const json = eventToMjaiJson(evt);
           const withJson = lines.map((l) => `${l} ${json}`);
           return [...evts.slice(-10 + withJson.length), ...withJson];
