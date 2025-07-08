@@ -90,6 +90,9 @@ export function applyEvent(state, event) {
       newState.waiting_for_claims = [];
       break;
     case 'skip': {
+      if (!Array.isArray(state.waiting_for_claims) || state.waiting_for_claims.length === 0) {
+        break;
+      }
       newState.waiting_for_claims = newState.waiting_for_claims.filter(
         (i) => i !== event.payload.player_index,
       );

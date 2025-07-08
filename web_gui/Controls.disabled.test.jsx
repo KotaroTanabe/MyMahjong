@@ -64,4 +64,19 @@ describe('Controls disabled state', () => {
     );
     expect(screen.getByRole('button', { name: 'Skip' }).disabled).toBe(false);
   });
+
+  it('disables skip when claim window closed', () => {
+    render(
+      <Controls
+        server="http://s"
+        gameId="1"
+        playerIndex={0}
+        activePlayer={1}
+        aiActive={false}
+        allowedActions={['skip']}
+        waitingForClaims={[]}
+      />,
+    );
+    expect(screen.getByRole('button', { name: 'Skip' }).disabled).toBe(true);
+  });
 });

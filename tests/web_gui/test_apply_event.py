@@ -28,7 +28,7 @@ tile: {suit: 'pin', value: 1}}};\n"
 def test_skip_updates_current_player() -> None:
     code = (
         "import { applyEvent } from './web_gui/applyEvent.js';\n"
-        "const state = {current_player: 0, players: [{}, {}]};\n"
+        "const state = {current_player: 0, players: [{}, {}], waiting_for_claims:[0]};\n"
         "const evt = {name: 'skip', payload: {player_index: 0}};\n"
         "const newState = applyEvent(state, evt);\n"
         "console.log(newState.current_player);"
@@ -136,3 +136,15 @@ def test_claims_closed_clears_waiting_for_claims() -> None:
     )
     output = run_node(code)
     assert output == '0'
+
+
+def test_skip_ignored_when_not_waiting() -> None:
+    code = (
+        "import { applyEvent } from './web_gui/applyEvent.js';\n"
+        "const state = {current_player:0, players:[{}, {}], waiting_for_claims:[]};\n"
+        "const evt = {name:'skip', payload:{player_index:0}};\n"
+        "const newState = applyEvent(state, evt);\n"
+        "console.log(newState.current_player + ':' + newState.waiting_for_claims.length);"
+    )
+    output = run_node(code)
+    assert output == '0:0'
