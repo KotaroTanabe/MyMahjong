@@ -270,7 +270,10 @@ async def game_events(websocket: WebSocket, game_id: int) -> None:
         except AssertionError:
             prev_actions = None
         while True:
-            events = api.pop_events()
+            try:
+                events = api.pop_events()
+            except AssertionError:
+                events = []
             for event in events:
                 await websocket.send_json(asdict(event))
             try:

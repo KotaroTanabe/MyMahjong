@@ -1,5 +1,6 @@
 from dataclasses import asdict
 from fastapi.testclient import TestClient
+import pytest
 
 from web.server import app
 from core import api, models
@@ -11,6 +12,12 @@ def test_get_game_returns_404_when_not_started() -> None:
     api._engine = None  # type: ignore[assignment]
     response = client.get("/games/1")
     assert response.status_code == 404
+
+
+def test_websocket_connect_without_game() -> None:
+    api._engine = None  # type: ignore[assignment]
+    with client.websocket_connect("/ws/1"):
+        pass
 
 
 def test_health_endpoint() -> None:
