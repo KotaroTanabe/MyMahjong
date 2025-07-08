@@ -25,6 +25,8 @@ export default function GameBoard({
 
   const prevPlayer = useRef(null);
   const prevWaiting = useRef([]);
+  const prevCounts = useRef([]);
+  const lastDrawPlayer = useRef(null);
   const [error, setError] = useState(null);
   const [result, setResult] = useState(null);
   // Players 1-3 (west, north, east) act as AI by default
@@ -42,7 +44,7 @@ export default function GameBoard({
       enable &&
       idx === state?.current_player &&
       gameId &&
-      state?.players?.[idx]?.hand?.tiles?.length >= 14
+      hasDrawnTile(state?.players?.[idx], idx)
     ) {
       const tiles = state.players[idx].hand.tiles;
       const tile = tiles[tiles.length - 1];
@@ -61,6 +63,18 @@ export default function GameBoard({
       }).catch(() => {});
     }
   }
+
+  useEffect(() => {
+    const counts = players.map((p) => p?.hand?.tiles?.length ?? 0);
+    if (prevCounts.current.length) {
+      counts.forEach((c, i) => {
+        if (prevCounts.current[i] != null && c > prevCounts.current[i]) {
+          lastDrawPlayer.current = i;
+        }
+      });
+    }
+    prevCounts.current = counts;
+  }, [players]);
 
   useEffect(() => {
     if (!gameId || result || state?.result) return;
@@ -90,10 +104,11 @@ export default function GameBoard({
 
     const current = state?.current_player;
     if (current == null || current === prevPlayer.current) return;
-    prevPlayer.current = current;
     const tiles = state?.players?.[current]?.hand?.tiles ?? [];
     const last = state?.last_discard;
     const count = tiles.length;
+    const drew = lastDrawPlayer.current === current;
+    prevPlayer.current = current;
     if (count % 3 === 1 && last) {
       const action = aiPlayers[current] ? "auto" : "draw";
       const body = { player_index: current, action };
@@ -107,7 +122,7 @@ export default function GameBoard({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       }).catch(() => {});
-    } else if (count % 3 === 2 && aiPlayers[current]) {
+    } else if (count % 3 === 2 && aiPlayers[current] && drew) {
       const body = {
         player_index: current,
         action: "auto",
@@ -119,6 +134,7 @@ export default function GameBoard({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       }).catch(() => {});
+      lastDrawPlayer.current = null;
     }
   }, [
     state?.current_player,
@@ -157,7 +173,8 @@ export default function GameBoard({
   function hasDrawnTile(player, index) {
     if (!player || state?.current_player !== index) return false;
     const count = player.hand?.tiles?.length ?? 0;
-    return count % 3 === 2;
+    if (count % 3 !== 2) return false;
+    return lastDrawPlayer.current === index;
   }
 
   function concealedHand(p) {
