@@ -61,6 +61,7 @@ Future work will expand these components.
 - [x] Discard tiles via GUI
 - [x] Display hand shanten count via GUI
 - [x] Allowed actions API
+- [x] Combined allowed actions endpoint
 - [x] Next actions API
 - [x] Next actions logged to event history
 - [x] GUI fetches next actions after every event

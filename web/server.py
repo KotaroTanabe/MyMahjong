@@ -154,6 +154,18 @@ def allowed_actions(game_id: int, player_index: int) -> dict:
     return {"actions": actions}
 
 
+@app.get("/games/{game_id}/allowed-actions")
+def allowed_actions_all(game_id: int) -> dict:
+    """Return allowed actions for all players."""
+
+    _ = game_id  # placeholder for future multi-game support
+    try:
+        actions = api.get_all_allowed_actions()
+    except AssertionError:
+        raise HTTPException(status_code=404, detail="Game not started")
+    return {"actions": actions}
+
+
 @app.get("/games/{game_id}/next-actions")
 def next_actions(game_id: int) -> dict:
     """Return the next actor index and their allowed actions."""

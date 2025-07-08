@@ -10,3 +10,16 @@ export async function getAllowedActions(server, gameId, playerIndex, log = () =>
     return [];
   }
 }
+
+export async function getAllAllowedActions(server, gameId, log = () => {}) {
+  try {
+    const url = `${server.replace(/\/$/, '')}/games/${gameId}/allowed-actions`;
+    log('debug', `GET ${url} - fetch allowed actions`);
+    const resp = await fetch(url);
+    if (!resp.ok) return [];
+    const data = await resp.json();
+    return data.actions || [];
+  } catch {
+    return [];
+  }
+}
