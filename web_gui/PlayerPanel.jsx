@@ -41,7 +41,7 @@ export default function PlayerPanel({
   }, [allowedActionsMemo]);
 
   useEffect(() => {
-    if (!server || !gameId) return;
+    if (!server || !gameId || !state) return;
     controllerRef.current?.abort();
     if (aiActive) {
       controllerRef.current = null;
