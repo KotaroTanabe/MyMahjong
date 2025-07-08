@@ -86,7 +86,10 @@ export function Controls({
   const active =
     (playerIndex === activePlayer || waitingForClaims.includes(playerIndex)) &&
     !aiActive;
-  const isAllowed = (action) => active && allowedActions.includes(action);
+  const isAllowed = (action) =>
+    active &&
+    allowedActions.includes(action) &&
+    (action !== 'skip' || waitingForClaims.length > 0);
 
   return (
     <div className="controls">
