@@ -229,7 +229,12 @@ export default function GameBoard({
         },
       );
       if (!resp.ok) {
-        setError(`Discard failed: ${resp.status}`);
+        let message = `Discard failed: ${resp.status}`;
+        try {
+          const data = await resp.json();
+          if (data.detail) message = data.detail;
+        } catch {}
+        setError(message);
       }
     } catch {
       setError("Failed to contact server");

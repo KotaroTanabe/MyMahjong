@@ -10,6 +10,7 @@ export function Controls({
   allowedActions = [],
   waitingForClaims = [],
   log = () => {},
+  onError = () => {},
 }) {
   const [message, setMessage] = useState('');
 
@@ -17,14 +18,23 @@ export function Controls({
   async function simple(action, payload = {}) {
     try {
       log('debug', `POST /games/${gameId}/action ${action} - control button`);
-      await fetch(`${server.replace(/\/$/, '')}/games/${gameId}/action`, {
+      const resp = await fetch(`${server.replace(/\/$/, '')}/games/${gameId}/action`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ player_index: playerIndex, action, ...payload }),
       });
-      setMessage(action);
+      if (!resp.ok) {
+        let msg = `Action ${action} failed: ${resp.status}`;
+        try {
+          const data = await resp.json();
+          if (data.detail) msg = data.detail;
+        } catch {}
+        onError(msg);
+      } else {
+        setMessage(action);
+      }
     } catch {
-      setMessage('Server unreachable');
+      onError('Server unreachable');
     }
   }
 
