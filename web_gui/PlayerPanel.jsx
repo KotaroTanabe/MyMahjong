@@ -27,7 +27,8 @@ export default function PlayerPanel({
   allowedActions = [],
 }) {
   const waiting = state?.waiting_for_claims ?? [];
-  const active = playerIndex === activePlayer || waiting.includes(playerIndex);
+  const isWaiting = waiting.includes(playerIndex);
+  const active = playerIndex === activePlayer;
   const allowedActionsMemo = useMemo(
     () => allowedActions,
     [allowedActions.join(',')]
@@ -65,7 +66,7 @@ export default function PlayerPanel({
     return () => controller.abort();
   }, [server, gameId, playerIndex, aiActive]);
   return (
-    <div className={`${seat} seat player-panel${active ? ' active-player' : ''}`}>
+    <div className={`${seat} seat player-panel${active ? ' active-player' : ''}${!active && isWaiting ? ' waiting-player' : ''}`}>
       <div className="player-header">
         <span className="riichi-stick">{player?.riichi ? '|' : '\u00a0'}</span>
         <span className="player-name">{(player ? player.name : seat) + (player ? ` ${player.score}` : '')}</span>

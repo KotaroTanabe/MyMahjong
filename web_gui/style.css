@@ -203,6 +203,11 @@
   background-color: #fff4ce;
 }
 
+.waiting-player .player-header {
+  font-weight: bold;
+  background-color: #d0f0ff;
+}
+
 .player-header .ai-btn {
   margin-left: auto;
   padding: 0.25rem;
