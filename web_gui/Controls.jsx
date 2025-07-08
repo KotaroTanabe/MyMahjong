@@ -8,6 +8,7 @@ export default function Controls({
   activePlayer = null,
   aiActive = false,
   allowedActions = [],
+  waitingForClaims = [],
   log = () => {},
 }) {
   const [message, setMessage] = useState('');
@@ -72,7 +73,9 @@ export default function Controls({
     simple('skip');
   }
 
-  const active = playerIndex === activePlayer && !aiActive;
+  const active =
+    (playerIndex === activePlayer || waitingForClaims.includes(playerIndex)) &&
+    !aiActive;
   const isAllowed = (action) => active && allowedActions.includes(action);
 
   return (
