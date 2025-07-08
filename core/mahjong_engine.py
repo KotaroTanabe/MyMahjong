@@ -612,10 +612,17 @@ class MahjongEngine:
         last = state.last_discard
         last_player = state.last_discard_player
 
+        claims_open = self._claims_open and player_index in state.waiting_for_claims
+
         if player_index in state.waiting_for_claims:
             actions.add("skip")
 
-        if last is not None and last_player is not None and last_player != player_index:
+        if (
+            claims_open
+            and last is not None
+            and last_player is not None
+            and last_player != player_index
+        ):
             same = [t for t in tiles if t.suit == last.suit and t.value == last.value]
             if len(same) >= 2:
                 actions.add("pon")
