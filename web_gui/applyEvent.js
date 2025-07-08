@@ -35,7 +35,9 @@ export function applyEvent(state, event) {
     case 'meld': {
       const p = newState.players[event.payload.player_index];
       if (p) {
-        event.payload.meld.tiles.forEach((m) => {
+        const called = event.payload.meld.called_index;
+        event.payload.meld.tiles.forEach((m, i) => {
+          if (called !== null && i === called) return;
           const idx = p.hand.tiles.findIndex(
             (t) => t.suit === m.suit && t.value === m.value,
           );
