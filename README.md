@@ -103,6 +103,8 @@ Future work will expand these components.
 - [x] Debug logging of GUI API calls
 - [x] Error modal shows server rejection
 - [x] Cancel in-flight allowed actions requests
+- [x] Download Tenhou log
+- [x] Download MJAI log
 - [x] 何切る問題 mode
   - [x] CLI practice command
   - [x] AI recommendation
