@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
-import CenterDisplay from './CenterDisplay.jsx';
-import PlayerPanel from './PlayerPanel.jsx';
-import { tileToEmoji, sortTiles, sortTilesExceptLast } from './tileUtils.js';
-import ErrorModal from './ErrorModal.jsx';
-import ResultModal from './ResultModal.jsx';
+import React, { useEffect, useRef, useState } from "react";
+import CenterDisplay from "./CenterDisplay.jsx";
+import PlayerPanel from "./PlayerPanel.jsx";
+import { tileToEmoji, sortTiles, sortTilesExceptLast } from "./tileUtils.js";
+import ErrorModal from "./ErrorModal.jsx";
+import ResultModal from "./ResultModal.jsx";
 
 function tileLabel(tile) {
   return tileToEmoji(tile);
@@ -28,7 +28,7 @@ export default function GameBoard({
   const [result, setResult] = useState(null);
   // Players 1-3 (west, north, east) act as AI by default
   const [aiPlayers, setAiPlayers] = useState([false, true, true, true]);
-  const [aiTypes] = useState(['simple', 'simple', 'simple', 'simple']);
+  const [aiTypes] = useState(["simple", "simple", "simple", "simple"]);
 
   function toggleAI(idx) {
     const enable = !aiPlayers[idx];
@@ -45,13 +45,16 @@ export default function GameBoard({
     ) {
       const tiles = state.players[idx].hand.tiles;
       const tile = tiles[tiles.length - 1];
-      log('debug', `POST /games/${gameId}/action discard - enable AI autoplays`);
-      fetch(`${server.replace(/\/$/, '')}/games/${gameId}/action`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      log(
+        "debug",
+        `POST /games/${gameId}/action discard - enable AI autoplays`,
+      );
+      fetch(`${server.replace(/\/$/, "")}/games/${gameId}/action`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           player_index: idx,
-          action: 'discard',
+          action: "discard",
           tile,
         }),
       }).catch(() => {});
@@ -68,13 +71,13 @@ export default function GameBoard({
           if (aiPlayers[idx]) {
             const body = {
               player_index: idx,
-              action: 'auto',
+              action: "auto",
               ai_type: aiTypes[idx],
             };
-            log('debug', `POST /games/${gameId}/action auto - resolve claims`);
-            fetch(`${server.replace(/\/$/, '')}/games/${gameId}/action`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+            log("debug", `POST /games/${gameId}/action auto - resolve claims`);
+            fetch(`${server.replace(/\/$/, "")}/games/${gameId}/action`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
               body: JSON.stringify(body),
             }).catch(() => {});
           }
@@ -89,18 +92,43 @@ export default function GameBoard({
     prevPlayer.current = current;
     const tiles = state?.players?.[current]?.hand?.tiles ?? [];
     const last = state?.last_discard;
-    if (tiles.length === 13 && last) {
-      const action = aiPlayers[current] ? 'auto' : 'draw';
+    const count = tiles.length;
+    if (count % 3 === 1 && last) {
+      const action = aiPlayers[current] ? "auto" : "draw";
       const body = { player_index: current, action };
-      if (action === 'auto') body.ai_type = aiTypes[current];
-      log('debug', `POST /games/${gameId}/action ${action} - next player action`);
-      fetch(`${server.replace(/\/$/, '')}/games/${gameId}/action`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      if (action === "auto") body.ai_type = aiTypes[current];
+      log(
+        "debug",
+        `POST /games/${gameId}/action ${action} - next player action`,
+      );
+      fetch(`${server.replace(/\/$/, "")}/games/${gameId}/action`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      }).catch(() => {});
+    } else if (count % 3 === 2 && aiPlayers[current]) {
+      const body = {
+        player_index: current,
+        action: "auto",
+        ai_type: aiTypes[current],
+      };
+      log("debug", "POST /games/" + gameId + "/action auto - auto discard");
+      fetch(`${server.replace(/\/$/, "")}/games/${gameId}/action`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       }).catch(() => {});
     }
-  }, [state?.current_player, state?.waiting_for_claims, gameId, server, state?.players, aiPlayers, aiTypes, result]);
+  }, [
+    state?.current_player,
+    state?.waiting_for_claims,
+    gameId,
+    server,
+    state?.players,
+    aiPlayers,
+    aiTypes,
+    result,
+  ]);
 
   useEffect(() => {
     if (state?.result) {
@@ -111,8 +139,10 @@ export default function GameBoard({
   async function copyLog() {
     if (!gameId) return;
     try {
-      log('debug', `GET /games/${gameId}/log - user copied log`);
-      const resp = await fetch(`${server.replace(/\/$/, '')}/games/${gameId}/log`);
+      log("debug", `GET /games/${gameId}/log - user copied log`);
+      const resp = await fetch(
+        `${server.replace(/\/$/, "")}/games/${gameId}/log`,
+      );
       if (!resp.ok) return;
       const data = await resp.json();
       await navigator.clipboard.writeText(data.log);
@@ -121,7 +151,7 @@ export default function GameBoard({
     }
   }
 
-  const defaultHand = Array(13).fill('🀫');
+  const defaultHand = Array(13).fill("🀫");
 
   function hasDrawnTile(player, index) {
     if (!player || state?.current_player !== index) return false;
@@ -131,15 +161,18 @@ export default function GameBoard({
 
   function concealedHand(p) {
     const count = p?.hand?.tiles?.length ?? 13;
-    return Array(count).fill('🀫');
+    return Array(count).fill("🀫");
   }
 
-  const northHand =
-    peek ? north?.hand?.tiles.map(tileLabel) ?? defaultHand : concealedHand(north);
-  const westHand =
-    peek ? west?.hand?.tiles.map(tileLabel) ?? defaultHand : concealedHand(west);
-  const eastHand =
-    peek ? east?.hand?.tiles.map(tileLabel) ?? defaultHand : concealedHand(east);
+  const northHand = peek
+    ? (north?.hand?.tiles.map(tileLabel) ?? defaultHand)
+    : concealedHand(north);
+  const westHand = peek
+    ? (west?.hand?.tiles.map(tileLabel) ?? defaultHand)
+    : concealedHand(west);
+  const eastHand = peek
+    ? (east?.hand?.tiles.map(tileLabel) ?? defaultHand)
+    : concealedHand(east);
   const southTiles = south?.hand?.tiles ?? null;
   const southHand = southTiles
     ? sortHand
@@ -183,22 +216,25 @@ export default function GameBoard({
   async function discard(tile) {
     try {
       if (!gameId) return;
-      if (typeof tile === 'string') return;
-      log('debug', `POST /games/${gameId}/action discard - user clicked tile`);
-      const resp = await fetch(`${server.replace(/\/$/, '')}/games/${gameId}/action`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ player_index: 0, action: 'discard', tile }),
-      });
+      if (typeof tile === "string") return;
+      log("debug", `POST /games/${gameId}/action discard - user clicked tile`);
+      const resp = await fetch(
+        `${server.replace(/\/$/, "")}/games/${gameId}/action`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ player_index: 0, action: "discard", tile }),
+        },
+      );
       if (!resp.ok) {
         setError(`Discard failed: ${resp.status}`);
       }
     } catch {
-      setError('Failed to contact server');
+      setError("Failed to contact server");
     }
   }
 
-  const boardClass = 'board-grid';
+  const boardClass = "board-grid";
 
   return (
     <>
@@ -209,76 +245,76 @@ export default function GameBoard({
         riichiSticks={state?.riichi_sticks ?? 0}
       />
       <div className={boardClass}>
-      <PlayerPanel
-        seat="north"
-        player={north}
-        hand={northHand}
-        drawn={northDrawn}
-        melds={northMelds}
-        riverTiles={(north?.river ?? []).map(tileLabel)}
-        state={state}
-        server={server}
-        gameId={gameId}
-        playerIndex={2}
-        activePlayer={state?.current_player}
-        aiActive={aiPlayers[2]}
-        toggleAI={toggleAI}
+        <PlayerPanel
+          seat="north"
+          player={north}
+          hand={northHand}
+          drawn={northDrawn}
+          melds={northMelds}
+          riverTiles={(north?.river ?? []).map(tileLabel)}
+          state={state}
+          server={server}
+          gameId={gameId}
+          playerIndex={2}
+          activePlayer={state?.current_player}
+          aiActive={aiPlayers[2]}
+          toggleAI={toggleAI}
+        />
+        <PlayerPanel
+          seat="west"
+          player={west}
+          hand={westHand}
+          drawn={westDrawn}
+          melds={westMelds}
+          riverTiles={(west?.river ?? []).map(tileLabel)}
+          state={state}
+          server={server}
+          gameId={gameId}
+          playerIndex={1}
+          activePlayer={state?.current_player}
+          aiActive={aiPlayers[1]}
+          toggleAI={toggleAI}
+        />
+        <PlayerPanel
+          seat="east"
+          player={east}
+          hand={eastHand}
+          drawn={eastDrawn}
+          melds={eastMelds}
+          riverTiles={(east?.river ?? []).map(tileLabel)}
+          state={state}
+          server={server}
+          gameId={gameId}
+          playerIndex={3}
+          activePlayer={state?.current_player}
+          aiActive={aiPlayers[3]}
+          toggleAI={toggleAI}
+        />
+        <PlayerPanel
+          seat="south"
+          player={south}
+          hand={southHand}
+          drawn={southDrawn}
+          melds={southMelds}
+          riverTiles={(south?.river ?? []).map(tileLabel)}
+          onDiscard={
+            state?.current_player === 0 && !aiPlayers[0] ? discard : undefined
+          }
+          state={state}
+          server={server}
+          gameId={gameId}
+          playerIndex={0}
+          activePlayer={state?.current_player}
+          aiActive={aiPlayers[0]}
+          toggleAI={toggleAI}
+        />
+      </div>
+      <ResultModal
+        result={result}
+        onClose={() => setResult(null)}
+        onCopyLog={copyLog}
       />
-      <PlayerPanel
-        seat="west"
-        player={west}
-        hand={westHand}
-        drawn={westDrawn}
-        melds={westMelds}
-        riverTiles={(west?.river ?? []).map(tileLabel)}
-        state={state}
-        server={server}
-        gameId={gameId}
-        playerIndex={1}
-        activePlayer={state?.current_player}
-        aiActive={aiPlayers[1]}
-        toggleAI={toggleAI}
-      />
-      <PlayerPanel
-        seat="east"
-        player={east}
-        hand={eastHand}
-        drawn={eastDrawn}
-        melds={eastMelds}
-        riverTiles={(east?.river ?? []).map(tileLabel)}
-        state={state}
-        server={server}
-        gameId={gameId}
-        playerIndex={3}
-        activePlayer={state?.current_player}
-        aiActive={aiPlayers[3]}
-        toggleAI={toggleAI}
-      />
-      <PlayerPanel
-        seat="south"
-        player={south}
-        hand={southHand}
-        drawn={southDrawn}
-        melds={southMelds}
-        riverTiles={(south?.river ?? []).map(tileLabel)}
-        onDiscard={
-          state?.current_player === 0 && !aiPlayers[0] ? discard : undefined
-        }
-        state={state}
-        server={server}
-        gameId={gameId}
-        playerIndex={0}
-        activePlayer={state?.current_player}
-        aiActive={aiPlayers[0]}
-        toggleAI={toggleAI}
-      />
-    </div>
-    <ResultModal
-      result={result}
-      onClose={() => setResult(null)}
-      onCopyLog={copyLog}
-    />
-    <ErrorModal message={error} onClose={() => setError(null)} />
+      <ErrorModal message={error} onClose={() => setError(null)} />
     </>
   );
 }
