@@ -99,6 +99,7 @@ Future work will expand these components.
 - [x] MJAI JSON shown alongside log entries
 - [x] Event log modal with copy button
 - [x] Debug logging of GUI API calls
+- [x] Cancel in-flight allowed actions requests
 - [x] 何切る問題 mode
   - [x] CLI practice command
   - [x] AI recommendation
