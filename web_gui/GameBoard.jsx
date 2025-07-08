@@ -122,10 +122,9 @@ export default function GameBoard({
     }
   }, [
     state?.current_player,
-    state?.waiting_for_claims,
+    state?.waiting_for_claims?.length ?? 0,
     gameId,
     server,
-    state?.players,
     aiPlayers,
     aiTypes,
     result,
