@@ -251,11 +251,29 @@ async def game_events(websocket: WebSocket, game_id: int) -> None:
     """Stream game events to the client."""
     _ = game_id  # placeholder for future multi-game support
     await websocket.accept()
+    prev_actions: list[list[str]] | None = None
     try:
+        # send initial allowed actions if a game is running
+        try:
+            prev_actions = api.get_all_allowed_actions()
+            await websocket.send_json(
+                {"name": "allowed_actions", "payload": {"actions": prev_actions}}
+            )
+        except AssertionError:
+            prev_actions = None
         while True:
             events = api.pop_events()
             for event in events:
                 await websocket.send_json(asdict(event))
+            try:
+                actions = api.get_all_allowed_actions()
+            except AssertionError:
+                actions = None
+            if actions is not None and actions != prev_actions:
+                prev_actions = actions
+                await websocket.send_json(
+                    {"name": "allowed_actions", "payload": {"actions": actions}}
+                )
             await asyncio.sleep(0.1)
     except WebSocketDisconnect:
         pass

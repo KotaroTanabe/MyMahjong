@@ -192,6 +192,8 @@ def test_websocket_streams_events() -> None:
     client.post("/games", json={"players": ["A", "B", "C", "D"]})
     with client.websocket_connect("/ws/1") as ws:
         data = ws.receive_json()
+        assert data["name"] == "allowed_actions"
+        data = ws.receive_json()
         assert data["name"] == "start_game"
         data = ws.receive_json()
         assert data["name"] == "start_kyoku"

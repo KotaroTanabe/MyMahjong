@@ -23,3 +23,10 @@ export async function getAllAllowedActions(server, gameId, log = () => {}) {
     return [];
   }
 }
+
+export function applyAllowedActionsEvent(current, event) {
+  if (event?.name === 'allowed_actions' && Array.isArray(event.payload?.actions)) {
+    return event.payload.actions;
+  }
+  return current;
+}

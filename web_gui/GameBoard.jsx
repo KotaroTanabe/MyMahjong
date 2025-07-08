@@ -4,7 +4,6 @@ import PlayerPanel from "./PlayerPanel.jsx";
 import { tileToEmoji, sortTiles, sortTilesExceptLast } from "./tileUtils.js";
 import ErrorModal from "./ErrorModal.jsx";
 import ResultModal from "./ResultModal.jsx";
-import { getAllAllowedActions } from "./allowedActions.js";
 
 function tileLabel(tile) {
   return tileToEmoji(tile);
@@ -16,6 +15,7 @@ export default function GameBoard({
   peek = false,
   sortHand = false,
   log = () => {},
+  allowedActions = [[], [], [], []],
 }) {
   const players = state?.players ?? [];
   const south = players[0];
@@ -30,7 +30,6 @@ export default function GameBoard({
   // Players 1-3 (west, north, east) act as AI by default
   const [aiPlayers, setAiPlayers] = useState([false, true, true, true]);
   const [aiTypes] = useState(["simple", "simple", "simple", "simple"]);
-  const [allowedActions, setAllowedActions] = useState([[], [], [], []]);
 
   function toggleAI(idx) {
     const enable = !aiPlayers[idx];
@@ -132,19 +131,6 @@ export default function GameBoard({
     result,
   ]);
 
-  useEffect(() => {
-    if (!gameId || !server) {
-      setAllowedActions([[], [], [], []]);
-      return;
-    }
-    getAllAllowedActions(server, gameId, log).then((actions) => {
-      if (Array.isArray(actions) && actions.length) {
-        setAllowedActions(actions);
-      } else {
-        setAllowedActions([[], [], [], []]);
-      }
-    });
-  }, [server, gameId, state]);
 
   useEffect(() => {
     if (state?.result) {
