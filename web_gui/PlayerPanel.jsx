@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { FaUser, FaRobot } from 'react-icons/fa';
 import Hand from './Hand.jsx';
 import River from './River.jsx';
@@ -27,12 +27,16 @@ export default function PlayerPanel({
 }) {
   const waiting = state?.waiting_for_claims ?? [];
   const active = playerIndex === activePlayer || waiting.includes(playerIndex);
-  const [actions, setActions] = useState(allowedActions);
+  const allowedActionsMemo = useMemo(
+    () => allowedActions,
+    [allowedActions.join(',')]
+  );
+  const [actions, setActions] = useState(allowedActionsMemo);
   const controllerRef = useRef(null);
 
   useEffect(() => {
-    setActions(allowedActions);
-  }, [allowedActions]);
+    setActions(allowedActionsMemo);
+  }, [allowedActionsMemo]);
 
   useEffect(() => {
     if (!server || !gameId) return;
