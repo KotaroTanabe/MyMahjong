@@ -75,3 +75,30 @@ describe('PlayerPanel fetch cancellation', () => {
     expect(aborted).toBe(true);
   });
 });
+
+describe('PlayerPanel AI behaviour', () => {
+  it('does not fetch actions when aiActive is true', async () => {
+    const fetchMock = vi.fn(() =>
+      Promise.resolve({ ok: true, json: () => Promise.resolve({ actions: [] }) })
+    );
+    global.fetch = fetchMock;
+    render(
+      <PlayerPanel
+        seat="east"
+        player={{}}
+        hand={[]}
+        melds={[]}
+        riverTiles={[]}
+        server="http://s"
+        gameId="1"
+        playerIndex={0}
+        activePlayer={0}
+        aiActive={true}
+        state={{}}
+        allowedActions={[]}
+      />,
+    );
+    await Promise.resolve();
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+});
