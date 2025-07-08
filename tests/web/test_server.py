@@ -1,6 +1,4 @@
-from dataclasses import asdict
 from fastapi.testclient import TestClient
-import pytest
 
 from web.server import app
 from core import api, models
