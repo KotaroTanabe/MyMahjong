@@ -6,7 +6,7 @@ export default function EventLogModal({ events, onClose, onCopy }) {
   return (
     <div className="modal is-active">
       <div className="modal-background" onClick={onClose}></div>
-      <div className="modal-content">
+      <div className="modal-content event-log-modal-content">
         <div className="box event-log">
           <div className="event-log-header">
             <h2>Events</h2>
