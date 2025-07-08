@@ -34,9 +34,14 @@ class MahjongEngine:
         self.state.current_player = 0
         self.events: list[GameEvent] = []
         self.event_history: list[GameEvent] = []
+        self._cached_allowed_actions: list[list[str]] | None = None
         self._claims_open = False
         self._emit("start_game", {"state": self.state})
         self.start_kyoku(dealer=0, round_number=1)
+
+    def _invalidate_cache(self) -> None:
+        """Clear cached allowed actions."""
+        self._cached_allowed_actions = None
 
     def _draw_replacement_tile(self, player: Player) -> None:
         """Draw a replacement tile from the dead wall and reveal new dora."""
@@ -113,6 +118,7 @@ class MahjongEngine:
 
     def start_kyoku(self, dealer: int, round_number: int) -> None:
         """Begin a new hand with fresh tiles."""
+        self._invalidate_cache()
         self.state.wall = Wall()
         wall = self.state.wall
         assert wall is not None
@@ -171,6 +177,7 @@ class MahjongEngine:
 
     def draw_tile(self, player_index: int) -> Tile:
         """Draw a tile for the specified player."""
+        self._invalidate_cache()
         if self.state.waiting_for_claims:
             raise ValueError("Waiting for other players to claim discard")
         if player_index != self.state.current_player:
@@ -189,6 +196,7 @@ class MahjongEngine:
 
     def discard_tile(self, player_index: int, tile: Tile) -> None:
         """Discard a tile from the specified player's hand."""
+        self._invalidate_cache()
         if self.state.waiting_for_claims:
             raise ValueError("Waiting for other players to claim discard")
         if player_index != self.state.current_player:
@@ -209,6 +217,7 @@ class MahjongEngine:
 
     def declare_riichi(self, player_index: int) -> None:
         """Declare riichi for the given player."""
+        self._invalidate_cache()
         from .shanten_quiz import is_tenpai
 
         player = self.state.players[player_index]
@@ -238,6 +247,7 @@ class MahjongEngine:
 
     def call_chi(self, player_index: int, tiles: list[Tile]) -> None:
         """Form a chi meld using the given tiles."""
+        self._invalidate_cache()
         if len(tiles) != 3:
             raise ValueError("Chi requires three tiles")
 
@@ -293,6 +303,7 @@ class MahjongEngine:
 
     def call_pon(self, player_index: int, tiles: list[Tile]) -> None:
         """Form a pon meld using the given tiles."""
+        self._invalidate_cache()
         if len(tiles) != 3:
             raise ValueError("Pon requires three tiles")
 
@@ -354,6 +365,7 @@ class MahjongEngine:
 
     def call_kan(self, player_index: int, tiles: list[Tile]) -> None:
         """Form a kan meld. Supports open, closed and added kan."""
+        self._invalidate_cache()
         if len(tiles) != 4:
             raise ValueError("Kan requires four tiles")
 
@@ -466,6 +478,7 @@ class MahjongEngine:
 
     def declare_tsumo(self, player_index: int, win_tile: Tile) -> HandResponse:
         """Declare a self-drawn win and return scoring info."""
+        self._invalidate_cache()
         result = self.calculate_score(player_index, win_tile)
         player = self.state.players[player_index]
         if result.cost and "total" in result.cost:
@@ -495,6 +508,7 @@ class MahjongEngine:
 
     def declare_ron(self, player_index: int, win_tile: Tile) -> HandResponse:
         """Declare a win on another player's discard."""
+        self._invalidate_cache()
         result = self.calculate_score(player_index, win_tile)
         player = self.state.players[player_index]
         if result.cost and "total" in result.cost:
@@ -524,6 +538,7 @@ class MahjongEngine:
 
     def skip(self, player_index: int) -> None:
         """Skip action for the specified player."""
+        self._invalidate_cache()
         # Waiting for claims from other players
         if self.state.waiting_for_claims:
             if player_index in self.state.waiting_for_claims:
@@ -550,6 +565,7 @@ class MahjongEngine:
 
     def advance_hand(self, winner_index: int | None = None) -> None:
         """Move to the next hand and handle dealer rotation."""
+        self._invalidate_cache()
         if winner_index is None or winner_index == self.state.dealer:
             self.state.honba += 1
         else:
@@ -564,6 +580,7 @@ class MahjongEngine:
 
     def end_game(self) -> GameState:
         """Reset the engine and return the final state."""
+        self._invalidate_cache()
         final_state = self.state
         scores = [p.score for p in final_state.players]
         self._emit("end_game", {"scores": scores})
@@ -583,11 +600,8 @@ class MahjongEngine:
         self._claims_open = False
         return final_state
 
-    def get_allowed_actions(self, player_index: int) -> list[str]:
-        """Return a list of actions the player may take."""
-
-        if player_index < 0 or player_index >= len(self.state.players):
-            raise IndexError("Invalid player index")
+    def _compute_allowed_actions(self, player_index: int) -> list[str]:
+        """Compute allowed actions for ``player_index``."""
 
         state = self.state
         player = state.players[player_index]
@@ -632,3 +646,14 @@ class MahjongEngine:
             actions.add("riichi")
 
         return sorted(actions)
+
+    def get_allowed_actions(self, player_index: int) -> list[str]:
+        """Return cached allowed actions for ``player_index``."""
+
+        if player_index < 0 or player_index >= len(self.state.players):
+            raise IndexError("Invalid player index")
+
+        if self._cached_allowed_actions is None or len(self._cached_allowed_actions) != len(self.state.players):
+            self._cached_allowed_actions = [self._compute_allowed_actions(i) for i in range(len(self.state.players))]
+
+        return self._cached_allowed_actions[player_index]
