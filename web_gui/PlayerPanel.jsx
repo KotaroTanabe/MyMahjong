@@ -36,8 +36,12 @@ export default function PlayerPanel({
 
   useEffect(() => {
     if (!server || !gameId) return;
-    const controller = new AbortController();
     controllerRef.current?.abort();
+    if (aiActive) {
+      controllerRef.current = null;
+      return;
+    }
+    const controller = new AbortController();
     controllerRef.current = controller;
     getAllowedActions(server, gameId, playerIndex, log, { signal: controller.signal })
       .then((acts) => {
@@ -45,7 +49,7 @@ export default function PlayerPanel({
       })
       .catch(() => {});
     return () => controller.abort();
-  }, [server, gameId, playerIndex]);
+  }, [server, gameId, playerIndex, aiActive]);
   return (
     <div className={`${seat} seat player-panel${active ? ' active-player' : ''}`}>
       <div className="player-header">
