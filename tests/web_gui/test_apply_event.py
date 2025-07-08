@@ -124,3 +124,15 @@ def test_ron_sets_result_and_scores() -> None:
     )
     output = run_node(code)
     assert output == 'ron:33000'
+
+
+def test_claims_closed_clears_waiting_for_claims() -> None:
+    code = (
+        "import { applyEvent } from './web_gui/applyEvent.js';\n"
+        "const state = {waiting_for_claims:[0,1]};\n"
+        "const evt = {name:'claims_closed'};\n"
+        "const newState = applyEvent(state, evt);\n"
+        "console.log(newState.waiting_for_claims.length);"
+    )
+    output = run_node(code)
+    assert output == '0'

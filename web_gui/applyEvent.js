@@ -86,6 +86,9 @@ export function applyEvent(state, event) {
       newState.result = { type: 'ryukyoku', ...event.payload };
       break;
     }
+    case 'claims_closed':
+      newState.waiting_for_claims = [];
+      break;
     case 'skip': {
       newState.waiting_for_claims = newState.waiting_for_claims.filter(
         (i) => i !== event.payload.player_index,
