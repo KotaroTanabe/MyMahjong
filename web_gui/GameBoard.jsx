@@ -25,6 +25,7 @@ export default function GameBoard({
 
   const prevPlayer = useRef(null);
   const prevWaiting = useRef([]);
+  const skipSent = useRef(new Set());
   const prevCounts = useRef([]);
   const lastDrawPlayer = useRef(null);
   const [error, setError] = useState(null);
@@ -82,24 +83,39 @@ export default function GameBoard({
     if (waiting.length > 0) {
       if (JSON.stringify(waiting) !== JSON.stringify(prevWaiting.current)) {
         prevWaiting.current = waiting.slice();
-        waiting.forEach((idx) => {
-          if (aiPlayers[idx]) {
-            const body = {
-              player_index: idx,
-              action: "auto",
-              ai_type: aiTypes[idx],
-            };
-            log("debug", `POST /games/${gameId}/action auto - resolve claims`);
-            fetch(`${server.replace(/\/$/, "")}/games/${gameId}/action`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(body),
-            }).catch(() => {});
-          }
-        });
+        skipSent.current.clear();
       }
+      waiting.forEach((idx) => {
+        if (aiPlayers[idx]) {
+          const body = {
+            player_index: idx,
+            action: "auto",
+            ai_type: aiTypes[idx],
+          };
+          log("debug", `POST /games/${gameId}/action auto - resolve claims`);
+          fetch(`${server.replace(/\/$/, "")}/games/${gameId}/action`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          }).catch(() => {});
+        } else if (
+          allowedActions[idx]?.length === 1 &&
+          allowedActions[idx][0] === "skip" &&
+          !skipSent.current.has(idx)
+        ) {
+          const body = { player_index: idx, action: "skip" };
+          log("debug", `POST /games/${gameId}/action skip - auto skip`);
+          fetch(`${server.replace(/\/$/, "")}/games/${gameId}/action`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          }).catch(() => {});
+          skipSent.current.add(idx);
+        }
+      });
       return;
     }
+    skipSent.current.clear();
     prevWaiting.current = [];
 
     const current = state?.current_player;
@@ -139,6 +155,7 @@ export default function GameBoard({
   }, [
     state?.current_player,
     state?.waiting_for_claims?.length ?? 0,
+    allowedActions.map((a) => a.join(',')).join('|'),
     gameId,
     server,
     aiPlayers,
