@@ -62,4 +62,19 @@ describe('GameBoard auto draw', () => {
     rerender(<GameBoard state={state} server="http://s" gameId="1" />);
     await Promise.resolve();
   });
+
+  it('ignores score changes', async () => {
+    const fetchMock = vi.fn(() => Promise.resolve({ ok: true }));
+    global.fetch = fetchMock;
+    const state = mockState(0);
+    const { rerender } = render(
+      <GameBoard state={state} server="http://s" gameId="1" />,
+    );
+    await Promise.resolve();
+    fetchMock.mockClear();
+    state.players[0].score = 26000;
+    rerender(<GameBoard state={state} server="http://s" gameId="1" />);
+    await Promise.resolve();
+    expect(fetchMock).toHaveBeenCalledTimes(0);
+  });
 });
