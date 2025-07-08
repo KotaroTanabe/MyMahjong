@@ -34,6 +34,7 @@ class MahjongEngine:
         self.state.current_player = 0
         self.events: list[GameEvent] = []
         self.event_history: list[GameEvent] = []
+        self._claims_open = False
         self._emit("start_game", {"state": self.state})
         self.start_kyoku(dealer=0, round_number=1)
 
@@ -68,6 +69,12 @@ class MahjongEngine:
         evt = GameEvent(name=name, payload=payload)
         self.events.append(evt)
         self.event_history.append(evt)
+
+    def _close_claims(self) -> None:
+        """Emit ``claims_closed`` if a discard claim window was open."""
+        if self._claims_open:
+            self._claims_open = False
+            self._emit("claims_closed", {})
 
     def _is_tenpai(self, player: Player) -> bool:
         """Return True if ``player`` is in tenpai."""
@@ -120,6 +127,7 @@ class MahjongEngine:
         self.state.last_discard = None
         self.state.last_discard_player = None
         self.state.waiting_for_claims = []
+        self._claims_open = False
         self.state.kan_count = 0
         winds = ["east", "south", "west", "north"]
         self.state.seat_winds = []
@@ -195,6 +203,7 @@ class MahjongEngine:
         self.state.waiting_for_claims = [
             i for i in range(len(self.state.players)) if i != player_index
         ]
+        self._claims_open = True
         self.state.last_discard = tile
         self.state.last_discard_player = player_index
 
@@ -278,6 +287,7 @@ class MahjongEngine:
         self.state.last_discard = None
         self.state.last_discard_player = None
         self.state.waiting_for_claims = []
+        self._close_claims()
         self.state.current_player = player_index
         self._emit("meld", {"player_index": player_index, "meld": meld})
 
@@ -338,6 +348,7 @@ class MahjongEngine:
         self.state.last_discard = None
         self.state.last_discard_player = None
         self.state.waiting_for_claims = []
+        self._close_claims()
         self.state.current_player = player_index
         self._emit("meld", {"player_index": player_index, "meld": meld})
 
@@ -392,8 +403,9 @@ class MahjongEngine:
             player.hand.melds.append(meld)
             self.state.last_discard = None
             self.state.last_discard_player = None
-            self._draw_replacement_tile(player)
             self.state.waiting_for_claims = []
+            self._close_claims()
+            self._draw_replacement_tile(player)
             self.state.current_player = player_index
             self._emit("meld", {"player_index": player_index, "meld": meld})
             self.state.kan_count += 1
@@ -418,8 +430,9 @@ class MahjongEngine:
                     raise ValueError("Player missing tile for added kan")
                 meld.tiles.append(player.hand.tiles.pop(idx))
                 meld.type = "added_kan"
-                self._draw_replacement_tile(player)
                 self.state.waiting_for_claims = []
+                self._close_claims()
+                self._draw_replacement_tile(player)
                 self.state.current_player = player_index
                 self._emit("meld", {"player_index": player_index, "meld": meld})
                 self.state.kan_count += 1
@@ -442,8 +455,9 @@ class MahjongEngine:
                     break
         meld = Meld(tiles=meld_tiles, type="closed_kan")
         player.hand.melds.append(meld)
-        self._draw_replacement_tile(player)
         self.state.waiting_for_claims = []
+        self._close_claims()
+        self._draw_replacement_tile(player)
         self.state.current_player = player_index
         self._emit("meld", {"player_index": player_index, "meld": meld})
         self.state.kan_count += 1
@@ -504,6 +518,7 @@ class MahjongEngine:
             },
         )
         self.state.waiting_for_claims = []
+        self._close_claims()
         self.advance_hand(player_index)
         return result
 
@@ -515,6 +530,7 @@ class MahjongEngine:
                 self.state.waiting_for_claims.remove(player_index)
                 self._emit("skip", {"player_index": player_index})
                 if not self.state.waiting_for_claims:
+                    self._close_claims()
                     # All players have passed on the discard; draw for next player
                     next_player = self.state.current_player
                     self.draw_tile(next_player)
@@ -564,6 +580,7 @@ class MahjongEngine:
         self.state.seat_winds = []
         self.state.last_discard = None
         self.state.last_discard_player = None
+        self._claims_open = False
         return final_state
 
     def get_allowed_actions(self, player_index: int) -> list[str]:
