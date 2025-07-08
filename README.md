@@ -312,7 +312,8 @@ python run_local.py
 
 ### Build and test
 
-Install the editable packages and run all checks with **uv**:
+Install the editable packages and run all checks with **uv**. This mirrors the
+GitHub Actions workflow so results are consistent locally and in CI:
 
 ```bash
 uv pip install -e ./core -e ./cli -e ./web
@@ -322,6 +323,9 @@ python -m build cli
 flake8  # uses a very lenient rule set (E9,F63,F7,F82 only)
 mypy core web cli
 pytest -q
+npm ci --prefix web_gui
+# run Vitest from the web_gui directory so the React plugin is loaded
+(cd web_gui && npx --no-install vitest run)
 ```
 
 The GUI will automatically connect to the local FastAPI server's REST endpoints.
@@ -347,3 +351,5 @@ dependencies are frozen in `requirements.lock` which the workflow installs
 with `uv pip install --system -r requirements.lock`. The lock file pins exact
 package versions and references local packages via relative paths like
 `-e ./core` so it can be used on any machine.
+CI uses Python 3.11 and Node.js 20. Running the commands above with the same
+versions locally ensures consistent results.
