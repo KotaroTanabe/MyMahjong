@@ -20,6 +20,7 @@ export default function App() {
   const [gameId, setGameId] = useState(() => localStorage.getItem('gameId') || '');
   const [gameState, setGameState] = useState(null);
   const [events, setEvents] = useState([]);
+  const [allowedActions, setAllowedActions] = useState([[], [], [], []]);
   function log(level, message) {
     setEvents((evts) => [...evts.slice(-19), `[${level}] ${message}`]);
   }
@@ -100,6 +101,14 @@ export default function App() {
     try {
       const evt = JSON.parse(e.data);
       log('info', formatEvent(evt));
+      if (evt.name === 'allowed_actions') {
+        setAllowedActions(evt.payload?.actions || [[], [], [], []]);
+        setEvents((evts) => {
+          const line = `${formatEvent(evt)} ${eventToMjaiJson(evt)}`;
+          return [...evts.slice(-9), line];
+        });
+        return;
+      }
       setGameState((prev) => {
         const next = applyEvent(prev, evt);
         setEvents((evts) => {
@@ -325,6 +334,7 @@ export default function App() {
           peek={peek}
           sortHand={sortHand}
           log={log}
+          allowedActions={allowedActions}
         />
       ) : mode === 'practice' ? (
         <Practice server={server} sortHand={sortHand} log={log} />
