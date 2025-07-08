@@ -24,7 +24,8 @@ export default function PlayerPanel({
   state,
   log = () => {},
 }) {
-  const active = playerIndex === activePlayer;
+  const waiting = state?.waiting_for_claims ?? [];
+  const active = playerIndex === activePlayer || waiting.includes(playerIndex);
   const [allowedActions, setAllowedActions] = useState([]);
 
   useEffect(() => {
@@ -60,6 +61,7 @@ export default function PlayerPanel({
         gameId={gameId}
         playerIndex={playerIndex}
         activePlayer={activePlayer}
+        waitingForClaims={waiting}
         aiActive={aiActive}
         allowedActions={allowedActions}
         log={log}
