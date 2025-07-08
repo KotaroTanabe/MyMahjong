@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { FaUser, FaRobot } from 'react-icons/fa';
 import Hand from './Hand.jsx';
 import River from './River.jsx';
 import MeldArea from './MeldArea.jsx';
 import Controls from './Controls.jsx';
 import Button from './Button.jsx';
-import { getAllowedActions } from './allowedActions.js';
 
 export default function PlayerPanel({
   seat,
@@ -23,18 +22,10 @@ export default function PlayerPanel({
   toggleAI,
   state,
   log = () => {},
+  allowedActions = [],
 }) {
   const waiting = state?.waiting_for_claims ?? [];
   const active = playerIndex === activePlayer || waiting.includes(playerIndex);
-  const [allowedActions, setAllowedActions] = useState([]);
-
-  useEffect(() => {
-    if (!server || !gameId) {
-      setAllowedActions([]);
-      return;
-    }
-    getAllowedActions(server, gameId, playerIndex, log).then(setAllowedActions);
-  }, [server, gameId, playerIndex, state]);
   return (
     <div className={`${seat} seat player-panel${active ? ' active-player' : ''}`}> 
       <div className="player-header">

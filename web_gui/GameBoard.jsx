@@ -4,6 +4,7 @@ import PlayerPanel from "./PlayerPanel.jsx";
 import { tileToEmoji, sortTiles, sortTilesExceptLast } from "./tileUtils.js";
 import ErrorModal from "./ErrorModal.jsx";
 import ResultModal from "./ResultModal.jsx";
+import { getAllAllowedActions } from "./allowedActions.js";
 
 function tileLabel(tile) {
   return tileToEmoji(tile);
@@ -29,6 +30,7 @@ export default function GameBoard({
   // Players 1-3 (west, north, east) act as AI by default
   const [aiPlayers, setAiPlayers] = useState([false, true, true, true]);
   const [aiTypes] = useState(["simple", "simple", "simple", "simple"]);
+  const [allowedActions, setAllowedActions] = useState([[], [], [], []]);
 
   function toggleAI(idx) {
     const enable = !aiPlayers[idx];
@@ -129,6 +131,20 @@ export default function GameBoard({
     aiTypes,
     result,
   ]);
+
+  useEffect(() => {
+    if (!gameId || !server) {
+      setAllowedActions([[], [], [], []]);
+      return;
+    }
+    getAllAllowedActions(server, gameId, log).then((actions) => {
+      if (Array.isArray(actions) && actions.length) {
+        setAllowedActions(actions);
+      } else {
+        setAllowedActions([[], [], [], []]);
+      }
+    });
+  }, [server, gameId, state]);
 
   useEffect(() => {
     if (state?.result) {
@@ -252,6 +268,7 @@ export default function GameBoard({
           drawn={northDrawn}
           melds={northMelds}
           riverTiles={(north?.river ?? []).map(tileLabel)}
+          allowedActions={allowedActions[2] || []}
           state={state}
           server={server}
           gameId={gameId}
@@ -267,6 +284,7 @@ export default function GameBoard({
           drawn={westDrawn}
           melds={westMelds}
           riverTiles={(west?.river ?? []).map(tileLabel)}
+          allowedActions={allowedActions[1] || []}
           state={state}
           server={server}
           gameId={gameId}
@@ -282,6 +300,7 @@ export default function GameBoard({
           drawn={eastDrawn}
           melds={eastMelds}
           riverTiles={(east?.river ?? []).map(tileLabel)}
+          allowedActions={allowedActions[3] || []}
           state={state}
           server={server}
           gameId={gameId}
@@ -300,6 +319,7 @@ export default function GameBoard({
           onDiscard={
             state?.current_player === 0 && !aiPlayers[0] ? discard : undefined
           }
+          allowedActions={allowedActions[0] || []}
           state={state}
           server={server}
           gameId={gameId}

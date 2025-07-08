@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import PlayerPanel from './PlayerPanel.jsx';
 
 function panel(aiActive) {
@@ -16,15 +16,10 @@ function panel(aiActive) {
       activePlayer={0}
       aiActive={aiActive}
       state={{ players: [{}, {}, {}, {}] }}
+      allowedActions={[]}
     />
   );
 }
-
-beforeEach(() => {
-  global.fetch = vi.fn(() =>
-    Promise.resolve({ ok: true, json: () => Promise.resolve({ actions: [] }) })
-  );
-});
 
 describe('PlayerPanel AI button icon', () => {
   it('changes icon when aiActive toggles', () => {
