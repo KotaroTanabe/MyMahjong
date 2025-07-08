@@ -93,12 +93,14 @@ Future work will expand these components.
 - [x] Highlight active player on board
 - [x] 6x4 discard grid rendering
 - [x] Modal error display on failed discard actions
+- [x] Server-side action validation
 - [x] Setup controls hidden after game start with modal access
 - [x] Detailed event log display
 - [x] Copy event log to clipboard
 - [x] MJAI JSON shown alongside log entries
 - [x] Event log modal with copy button
 - [x] Debug logging of GUI API calls
+- [x] Error modal shows server rejection
 - [x] Cancel in-flight allowed actions requests
 - [x] 何切る問題 mode
   - [x] CLI practice command

@@ -172,7 +172,7 @@ def test_additional_action_endpoints() -> None:
         "/games/1/action",
         json={"player_index": state.current_player, "action": "skip"},
     )
-    assert resp.status_code == 200
+    assert resp.status_code == 409
 
 
 def test_draw_from_empty_wall_returns_error() -> None:
@@ -318,3 +318,49 @@ def test_next_actions_endpoint_logs_event() -> None:
     assert resp.status_code == 200
     events = api.pop_events()
     assert any(e.name == "next_actions" for e in events)
+
+
+def test_action_rejected_when_not_allowed() -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    resp = client.post(
+        "/games/1/action",
+        json={
+            "player_index": 1,
+            "action": "chi",
+            "tiles": [
+                {"suit": "man", "value": 1},
+                {"suit": "man", "value": 2},
+                {"suit": "man", "value": 3},
+            ],
+        },
+    )
+    assert resp.status_code == 409
+    assert resp.json()["detail"] == "Action not allowed"
+
+
+def test_action_succeeds_when_allowed() -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    state = api.get_state()
+    for p in state.players:
+        p.hand.tiles = []
+    tile = {"suit": "man", "value": 2}
+    state.players[0].hand.tiles = [models.Tile(**tile)]
+    client.post(
+        "/games/1/action",
+        json={"player_index": 0, "action": "discard", "tile": tile},
+    )
+    state.players[1].hand.tiles = [models.Tile("man", 1), models.Tile("man", 3)]
+    resp = client.post(
+        "/games/1/action",
+        json={
+            "player_index": 1,
+            "action": "chi",
+            "tiles": [
+                {"suit": "man", "value": 1},
+                {"suit": "man", "value": 2},
+                {"suit": "man", "value": 3},
+            ],
+        },
+    )
+    assert resp.status_code == 200
+

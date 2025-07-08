@@ -196,6 +196,14 @@ class ActionRequest(BaseModel):
 def game_action(game_id: int, req: ActionRequest) -> dict:
     """Perform a simple game action and return its result."""
     _ = game_id  # placeholder for future multi-game support
+    try:
+        allowed = api.get_allowed_actions(req.player_index)
+    except AssertionError:
+        raise HTTPException(status_code=404, detail="Game not started")
+    except IndexError:
+        raise HTTPException(status_code=404, detail="Player not found")
+    if req.action in {"chi", "pon", "kan", "riichi", "skip"} and req.action not in allowed:
+        raise HTTPException(status_code=409, detail="Action not allowed")
     if req.action == "draw":
         try:
             tile = api.draw_tile(req.player_index)

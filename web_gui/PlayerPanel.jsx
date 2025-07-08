@@ -94,6 +94,7 @@ export default function PlayerPanel({
         aiActive={aiActive}
         allowedActions={actions}
         log={log}
+        onError={setError}
       />
       {error && (
         <ErrorModal message={error} onClose={() => setError(null)} />
