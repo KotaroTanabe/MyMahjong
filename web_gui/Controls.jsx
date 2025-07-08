@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Button from './Button.jsx';
 
-export default function Controls({
+export function Controls({
   server,
   gameId,
   playerIndex = 0,
@@ -92,3 +92,5 @@ export default function Controls({
     </div>
   );
 }
+
+export default React.memo(Controls);
