@@ -43,6 +43,12 @@ export default function App() {
     if (gameId) localStorage.setItem('gameId', gameId);
   }, [gameId]);
 
+  useEffect(() => {
+    if (gameState?.result?.type === 'end_game') {
+      wsRef.current?.close();
+    }
+  }, [gameState?.result?.type]);
+
   async function fetchStatus() {
     setStatus('Contacting server...');
     setConnectionStatus(null);
