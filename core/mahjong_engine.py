@@ -46,8 +46,12 @@ class MahjongEngine:
         """Clear cached allowed actions."""
         self._cached_allowed_actions = None
 
-    def _draw_replacement_tile(self, player: Player) -> None:
-        """Draw a replacement tile from the dead wall and reveal new dora."""
+    def _draw_replacement_tile(self, player: Player, player_index: int) -> None:
+        """Draw a replacement tile from the dead wall and reveal new dora.
+
+        A ``draw_tile`` event is emitted so front ends can display the
+        replacement tile. The payload includes ``source='dead_wall'``.
+        """
         assert self.state.wall is not None
         if not self.state.wall.dead_wall:
             return
@@ -59,7 +63,7 @@ class MahjongEngine:
             player_index = -1
         self._emit(
             "draw_tile",
-            {"player_index": player_index, "tile": tile, "from_dead_wall": True},
+            {"player_index": player_index, "tile": tile, "source": "dead_wall", "from_dead_wall": True},
         )
         if self.state.dead_wall:
             self.state.dead_wall.pop(0)
@@ -443,7 +447,7 @@ class MahjongEngine:
             self.state.last_discard_player = None
             self.state.waiting_for_claims = []
             self._close_claims()
-            self._draw_replacement_tile(player)
+            self._draw_replacement_tile(player, player_index)
             self.state.current_player = player_index
             self._emit("meld", {"player_index": player_index, "meld": meld})
             self.state.kan_count += 1
@@ -470,7 +474,7 @@ class MahjongEngine:
                 meld.type = "added_kan"
                 self.state.waiting_for_claims = []
                 self._close_claims()
-                self._draw_replacement_tile(player)
+                self._draw_replacement_tile(player, player_index)
                 self.state.current_player = player_index
                 self._emit("meld", {"player_index": player_index, "meld": meld})
                 self.state.kan_count += 1
@@ -495,7 +499,7 @@ class MahjongEngine:
         player.hand.melds.append(meld)
         self.state.waiting_for_claims = []
         self._close_claims()
-        self._draw_replacement_tile(player)
+        self._draw_replacement_tile(player, player_index)
         self.state.current_player = player_index
         self._emit("meld", {"player_index": player_index, "meld": meld})
         self.state.kan_count += 1

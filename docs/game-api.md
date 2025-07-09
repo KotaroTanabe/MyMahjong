@@ -49,7 +49,7 @@ translate them directly.
 | ------------------ | --------------------------------------- | ----- |
 | `start_game`       | `GameState`                             | Sent once at the beginning. |
 | `start_kyoku`      | dealer seat and round number            | Signals the start of a hand. |
-| `draw_tile`        | `player_index`, `Tile`                  | Tile drawn from the wall. |
+| `draw_tile`        | `player_index`, `Tile`, `source`        | Tile drawn from the wall. When emitted after a kan, `source` will be `"dead_wall"`. |
 | `discard`          | `player_index`, `Tile`                  | Tile placed into the river. |
 | `meld`             | `player_index`, `Meld`                  | Meld call (chi/pon/kan). |
 | `claims_closed`    | none                                    | No player called the discard. |
@@ -59,6 +59,9 @@ translate them directly.
 | `ryukyoku`         | reason                                  | Hand ends in draw. |
 | `round_end`        | next dealer and round                   | Fired before the next hand begins. |
 | `end_game`         | final scores, reason                    | Sent after the last hand or when a player goes bankrupt. |
+
+The replacement tile drawn after any kan uses this `draw_tile` event so
+front ends always receive the tile and know it came from the dead wall.
 
 Front ends are expected to update their displays or AI processes whenever an
 event is received.  The low level transport (function call, WebSocket, etc.) is
