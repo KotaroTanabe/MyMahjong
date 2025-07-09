@@ -88,6 +88,53 @@ def test_discard_action_endpoint() -> None:
     assert resp.json() == {"status": "ok"}
 
 
+def test_discard_invalid_tile_returns_409() -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    state = api.get_state()
+    player = state.players[state.current_player]
+    tile = {"suit": "man", "value": 1}
+    while models.Tile(**tile) in player.hand.tiles:
+        if tile["value"] < 9:
+            tile["value"] += 1
+        else:
+            tile["value"] = 1
+            tile["suit"] = "pin" if tile["suit"] == "man" else "sou"
+    resp = client.post(
+        "/games/1/action",
+        json={"player_index": state.current_player, "action": "discard", "tile": tile},
+    )
+    assert resp.status_code == 409
+
+
+def test_chi_without_discard_returns_409() -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    state = api.get_state()
+    chi_tile = {"suit": "man", "value": 3}
+    state.players[0].hand.tiles = [models.Tile(**chi_tile)]
+    state.players[1].hand.tiles = [models.Tile("man", 1), models.Tile("man", 2)]
+    client.post(
+        "/games/1/action",
+        json={"player_index": 0, "action": "discard", "tile": chi_tile},
+    )
+    assert api._engine is not None
+    api.get_allowed_actions(1)  # cache chi as allowed
+    assert api._engine is not None
+    api._engine.state.last_discard = None
+    api._engine.state.last_discard_player = None
+    resp = client.post(
+        "/games/1/action",
+        json={
+            "player_index": 1,
+            "action": "chi",
+            "tiles": [
+                {"suit": "man", "value": 1},
+                {"suit": "man", "value": 2},
+            ],
+        },
+    )
+    assert resp.status_code == 409
+
+
 def test_additional_action_endpoints() -> None:
     client.post("/games", json={"players": ["A", "B", "C", "D"]})
     state = api.get_state()
@@ -469,4 +516,23 @@ def test_kan_invalid_tiles_returns_409() -> None:
         },
     )
     assert resp.status_code == 409
+def test_start_kyoku_endpoint_and_ws() -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    with client.websocket_connect("/ws/1") as ws:
+        ws.receive_json()  # allowed_actions
+        ws.receive_json()  # start_game
+        ws.receive_json()  # start_kyoku for first hand
+
+        resp = client.post(
+            "/games/1/start-kyoku",
+            json={"dealer": 1, "round": 2},
+        )
+        assert resp.status_code == 200
+        state = api.get_state()
+        assert state.dealer == 1
+        assert state.round_number == 2
+        data = ws.receive_json()
+        assert data["name"] == "start_kyoku"
+        assert data["payload"]["dealer"] == 1
+        assert data["payload"]["round"] == 2
 

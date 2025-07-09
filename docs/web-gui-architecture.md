@@ -22,6 +22,9 @@ Each component receives only the data it needs so the interface remains simple a
 1. After the page loads, `App` fetches the current game state via `GET /games/{id}`.
 2. `App` opens a WebSocket to `/ws/{id}` and listens for events.
 3. Incoming events update the React state, which re-renders the `GameBoard`.
+   When the engine sends a `draw_tile` event with `source: "dead_wall"` (after a
+   kan), the tile is inserted into the acting player's hand before further
+   actions are offered.
 4. The GUI queries `/games/{id}/next-actions` to determine which player acts next
    and what actions are possible. The set of allowed actions for each player is
    pushed to the client via an `allowed_actions` WebSocket event, so no extra

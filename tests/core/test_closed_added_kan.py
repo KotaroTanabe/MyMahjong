@@ -18,6 +18,19 @@ def test_call_closed_kan_draws_replacement_and_dora() -> None:
     assert len(engine.state.dora_indicators) == before_dora + 1
 
 
+def test_call_kan_emits_draw_event() -> None:
+    engine = MahjongEngine()
+    engine.pop_events()
+    tiles = [Tile("man", 5) for _ in range(4)]
+    engine.state.players[0].hand.tiles = tiles.copy()
+    engine.call_kan(0, tiles)
+    last_two = engine.event_history[-2:]
+    assert last_two[0].name == "draw_tile"
+    assert last_two[0].payload["player_index"] == 0
+    assert last_two[0].payload.get("source") == "dead_wall"
+    assert last_two[1].name == "meld"
+
+
 def test_call_added_kan_upgrades_pon() -> None:
     engine = MahjongEngine()
     discarder = engine.state.players[0]
