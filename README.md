@@ -153,6 +153,7 @@ Future work will expand these components.
 - [x] Game ends early if any player reaches zero or negative points (bankruptcy)
 - [x] Enforce tsumogiri after riichi
 - [x] Riichi event includes player score and stick count
+- [x] Ippatsu flag tracking for riichi wins
 - [x] Validate closed-hand tenpai requirement for riichi
  - [x] action dispatch helper
   - [x] seat wind tracking
