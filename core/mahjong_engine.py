@@ -157,6 +157,7 @@ class MahjongEngine:
             p.river.clear()
             p.riichi = False
             p.must_tsumogiri = False
+            p.ippatsu_available = False
         self.state.last_discard = None
         self.state.last_discard_player = None
         self.state.waiting_for_claims = []
@@ -212,6 +213,8 @@ class MahjongEngine:
         player = self.state.players[player_index]
         if len(player.hand.tiles) % 3 != 1:
             raise ValueError("Cannot draw before discarding")
+        if player.ippatsu_available:
+            player.ippatsu_available = False
         self._check_four_winds()
         assert self.state.wall is not None
         tile = self.state.wall.draw_tile()
@@ -280,6 +283,8 @@ class MahjongEngine:
     def call_chi(self, player_index: int, tiles: list[Tile]) -> None:
         """Form a chi meld using the given tiles."""
         self._invalidate_cache()
+        for p in self.state.players:
+            p.ippatsu_available = False
         if len(tiles) != 3:
             raise ValueError("Chi requires three tiles")
 
@@ -336,6 +341,8 @@ class MahjongEngine:
     def call_pon(self, player_index: int, tiles: list[Tile]) -> None:
         """Form a pon meld using the given tiles."""
         self._invalidate_cache()
+        for p in self.state.players:
+            p.ippatsu_available = False
         if len(tiles) != 3:
             raise ValueError("Pon requires three tiles")
 
@@ -398,6 +405,8 @@ class MahjongEngine:
     def call_kan(self, player_index: int, tiles: list[Tile]) -> None:
         """Form a kan meld. Supports open, closed and added kan."""
         self._invalidate_cache()
+        for p in self.state.players:
+            p.ippatsu_available = False
         if len(tiles) != 4:
             raise ValueError("Kan requires four tiles")
 
@@ -516,6 +525,7 @@ class MahjongEngine:
         self._invalidate_cache()
         result = self.calculate_score(player_index, win_tile)
         player = self.state.players[player_index]
+        ippatsu = player.riichi and player.ippatsu_available
         if result.cost and "total" in result.cost:
             total = int(result.cost["total"])
             honba_bonus = self.state.honba * 100
@@ -534,9 +544,11 @@ class MahjongEngine:
                 "win_tile": win_tile,
                 "hand": asdict(player.hand),
                 "result": _hand_response_dict(result),
+                "ippatsu": ippatsu,
                 "scores": scores,
             },
         )
+        player.ippatsu_available = False
         self.state.waiting_for_claims = []
         self.advance_hand(player_index)
         return result
@@ -546,6 +558,7 @@ class MahjongEngine:
         self._invalidate_cache()
         result = self.calculate_score(player_index, win_tile)
         player = self.state.players[player_index]
+        ippatsu = player.riichi and player.ippatsu_available
         if result.cost and "total" in result.cost:
             total = int(result.cost["total"])
             honba_bonus = self.state.honba * 300
@@ -563,9 +576,11 @@ class MahjongEngine:
                 "win_tile": win_tile,
                 "hand": asdict(player.hand),
                 "result": _hand_response_dict(result),
+                "ippatsu": ippatsu,
                 "scores": scores,
             },
         )
+        player.ippatsu_available = False
         self.state.waiting_for_claims = []
         self._close_claims()
         self.advance_hand(player_index)

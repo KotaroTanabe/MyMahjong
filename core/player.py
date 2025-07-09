@@ -17,6 +17,7 @@ class Player:
     riichi: bool = False
     seat_wind: str = "east"
     must_tsumogiri: bool = False
+    ippatsu_available: bool = False
 
     def draw(self, tile: Tile) -> None:
         """Add a tile to the player's hand."""
@@ -48,3 +49,4 @@ class Player:
         self.score -= 1000
         self.riichi = True
         self.must_tsumogiri = True
+        self.ippatsu_available = True
