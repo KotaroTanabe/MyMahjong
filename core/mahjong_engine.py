@@ -53,6 +53,14 @@ class MahjongEngine:
             return
         tile = self.state.wall.dead_wall.pop(0)
         player.draw(tile)
+        try:
+            player_index = next(i for i, p in enumerate(self.state.players) if p is player)
+        except StopIteration:  # pragma: no cover - should not happen
+            player_index = -1
+        self._emit(
+            "draw_tile",
+            {"player_index": player_index, "tile": tile, "from_dead_wall": True},
+        )
         if self.state.dead_wall:
             self.state.dead_wall.pop(0)
         # Reveal next dora indicator if available
