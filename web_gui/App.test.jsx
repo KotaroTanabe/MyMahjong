@@ -38,6 +38,28 @@ describe('App websocket', () => {
     expect(optionsButton).toBeTruthy();
     server.stop();
   });
+
+  it.skip('closes the connection on end_game', async () => {
+    global.fetch = mockFetch();
+    const server = new Server('ws://localhost:1235/ws/1');
+    let socket;
+    let closed = false;
+    server.on('connection', (s) => {
+      socket = s;
+      socket.on('close', () => {
+        closed = true;
+      });
+    });
+    render(<App />);
+    const input = screen.getByLabelText('Server:');
+    await userEvent.clear(input);
+    await userEvent.type(input, 'http://localhost:1235');
+    await userEvent.click(screen.getByText('Start Game'));
+    await waitFor(() => socket);
+    socket.send(JSON.stringify({ name: 'end_game', payload: { scores: [] } }));
+    await waitFor(() => closed === true);
+    server.stop();
+  });
 });
 
 describe('App practice mode', () => {

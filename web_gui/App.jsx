@@ -114,6 +114,9 @@ export default function App() {
         });
         return;
       }
+      if (evt.name === 'end_game') {
+        wsRef.current?.close();
+      }
       setGameData((prev) => {
         const nextState = applyEvent(prev.state, evt);
         const next = { ...prev, state: nextState };
