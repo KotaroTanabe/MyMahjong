@@ -8,6 +8,13 @@ import Button from './Button.jsx';
 import { getAllowedActions } from './allowedActions.js';
 import ErrorModal from './ErrorModal.jsx';
 
+const windChars = {
+  east: '\u6771',
+  south: '\u5357',
+  west: '\u897f',
+  north: '\u5317',
+};
+
 export default function PlayerPanel({
   seat,
   player,
@@ -90,7 +97,11 @@ export default function PlayerPanel({
     <div className={`${seat} seat player-panel${active ? ' active-player' : ''}${!active && isWaiting ? ' waiting-player' : ''}`}>
       <div className="player-header">
         <span className="riichi-stick">{player?.riichi ? '|' : '\u00a0'}</span>
-        <span className="player-name">{(player ? player.name : seat) + (player ? ` ${player.score}` : '')}</span>
+        <span className="player-name">
+          {(player ? player.name : seat)}
+          {player?.seat_wind ? ` (${windChars[player.seat_wind]})` : ''}
+          {player ? ` ${player.score}` : ''}
+        </span>
         <Button
           aria-label={aiActive ? 'Disable AI' : 'Enable AI'}
           className={`ai-btn${aiActive ? ' active' : ''}`}

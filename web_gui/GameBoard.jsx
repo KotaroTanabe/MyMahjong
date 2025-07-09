@@ -280,6 +280,7 @@ export default function GameBoard({
         dora={dora}
         honba={state?.honba ?? 0}
         riichiSticks={state?.riichi_sticks ?? 0}
+        round={state?.round_number ?? 1}
       />
       <div className={boardClass}>
         <PlayerPanel
