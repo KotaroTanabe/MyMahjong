@@ -438,6 +438,84 @@ def test_action_succeeds_when_allowed() -> None:
     assert resp.status_code == 200
 
 
+def test_discard_wrong_player_returns_409() -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    state = api.get_state()
+    tile = state.players[1].hand.tiles[0]
+    resp = client.post(
+        "/games/1/action",
+        json={"player_index": 1, "action": "discard", "tile": tile.__dict__},
+    )
+    assert resp.status_code == 409
+
+
+def test_chi_wrong_player_returns_409() -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    state = api.get_state()
+    disc_tile = state.players[0].hand.tiles[0]
+    client.post(
+        "/games/1/action",
+        json={"player_index": 0, "action": "discard", "tile": disc_tile.__dict__},
+    )
+    resp = client.post(
+        "/games/1/action",
+        json={
+            "player_index": 2,
+            "action": "chi",
+            "tiles": [
+                disc_tile.__dict__,
+                disc_tile.__dict__,
+                disc_tile.__dict__,
+            ],
+        },
+    )
+    assert resp.status_code == 409
+
+
+def test_pon_invalid_tiles_returns_409() -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    state = api.get_state()
+    disc_tile = state.players[0].hand.tiles[0]
+    client.post(
+        "/games/1/action",
+        json={"player_index": 0, "action": "discard", "tile": disc_tile.__dict__},
+    )
+    resp = client.post(
+        "/games/1/action",
+        json={
+            "player_index": 1,
+            "action": "pon",
+            "tiles": [
+                disc_tile.__dict__,
+                disc_tile.__dict__,
+                {"suit": disc_tile.suit, "value": (disc_tile.value % 9) + 1},
+            ],
+        },
+    )
+    assert resp.status_code == 409
+
+
+def test_kan_invalid_tiles_returns_409() -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    state = api.get_state()
+    disc_tile = state.players[0].hand.tiles[0]
+    client.post(
+        "/games/1/action",
+        json={"player_index": 0, "action": "discard", "tile": disc_tile.__dict__},
+    )
+    resp = client.post(
+        "/games/1/action",
+        json={
+            "player_index": 1,
+            "action": "kan",
+            "tiles": [
+                disc_tile.__dict__,
+                disc_tile.__dict__,
+                disc_tile.__dict__,
+            ],
+        },
+    )
+    assert resp.status_code == 409
 def test_start_kyoku_endpoint_and_ws() -> None:
     client.post("/games", json={"players": ["A", "B", "C", "D"]})
     with client.websocket_connect("/ws/1") as ws:
