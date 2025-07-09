@@ -37,6 +37,7 @@ The following classes defined in `core.models` are used throughout the API:
 | `auto_play_turn`   | `player_index`, `ai_type`               | Draw and discard using the chosen AI. |
 | `end_game`         | none                                    | Terminate the current game. |
 | `get_state`        | none                                    | Retrieve the current `GameState`. |
+| `get_chi_options`  | `player_index`                          | List possible chi tile pairs for the last discard. |
 
 ## Events (Core -> GUI/CLI)
 

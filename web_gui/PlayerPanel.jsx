@@ -94,6 +94,7 @@ export default function PlayerPanel({
         waitingForClaims={waiting}
         aiActive={aiActive}
         allowedActions={actions}
+        lastDiscard={state?.last_discard}
         log={log}
         onError={setError}
       />

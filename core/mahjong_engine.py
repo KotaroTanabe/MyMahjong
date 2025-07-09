@@ -715,6 +715,49 @@ class MahjongEngine:
 
         return self._cached_allowed_actions[player_index]
 
+    def get_chi_options(self, player_index: int) -> list[list[Tile]]:
+        """Return possible chi tile pairs for ``player_index``."""
+
+        last_tile = self.state.last_discard
+        last_player = self.state.last_discard_player
+        if (
+            last_tile is None
+            or last_player is None
+            or (last_player + 1) % len(self.state.players) != player_index
+            or last_tile.suit not in {"man", "pin", "sou"}
+        ):
+            return []
+
+        tiles = self.state.players[player_index].hand.tiles
+        options: list[list[Tile]] = []
+
+        def find(value: int, used: set[int]) -> tuple[int, Tile] | None:
+            for idx, t in enumerate(tiles):
+                if idx in used:
+                    continue
+                if t.suit == last_tile.suit and t.value == value:
+                    return idx, t
+            return None
+
+        for d1, d2 in [(-2, -1), (-1, 1), (1, 2)]:
+            v1 = last_tile.value + d1
+            v2 = last_tile.value + d2
+            if not (1 <= v1 <= 9 and 1 <= v2 <= 9):
+                continue
+            used: set[int] = set()
+            t1 = find(v1, used)
+            if t1 is None:
+                continue
+            used.add(t1[0])
+            t2 = find(v2, used)
+            if t2 is None:
+                continue
+            pair = sorted([t1[1], t2[1]], key=lambda t: t.value)
+            if not any(all(p.suit == q.suit and p.value == q.value for p, q in zip(pair, o)) for o in options):
+                options.append(pair)
+
+        return options
+
     @property
     def is_game_over(self) -> bool:
         """Return True if ``end_game`` has been called."""

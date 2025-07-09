@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import Button from './Button.jsx';
+import ChiModal from './ChiModal.jsx';
+import { getChiOptions } from './chiOptions.js';
 
 export function Controls({
   server,
@@ -9,10 +11,12 @@ export function Controls({
   aiActive = false,
   allowedActions = [],
   waitingForClaims = [],
+  lastDiscard = null,
   log = () => {},
   onError = () => {},
 }) {
   const [message, setMessage] = useState('');
+  const [chiOptions, setChiOptions] = useState(null);
 
 
   async function simple(action, payload = {}) {
@@ -55,8 +59,18 @@ export function Controls({
     }
   }
 
-  function chi() {
-    simple('chi', { tiles: [{ suit: 'man', value: 1 }, { suit: 'man', value: 2 }, { suit: 'man', value: 3 }] });
+  async function chi() {
+    if (!gameId) return;
+    const options = await getChiOptions(server, gameId, playerIndex, log);
+    if (!options || options.length === 0) {
+      onError('No chi options');
+      return;
+    }
+    if (options.length === 1) {
+      simple('chi', { tiles: options[0] });
+    } else {
+      setChiOptions(options);
+    }
   }
 
   function pon() {
@@ -83,6 +97,11 @@ export function Controls({
     simple('skip');
   }
 
+  function chooseChi(pair) {
+    simple('chi', { tiles: pair });
+    setChiOptions(null);
+  }
+
   const active =
     (playerIndex === activePlayer || waitingForClaims.includes(playerIndex)) &&
     !aiActive;
@@ -102,8 +121,15 @@ export function Controls({
       <Button onClick={skip} disabled={!isAllowed('skip')}>Skip</Button>
       <Button onClick={shanten}>Shanten</Button>
       {message && <div className="message">{message}</div>}
+      <ChiModal
+        options={chiOptions || []}
+        discard={lastDiscard}
+        onSelect={chooseChi}
+        onClose={() => setChiOptions(null)}
+      />
     </div>
   );
 }
 
 export default React.memo(Controls);
+

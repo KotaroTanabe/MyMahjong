@@ -103,6 +103,7 @@ Future work will expand these components.
 - [x] Event log modal with copy button
 - [x] Debug logging of GUI API calls
 - [x] Error modal shows server rejection
+- [x] Chi option modal when multiple chi choices are available
 - [x] Cancel in-flight allowed actions requests
 - [x] Download Tenhou log
 - [x] Download MJAI log
