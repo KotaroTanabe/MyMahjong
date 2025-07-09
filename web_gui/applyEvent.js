@@ -10,7 +10,9 @@ export function applyEvent(state, event) {
     case 'draw_tile': {
       const p = newState.players[event.payload.player_index];
       if (p) p.hand.tiles.push(event.payload.tile);
-      if (newState.wall?.tiles?.length) newState.wall.tiles.pop();
+      if (!event.payload.from_dead_wall && newState.wall?.tiles?.length) {
+        newState.wall.tiles.pop();
+      }
       break;
     }
     case 'discard': {
@@ -86,6 +88,16 @@ export function applyEvent(state, event) {
         });
       }
       newState.result = { type: 'ryukyoku', ...event.payload };
+      break;
+    }
+    case 'end_game': {
+      if (Array.isArray(event.payload.scores)) {
+        newState.players.forEach((p, i) => {
+          if (p) p.score = event.payload.scores[i];
+        });
+      }
+      newState.result = { type: 'end_game', ...event.payload };
+      newState.waiting_for_claims = [];
       break;
     }
     case 'round_end':

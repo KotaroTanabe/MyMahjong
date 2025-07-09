@@ -39,26 +39,32 @@ describe('App websocket', () => {
     server.stop();
   });
 
-  it.skip('closes the connection on end_game', async () => {
+  it('closes the connection on end_game', async () => {
     global.fetch = mockFetch();
-    const server = new Server('ws://localhost:1235/ws/1');
-    let socket;
+    const OriginalWS = global.WebSocket;
     let closed = false;
-    server.on('connection', (s) => {
-      socket = s;
-      socket.on('close', () => {
+    class MockWS {
+      constructor() {
+        MockWS.instance = this;
+        setTimeout(() => this.onopen && this.onopen(), 0);
+      }
+      send() {}
+      close() {
         closed = true;
-      });
-    });
+      }
+    }
+    global.WebSocket = MockWS;
     render(<App />);
     const input = screen.getByLabelText('Server:');
     await userEvent.clear(input);
     await userEvent.type(input, 'http://localhost:1235');
     await userEvent.click(screen.getByText('Start Game'));
-    await waitFor(() => socket);
-    socket.send(JSON.stringify({ name: 'end_game', payload: { scores: [] } }));
+    await waitFor(() => MockWS.instance);
+    MockWS.instance.onmessage({ data: JSON.stringify({ name: 'end_game', payload: { scores: [1,2,3,4] } }) });
     await waitFor(() => closed === true);
-    server.stop();
+    const item = await screen.findByText('Player 1: 1');
+    expect(item).toBeTruthy();
+    global.WebSocket = OriginalWS;
   });
 });
 
