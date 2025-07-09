@@ -17,7 +17,7 @@ def test_open_kan_events_order() -> None:
     engine.call_kan(0, [Tile('man', 1)] * 4)
     events = engine.pop_events()
     names = [e.name for e in events]
-    assert names == ['claims_closed', 'meld']
+    assert names == ['claims_closed', 'draw_tile', 'meld']
     meld = events[-1].payload['meld']
     assert meld.type == 'kan'
     assert len(meld.tiles) == 4
@@ -30,8 +30,8 @@ def test_closed_kan_event() -> None:
     engine.state.players[0].hand.tiles = [Tile('sou', 5)] * 4
     engine.call_kan(0, [Tile('sou', 5)] * 4)
     events = engine.pop_events()
-    assert [e.name for e in events] == ['meld']
-    meld = events[0].payload['meld']
+    assert [e.name for e in events] == ['draw_tile', 'meld']
+    meld = events[1].payload['meld']
     assert meld.type == 'closed_kan'
     assert len(meld.tiles) == 4
 
@@ -51,7 +51,7 @@ def test_added_kan_event() -> None:
     caller.hand.tiles.append(Tile('pin', 2))
     engine.call_kan(0, [Tile('pin', 2)] * 4)
     events = engine.pop_events()
-    assert [e.name for e in events] == ['meld']
-    meld = events[0].payload['meld']
+    assert [e.name for e in events] == ['draw_tile', 'meld']
+    meld = events[1].payload['meld']
     assert meld.type == 'added_kan'
     assert len(meld.tiles) == 4

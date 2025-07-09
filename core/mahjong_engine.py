@@ -447,6 +447,7 @@ class MahjongEngine:
             self.state.last_discard_player = None
             self.state.waiting_for_claims = []
             self._close_claims()
+            # TODO: support chankan (槍槓) before drawing replacement tile
             self._draw_replacement_tile(player, player_index)
             self.state.current_player = player_index
             self._emit("meld", {"player_index": player_index, "meld": meld})
@@ -474,6 +475,7 @@ class MahjongEngine:
                 meld.type = "added_kan"
                 self.state.waiting_for_claims = []
                 self._close_claims()
+                # TODO: support chankan (槍槓) before drawing replacement tile
                 self._draw_replacement_tile(player, player_index)
                 self.state.current_player = player_index
                 self._emit("meld", {"player_index": player_index, "meld": meld})
@@ -499,6 +501,7 @@ class MahjongEngine:
         player.hand.melds.append(meld)
         self.state.waiting_for_claims = []
         self._close_claims()
+        # TODO: support chankan (槍槓) before drawing replacement tile
         self._draw_replacement_tile(player, player_index)
         self.state.current_player = player_index
         self._emit("meld", {"player_index": player_index, "meld": meld})
