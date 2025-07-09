@@ -10,7 +10,9 @@ export function applyEvent(state, event) {
     case 'draw_tile': {
       const p = newState.players[event.payload.player_index];
       if (p) p.hand.tiles.push(event.payload.tile);
-      if (newState.wall?.tiles?.length) newState.wall.tiles.pop();
+      if (!event.payload.from_dead_wall && newState.wall?.tiles?.length) {
+        newState.wall.tiles.pop();
+      }
       break;
     }
     case 'discard': {
