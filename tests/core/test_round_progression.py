@@ -17,6 +17,7 @@ def test_honba_increments_on_draw() -> None:
     engine.pop_events()
     assert engine.state.wall is not None
     engine.state.wall.tiles = [Tile("pin", 1)]
+    engine.state.players[engine.state.current_player].hand.tiles.pop()
     engine.draw_tile(engine.state.current_player)
     assert engine.state.honba == 1
     assert engine.state.round_number == 1

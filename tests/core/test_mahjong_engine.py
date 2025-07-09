@@ -39,6 +39,7 @@ def test_draw_tile_updates_state() -> None:
     assert engine.state.wall is not None
     tile = Tile(suit="pin", value=3)
     engine.state.wall.tiles.append(tile)
+    engine.state.players[0].hand.tiles.pop()
     engine.draw_tile(0)
     assert tile in engine.state.players[0].hand.tiles
 
@@ -118,6 +119,7 @@ def test_end_game_ignored_on_subsequent_calls() -> None:
 def test_remaining_tiles_property() -> None:
     engine = MahjongEngine()
     remaining = engine.remaining_tiles
+    engine.state.players[0].hand.tiles.pop()
     engine.draw_tile(0)
     assert engine.remaining_tiles == remaining - 1
 
@@ -125,6 +127,7 @@ def test_remaining_tiles_property() -> None:
 def test_remaining_yama_tiles_property() -> None:
     engine = MahjongEngine()
     yama_remaining = engine.remaining_yama_tiles
+    engine.state.players[0].hand.tiles.pop()
     engine.draw_tile(0)
     assert engine.remaining_yama_tiles == yama_remaining - 1
 
@@ -227,6 +230,7 @@ def test_event_log() -> None:
     engine.pop_events()  # clear start_game
     tile = Tile("man", 1)
     engine.state.wall.tiles.append(tile)
+    engine.state.players[0].hand.tiles.pop()
     drawn = engine.draw_tile(0)
     engine.discard_tile(0, drawn)
     _set_tenpai_hand(engine.state.players[0])
@@ -275,7 +279,60 @@ def test_draw_blocked_until_all_skip() -> None:
     engine.skip(1)
     engine.skip(2)
     engine.skip(3)
-    engine.draw_tile(1)
+    assert len(engine.state.players[1].hand.tiles) == 14
+
+
+def test_draw_disallowed_after_chi() -> None:
+    engine = MahjongEngine()
+    engine.pop_events()
+    discarder = 0
+    caller = 1
+    tile = Tile("man", 3)
+    engine.state.players[discarder].hand.tiles.append(tile)
+    engine.state.current_player = discarder
+    engine.discard_tile(discarder, tile)
+    engine.pop_events()
+    engine.state.players[caller].hand.tiles = [
+        Tile("man", 1),
+        Tile("man", 2),
+        *([Tile("pin", 1)] * 11),
+    ]
+    engine.call_chi(caller, [Tile("man", 1), Tile("man", 2), tile])
+    with pytest.raises(ValueError):
+        engine.draw_tile(caller)
+
+
+def test_draw_disallowed_after_pon() -> None:
+    engine = MahjongEngine()
+    engine.pop_events()
+    discarder = 0
+    caller = 2
+    tile = Tile("pin", 5)
+    engine.state.players[discarder].hand.tiles.append(tile)
+    engine.state.current_player = discarder
+    engine.discard_tile(discarder, tile)
+    engine.pop_events()
+    engine.state.players[caller].hand.tiles = [
+        Tile("pin", 5),
+        Tile("pin", 5),
+        *([Tile("sou", 1)] * 11),
+    ]
+    engine.call_pon(caller, [Tile("pin", 5), Tile("pin", 5), tile])
+    with pytest.raises(ValueError):
+        engine.draw_tile(caller)
+
+
+def test_draw_disallowed_after_kan() -> None:
+    engine = MahjongEngine()
+    engine.pop_events()
+    caller = 0
+    tile = Tile("sou", 7)
+    engine.state.players[caller].hand.tiles = [tile] * 4 + [Tile("man", 1)] * 9
+    engine.draw_tile(caller)
+    engine.call_kan(caller, [tile] * 4)
+    engine.pop_events()
+    with pytest.raises(ValueError):
+        engine.draw_tile(caller)
 
 
 def test_start_kyoku_resets_state_and_emits_event() -> None:
@@ -303,6 +360,7 @@ def test_ryukyoku_event_on_wall_empty() -> None:
     engine.pop_events()  # clear initial events
     assert engine.state.wall is not None
     engine.state.wall.tiles = [Tile("man", 1)]
+    engine.state.players[0].hand.tiles.pop()
     engine.draw_tile(0)
     events = engine.pop_events()
     names = [e.name for e in events]

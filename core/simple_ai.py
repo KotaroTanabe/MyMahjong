@@ -14,19 +14,17 @@ from .rules import _tile_to_index
 def tsumogiri_turn(engine: MahjongEngine, player_index: int) -> Tile:
     """Play a full turn by discarding the drawn tile.
 
-    If the player has already drawn (hand size >= 14), simply discard the last
-    tile instead of drawing again. This allows enabling AI mid-turn.
+    The AI only draws when the player has just discarded (hand size modulo 3
+    equals 1). After calling melds the hand size will not satisfy this
+    condition so no extra draw occurs.
     """
 
     player = engine.state.players[player_index]
-    if len(player.hand.tiles) >= 14:
+    if len(player.hand.tiles) % 3 == 1:
+        tile = engine.draw_tile(player_index)
+    else:
         tile = player.hand.tiles[-1]
-        engine.discard_tile(player_index, tile)
-        return tile
-
-    tile = engine.draw_tile(player_index)
-    if tile in player.hand.tiles:
-        engine.discard_tile(player_index, tile)
+    engine.discard_tile(player_index, tile)
     return tile
 
 
@@ -63,7 +61,7 @@ def shanten_turn(engine: MahjongEngine, player_index: int) -> Tile:
     """Play a turn by discarding a shanten-neutral tile."""
 
     player = engine.state.players[player_index]
-    if len(player.hand.tiles) < 14:
+    if len(player.hand.tiles) % 3 == 1:
         engine.draw_tile(player_index)
     tile = suggest_discard(player.hand.tiles)
     engine.discard_tile(player_index, tile)

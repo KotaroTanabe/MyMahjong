@@ -209,12 +209,14 @@ class MahjongEngine:
             raise ValueError("Waiting for other players to claim discard")
         if player_index != self.state.current_player:
             raise ValueError("Not player's turn")
+        player = self.state.players[player_index]
+        if len(player.hand.tiles) % 3 != 1:
+            raise ValueError("Cannot draw before discarding")
         self._check_four_winds()
         assert self.state.wall is not None
         tile = self.state.wall.draw_tile()
-        self.state.players[player_index].draw(tile)
+        player.draw(tile)
         self._emit("draw_tile", {"player_index": player_index, "tile": tile})
-        player = self.state.players[player_index]
         if len(player.river) == 0 and not player.hand.melds:
             self._check_nine_terminals(player)
         if self.state.wall.remaining_tiles == 0:

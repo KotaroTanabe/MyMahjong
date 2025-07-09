@@ -7,6 +7,7 @@ def test_apply_action_draw_discard() -> None:
     assert state.wall is not None
     tile = models.Tile(suit="sou", value=9)
     state.wall.tiles.append(tile)
+    state.players[0].hand.tiles.pop()
     draw = models.GameAction(type="draw", player_index=0)
     result = api.apply_action(draw)
     assert result == tile

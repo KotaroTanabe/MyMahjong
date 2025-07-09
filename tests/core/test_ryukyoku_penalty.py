@@ -13,6 +13,7 @@ def test_ryukyoku_noten_penalty() -> None:
     engine._is_tenpai = fake_is_tenpai  # type: ignore
     assert engine.state.wall is not None
     engine.state.wall.tiles = [Tile("man", 1)]
+    engine.state.players[engine.state.current_player].hand.tiles.pop()
     engine.draw_tile(engine.state.current_player)
     events = engine.pop_events()
     ryukyoku = next(e for e in events if e.name == "ryukyoku")

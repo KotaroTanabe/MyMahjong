@@ -5,6 +5,7 @@ from core.mahjong_engine import MahjongEngine
 def test_draw_advances_turn() -> None:
     engine = MahjongEngine()
     current = engine.state.current_player
+    engine.state.players[current].hand.tiles.pop()
     engine.draw_tile(current)
     assert engine.state.current_player == current
 

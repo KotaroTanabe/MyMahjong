@@ -20,6 +20,7 @@ def test_draw_and_discard() -> None:
     assert state.wall is not None
     tile = models.Tile(suit="sou", value=9)
     state.wall.tiles.append(tile)
+    state.players[0].hand.tiles.pop()
     drawn = api.draw_tile(0)
     assert drawn == tile
     api.discard_tile(0, tile)
