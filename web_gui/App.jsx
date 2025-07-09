@@ -143,8 +143,12 @@ export default function App() {
         return;
       }
       if (evt.name !== 'next_actions' && gameId) {
-        logNextActions(server, gameId, log, (line) =>
-          setEvents((evts) => [...evts.slice(-9), line]),
+        logNextActions(
+          server,
+          gameId,
+          log,
+          (line) => setEvents((evts) => [...evts.slice(-9), line]),
+          { requestId: 'ws' },
         );
       }
     } catch {
