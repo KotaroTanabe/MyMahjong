@@ -16,6 +16,7 @@ export default function GameBoard({
   sortHand = false,
   log = () => {},
   allowedActions = [[], [], [], []],
+  aiDelay = 0,
 }) {
   const players = state?.players ?? [];
   const south = players[0];
@@ -33,6 +34,21 @@ export default function GameBoard({
   // Players 1-3 (west, north, east) act as AI by default
   const [aiPlayers, setAiPlayers] = useState([false, true, true, true]);
   const [aiTypes] = useState(["simple", "simple", "simple", "simple"]);
+
+  function sendAction(body, delay = false) {
+    const url = `${server.replace(/\/$/, "")}/games/${gameId}/action`;
+    const fn = () =>
+      fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      }).catch(() => {});
+    if (delay && aiDelay > 0) {
+      setTimeout(fn, aiDelay);
+    } else {
+      fn();
+    }
+  }
 
   function toggleAI(idx) {
     const enable = !aiPlayers[idx];
@@ -53,15 +69,10 @@ export default function GameBoard({
         "debug",
         `POST /games/${gameId}/action discard - enable AI autoplays`,
       );
-      fetch(`${server.replace(/\/$/, "")}/games/${gameId}/action`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          player_index: idx,
-          action: "discard",
-          tile,
-        }),
-      }).catch(() => {});
+      sendAction(
+        { player_index: idx, action: "discard", tile },
+        true,
+      );
     }
   }
 
@@ -93,11 +104,7 @@ export default function GameBoard({
             ai_type: aiTypes[idx],
           };
           log("debug", `POST /games/${gameId}/action auto - resolve claims`);
-          fetch(`${server.replace(/\/$/, "")}/games/${gameId}/action`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body),
-          }).catch(() => {});
+          sendAction(body, true);
         } else if (
           allowedActions[idx]?.length === 1 &&
           allowedActions[idx][0] === "skip" &&
@@ -105,11 +112,7 @@ export default function GameBoard({
         ) {
           const body = { player_index: idx, action: "skip" };
           log("debug", `POST /games/${gameId}/action skip - auto skip`);
-          fetch(`${server.replace(/\/$/, "")}/games/${gameId}/action`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body),
-          }).catch(() => {});
+          sendAction(body);
           skipSent.current.add(idx);
         }
       });
@@ -133,11 +136,7 @@ export default function GameBoard({
         "debug",
         `POST /games/${gameId}/action ${action} - next player action`,
       );
-      fetch(`${server.replace(/\/$/, "")}/games/${gameId}/action`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      }).catch(() => {});
+      sendAction(body, action === "auto");
     } else if (count % 3 === 2 && aiPlayers[current] && drew) {
       const body = {
         player_index: current,
@@ -145,11 +144,7 @@ export default function GameBoard({
         ai_type: aiTypes[current],
       };
       log("debug", "POST /games/" + gameId + "/action auto - auto discard");
-      fetch(`${server.replace(/\/$/, "")}/games/${gameId}/action`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      }).catch(() => {});
+      sendAction(body, true);
       lastDrawPlayer.current = null;
     }
   }, [
