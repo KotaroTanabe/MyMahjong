@@ -15,5 +15,6 @@ def test_basic_classes() -> None:
     tile = models.Tile(suit="man", value=1)
     assert engine.state.wall is not None
     engine.state.wall.tiles.append(tile)
+    engine.state.players[0].hand.tiles.pop()
     drawn = engine.draw_tile(0)
     assert drawn == tile

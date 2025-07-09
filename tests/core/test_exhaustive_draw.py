@@ -81,28 +81,24 @@ def test_four_winds_triggers_ryukyoku() -> None:
     engine.skip(1)
     engine.skip(2)
     engine.skip(3)
-    engine.draw_tile(1)
     engine.state.players[1].hand.tiles[-1] = Tile("wind", 1)
     east1 = engine.state.players[1].hand.tiles[-1]
     engine.discard_tile(1, east1)
     engine.skip(2)
     engine.skip(3)
     engine.skip(0)
-    engine.draw_tile(2)
     engine.state.players[2].hand.tiles[-1] = Tile("wind", 1)
     east2 = engine.state.players[2].hand.tiles[-1]
     engine.discard_tile(2, east2)
     engine.skip(3)
     engine.skip(0)
     engine.skip(1)
-    engine.draw_tile(3)
     engine.state.players[3].hand.tiles[-1] = Tile("wind", 1)
     east3 = engine.state.players[3].hand.tiles[-1]
     engine.discard_tile(3, east3)
     engine.skip(0)
     engine.skip(1)
     engine.skip(2)
-    engine.draw_tile(0)
     events = engine.pop_events()
     assert any(
         e.name == "ryukyoku" and e.payload.get("reason") == "four_winds"

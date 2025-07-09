@@ -63,6 +63,9 @@ def test_get_events_endpoint() -> None:
 
 def test_draw_action_endpoint() -> None:
     client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    from core import api
+    assert api._engine is not None
+    api._engine.state.players[0].hand.tiles.pop()
     resp = client.post(
         "/games/1/action",
         json={"player_index": 0, "action": "draw"},
@@ -75,6 +78,10 @@ def test_draw_action_endpoint() -> None:
 def test_discard_action_endpoint() -> None:
     client.post("/games", json={"players": ["A", "B", "C", "D"]})
     state = api.get_state()
+    assert api._engine is not None
+    api._engine.state.players[state.current_player].hand.tiles = [
+        models.Tile("man", 1)
+    ] * 13
     draw = client.post(
         "/games/1/action",
         json={"player_index": state.current_player, "action": "draw"},
@@ -216,6 +223,10 @@ def test_additional_action_endpoints() -> None:
     assert resp.status_code == 409
 
     state = api.get_state()
+    assert api._engine is not None
+    api._engine.state.players[state.current_player].hand.tiles = [
+        models.Tile("man", 1)
+    ]
     draw = client.post(
         "/games/1/action",
         json={"player_index": state.current_player, "action": "draw"},
@@ -240,6 +251,7 @@ def test_draw_from_empty_wall_returns_error() -> None:
     from core import api
     assert api._engine is not None
     api._engine.state.wall.tiles = []  # type: ignore[list]
+    api._engine.state.players[0].hand.tiles.pop()
     resp = client.post(
         "/games/1/action",
         json={"player_index": 0, "action": "draw"},
@@ -257,6 +269,9 @@ def test_websocket_streams_events() -> None:
         assert data["name"] == "start_game"
         data = ws.receive_json()
         assert data["name"] == "start_kyoku"
+        from core import api
+        assert api._engine is not None
+        api._engine.state.players[0].hand.tiles.pop()
         client.post(
             "/games/1/action",
             json={"player_index": 0, "action": "draw"},
