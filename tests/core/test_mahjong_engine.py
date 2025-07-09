@@ -293,3 +293,17 @@ def test_ryukyoku_event_on_wall_empty() -> None:
     events = engine.pop_events()
     names = [e.name for e in events]
     assert "ryukyoku" in names
+
+
+def test_start_kyoku_clears_previous_discard_state() -> None:
+    engine = MahjongEngine()
+    engine.pop_events()  # clear initial events
+    discard = engine.state.players[0].hand.tiles[-1]
+    engine.discard_tile(0, discard)
+    assert engine.state.waiting_for_claims
+    engine.start_kyoku(dealer=1, round_number=2)
+    engine.pop_events()  # clear start_kyoku event
+    assert engine.state.current_player == 1
+    assert engine.state.last_discard is None
+    assert engine.state.last_discard_player is None
+    assert engine.state.waiting_for_claims == []
