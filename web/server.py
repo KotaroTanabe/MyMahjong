@@ -254,19 +254,31 @@ def game_action(game_id: int, req: ActionRequest) -> dict:
         return asdict(tile)
     if req.action == "discard" and req.tile:
         tile = models.Tile(**req.tile)
-        api.discard_tile(req.player_index, tile)
+        try:
+            api.discard_tile(req.player_index, tile)
+        except ValueError as err:
+            raise HTTPException(status_code=409, detail=str(err))
         return {"status": "ok"}
     if req.action == "chi" and req.tiles:
         tiles = [models.Tile(**t) for t in req.tiles]
-        api.call_chi(req.player_index, tiles)
+        try:
+            api.call_chi(req.player_index, tiles)
+        except ValueError as err:
+            raise HTTPException(status_code=409, detail=str(err))
         return {"status": "ok"}
     if req.action == "pon" and req.tiles:
         tiles = [models.Tile(**t) for t in req.tiles]
-        api.call_pon(req.player_index, tiles)
+        try:
+            api.call_pon(req.player_index, tiles)
+        except ValueError as err:
+            raise HTTPException(status_code=409, detail=str(err))
         return {"status": "ok"}
     if req.action == "kan" and req.tiles:
         tiles = [models.Tile(**t) for t in req.tiles]
-        api.call_kan(req.player_index, tiles)
+        try:
+            api.call_kan(req.player_index, tiles)
+        except ValueError as err:
+            raise HTTPException(status_code=409, detail=str(err))
         return {"status": "ok"}
     if req.action == "riichi":
         try:
@@ -276,14 +288,23 @@ def game_action(game_id: int, req: ActionRequest) -> dict:
         return {"status": "ok"}
     if req.action == "tsumo" and req.tile:
         tile = models.Tile(**req.tile)
-        result = api.declare_tsumo(req.player_index, tile)
+        try:
+            result = api.declare_tsumo(req.player_index, tile)
+        except ValueError as err:
+            raise HTTPException(status_code=409, detail=str(err))
         return result.__dict__
     if req.action == "ron" and req.tile:
         tile = models.Tile(**req.tile)
-        result = api.declare_ron(req.player_index, tile)
+        try:
+            result = api.declare_ron(req.player_index, tile)
+        except ValueError as err:
+            raise HTTPException(status_code=409, detail=str(err))
         return result.__dict__
     if req.action == "skip":
-        api.skip(req.player_index)
+        try:
+            api.skip(req.player_index)
+        except ValueError as err:
+            raise HTTPException(status_code=409, detail=str(err))
         return {"status": "ok"}
     if req.action == "auto":
         ai_type = req.ai_type or "simple"
