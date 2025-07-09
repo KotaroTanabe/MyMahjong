@@ -206,7 +206,9 @@ export default function GameBoard({
   const southTiles = south?.hand?.tiles ?? null;
   const southHand = southTiles
     ? sortHand
-      ? sortTilesExceptLast(southTiles)
+      ? hasDrawnTile(south, 0)
+        ? sortTilesExceptLast(southTiles)
+        : sortTiles(southTiles)
       : southTiles
     : defaultHand;
 
