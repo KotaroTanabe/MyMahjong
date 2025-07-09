@@ -105,6 +105,7 @@ Future work will expand these components.
 - [x] Error modal shows server rejection
 - [x] Chi option modal when multiple chi choices are available
 - [x] Cancel in-flight allowed actions requests
+- [x] Cancel in-flight next actions requests
 - [x] Download Tenhou log
 - [x] Download MJAI log
 - [x] 何切る問題 mode

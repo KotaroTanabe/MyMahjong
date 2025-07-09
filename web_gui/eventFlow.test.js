@@ -9,8 +9,24 @@ describe('logNextActions', () => {
     global.fetch = fetchMock;
     const events = [];
     const log = vi.fn((l, m) => events.push(`[${l}] ${m}`));
-    await logNextActions('http://s', '1', log, (line) => events.push(line));
-    expect(fetchMock).toHaveBeenCalledWith('http://s/games/1/next-actions');
+    await logNextActions('http://s', '1', log, (line) => events.push(line), { requestId: 'n' });
+    expect(fetchMock.mock.calls[0][0]).toBe('http://s/games/1/next-actions');
     expect(events.pop()).toContain('next_actions');
+  });
+
+  it('aborts previous request with same id', async () => {
+    let aborted = false;
+    const fetchMock = vi.fn((url, opts) => {
+      opts.signal.addEventListener('abort', () => {
+        aborted = true;
+      });
+      return new Promise(() => {});
+    });
+    global.fetch = fetchMock;
+    logNextActions('http://s', '1', () => {}, () => {}, { requestId: 'n' });
+    await Promise.resolve();
+    logNextActions('http://s', '1', () => {}, () => {}, { requestId: 'n' });
+    await Promise.resolve();
+    expect(aborted).toBe(true);
   });
 });

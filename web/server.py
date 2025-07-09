@@ -210,9 +210,17 @@ def next_actions(game_id: int) -> dict:
     except AssertionError:
         raise HTTPException(status_code=404, detail="Game not started")
     if api._engine is not None:
-        evt = GameEvent(name="next_actions", payload={"player_index": idx, "actions": actions})
-        api._engine.events.append(evt)
-        api._engine.event_history.append(evt)
+        payload = {"player_index": idx, "actions": actions}
+        last = api._engine.event_history[-1] if api._engine.event_history else None
+        if (
+            last is None
+            or last.name != "next_actions"
+            or last.payload.get("player_index") != idx
+            or last.payload.get("actions") != actions
+        ):
+            evt = GameEvent(name="next_actions", payload=payload)
+            api._engine.events.append(evt)
+            api._engine.event_history.append(evt)
     return {"player_index": idx, "actions": actions}
 
 

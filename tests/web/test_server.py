@@ -333,6 +333,19 @@ def test_next_actions_endpoint_logs_event() -> None:
     assert any(e.name == "next_actions" for e in events)
 
 
+def test_next_actions_endpoint_deduplicates_events() -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    api.pop_events()
+    resp1 = client.get("/games/1/next-actions")
+    assert resp1.status_code == 200
+    events = api.pop_events()
+    assert sum(1 for e in events if e.name == "next_actions") == 1
+    resp2 = client.get("/games/1/next-actions")
+    assert resp2.status_code == 200
+    events = api.pop_events()
+    assert not any(e.name == "next_actions" for e in events)
+
+
 def test_action_rejected_when_not_allowed() -> None:
     client.post("/games", json={"players": ["A", "B", "C", "D"]})
     resp = client.post(
