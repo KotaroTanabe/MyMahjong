@@ -27,9 +27,10 @@ def _hand_response_dict(resp: HandResponse) -> dict[str, Any]:
 class MahjongEngine:
     """Simplified engine that wraps the `mahjong` library."""
 
-    def __init__(self, ruleset: RuleSet | None = None) -> None:
+    def __init__(self, ruleset: RuleSet | None = None, *, max_rounds: int = 8) -> None:
         self.ruleset: RuleSet = ruleset or StandardRuleSet()
         self.state = GameState(wall=Wall())
+        self.state.max_rounds = max_rounds
         self.state.players = [Player(name=f"Player {i}") for i in range(4)]
         self.state.current_player = 0
         self.events: list[GameEvent] = []
@@ -573,7 +574,7 @@ class MahjongEngine:
             self.state.dealer = (self.state.dealer + 1) % len(self.state.players)
             self.state.round_number += 1
 
-        if self.state.round_number > 8:
+        if self.state.round_number > self.state.max_rounds:
             self.end_game()
         else:
             self.start_kyoku(self.state.dealer, self.state.round_number)

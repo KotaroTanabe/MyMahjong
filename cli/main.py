@@ -13,16 +13,17 @@ def cli() -> None:
 @cli.command()
 @click.argument("players", nargs=-1)
 @click.option("--server", "server", "-s", help="Base URL of remote server")
-def start(players: tuple[str, ...], server: str | None) -> None:
+@click.option("--max-rounds", type=int, default=8, help="Number of rounds to play")
+def start(players: tuple[str, ...], server: str | None, max_rounds: int) -> None:
     """Start a game with the given PLAYERS."""
     if not players:
         players = ("You", "AI1", "AI2", "AI3")
     if server:
-        data = remote_game.create_game(server, list(players))
+        data = remote_game.create_game(server, list(players), max_rounds=max_rounds)
         names = ", ".join(p["name"] for p in data.get("players", []))
         click.echo(f"Remote game created with players: {names}")
         return
-    run_game(list(players))
+    run_game(list(players), max_rounds=max_rounds)
 
 
 @cli.command()

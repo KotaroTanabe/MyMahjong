@@ -26,6 +26,7 @@ class CreateGameRequest(BaseModel):
     """Request body for creating a new game."""
 
     players: list[str]
+    max_rounds: int | None = None
 
 
 class SuggestRequest(BaseModel):
@@ -44,7 +45,10 @@ def health() -> dict[str, str]:
 def create_game(req: CreateGameRequest) -> dict:
     """Create a new game and return its id and state."""
     global _next_game_id
-    state = api.start_game(req.players)
+    if req.max_rounds is not None:
+        state = api.start_game(req.players, max_rounds=req.max_rounds)
+    else:
+        state = api.start_game(req.players)
     game_id = _next_game_id
     _next_game_id += 1
     return {"id": game_id, **asdict(state)}

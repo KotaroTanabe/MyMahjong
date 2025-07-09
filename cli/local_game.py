@@ -6,9 +6,9 @@ import click
 from core import api
 
 
-def run_game(players: list[str]) -> None:
+def run_game(players: list[str], *, max_rounds: int = 8) -> None:
     """Run an automated local game."""
-    state = api.start_game(players)
+    state = api.start_game(players, max_rounds=max_rounds)
     players_display = ', '.join(p.name for p in state.players)
     click.echo(f"Game started with players: {players_display}")
     start_round = state.round_number
