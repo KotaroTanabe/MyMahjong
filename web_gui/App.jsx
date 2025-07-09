@@ -133,7 +133,12 @@ export default function App() {
       setGameData((prev) => {
         const nextState = applyEvent(prev.state, evt);
         const next = { ...prev, state: nextState };
-        if (evt.name === 'tsumo' || evt.name === 'ron' || evt.name === 'ryukyoku') {
+        if (
+          evt.name === 'tsumo' ||
+          evt.name === 'ron' ||
+          evt.name === 'ryukyoku' ||
+          evt.name === 'start_kyoku'
+        ) {
           next.allowed = [[], [], [], []];
         }
         setEvents((evts) => {
