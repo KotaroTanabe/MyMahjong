@@ -143,6 +143,7 @@ Future work will expand these components.
 - [x] current player tracking
 - [x] Wait for all players to skip before next draw
 - [x] `claims_closed` event emitted when the claim window ends
+- [x] `round_end` event emitted between hands
 - [x] Enforce tsumogiri after riichi
 - [x] Riichi event includes player score and stick count
 - [x] Validate closed-hand tenpai requirement for riichi

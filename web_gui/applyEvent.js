@@ -88,6 +88,8 @@ export function applyEvent(state, event) {
       newState.result = { type: 'ryukyoku', ...event.payload };
       break;
     }
+    case 'round_end':
+      break;
     case 'claims_closed':
       newState.waiting_for_claims = [];
       break;
