@@ -226,6 +226,7 @@ def test_event_log() -> None:
         "discard",
         "riichi",
         "tsumo",
+        "round_end",
         "start_kyoku",
         "end_game",
     ]

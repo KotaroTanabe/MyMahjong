@@ -576,6 +576,13 @@ class MahjongEngine:
         if self.state.round_number > 8:
             self.end_game()
         else:
+            self._emit(
+                "round_end",
+                {
+                    "next_dealer": self.state.dealer,
+                    "next_round": self.state.round_number,
+                },
+            )
             self.start_kyoku(self.state.dealer, self.state.round_number)
 
     def end_game(self) -> GameState:

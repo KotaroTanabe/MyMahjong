@@ -56,6 +56,7 @@ translate them directly.
 | `tsumo`            | `player_index`, `HandResponse`, scores  | Self-drawn win. |
 | `ron`              | `player_index`, `HandResponse`, scores  | Win on discard. |
 | `ryukyoku`         | reason                                  | Hand ends in draw. |
+| `round_end`        | next dealer and round                   | Fired before the next hand begins. |
 | `end_game`         | final scores                            | Sent after the last hand. |
 
 Front ends are expected to update their displays or AI processes whenever an
