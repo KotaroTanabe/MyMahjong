@@ -23,5 +23,6 @@ def run_game(players: list[str]) -> None:
         name = state.players[player_index].name
         tile = api.auto_play_turn()
         click.echo(f"{name} drew {tile.suit}{tile.value} and discarded it")
-    api.end_game()
+    if not api.is_game_over():
+        api.end_game()
     click.echo("Game ended")

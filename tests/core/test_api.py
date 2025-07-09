@@ -66,6 +66,13 @@ def test_end_game_creates_new_state() -> None:
     assert new_state is not state
 
 
+def test_is_game_over() -> None:
+    api.start_game(["A", "B", "C", "D"])
+    assert not api.is_game_over()
+    api.end_game()
+    assert api.is_game_over()
+
+
 def test_declare_riichi_api() -> None:
     state = api.start_game(["A", "B", "C", "D"])
     player = state.players[0]

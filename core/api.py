@@ -153,6 +153,12 @@ def end_game() -> GameState:
     return _engine.end_game()
 
 
+def is_game_over() -> bool:
+    """Return True if the current game has ended."""
+    assert _engine is not None, "Game not started"
+    return _engine.is_game_over
+
+
 def pop_events() -> list[GameEvent]:
     """Retrieve and clear pending engine events."""
     assert _engine is not None, "Game not started"
