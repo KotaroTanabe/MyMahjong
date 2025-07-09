@@ -10,9 +10,17 @@ export function applyEvent(state, event) {
     case 'draw_tile': {
       const p = newState.players[event.payload.player_index];
       if (p) p.hand.tiles.push(event.payload.tile);
-      if (!event.payload.from_dead_wall && newState.wall?.tiles?.length) {
+      const replacement =
+        event.payload.replacement_for_kan ||
+        newState._pendingKanReplacement === true;
+      if (replacement) {
+        if (Array.isArray(newState.dead_wall) && newState.dead_wall.length) {
+          newState.dead_wall.pop();
+        }
+      } else if (!event.payload.from_dead_wall && newState.wall?.tiles?.length) {
         newState.wall.tiles.pop();
       }
+      newState._pendingKanReplacement = false;
       break;
     }
     case 'discard': {
@@ -55,6 +63,9 @@ export function applyEvent(state, event) {
       newState.last_discard_player = null;
       newState.current_player = event.payload.player_index;
       newState.waiting_for_claims = [];
+      if (event.payload.meld?.type?.includes('kan')) {
+        newState._pendingKanReplacement = true;
+      }
       break;
     }
     case 'riichi': {
