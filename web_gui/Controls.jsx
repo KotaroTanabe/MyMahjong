@@ -22,7 +22,10 @@ export function Controls({
 
   async function simple(action, payload = {}) {
     try {
-      log('debug', `POST /games/${gameId}/action ${action} - control button`);
+      log(
+        'debug',
+        `POST /games/${gameId}/action ${action} ${JSON.stringify(payload)} - control button`,
+      );
       const resp = await fetch(`${server.replace(/\/$/, '')}/games/${gameId}/action`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -75,7 +78,9 @@ export function Controls({
   }
 
   function pon() {
-    simple('pon', { tiles: [{ suit: 'pin', value: 1 }, { suit: 'pin', value: 1 }, { suit: 'pin', value: 1 }] });
+    if (!lastDiscard) return;
+    const tile = { suit: lastDiscard.suit, value: lastDiscard.value };
+    simple('pon', { tiles: [tile, tile, tile] });
   }
 
   function kan() {
