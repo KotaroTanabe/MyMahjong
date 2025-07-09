@@ -127,6 +127,14 @@ export default function App() {
         });
         return next;
       });
+      if (
+        evt.name === 'tsumo' ||
+        evt.name === 'ron' ||
+        evt.name === 'ryukyoku'
+      ) {
+        setAllowedActions([[], [], [], []]);
+        return;
+      }
       if (evt.name !== 'next_actions' && gameId) {
         logNextActions(server, gameId, log, (line) =>
           setEvents((evts) => [...evts.slice(-9), line]),
