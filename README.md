@@ -70,6 +70,7 @@ Future work will expand these components.
 - [x] GUI follows next actions from core
 - [x] Meld and win actions via GUI
 - [x] Start game via GUI
+- [x] Start round via API
 - [x] Simple shanten-based AI for automated turns (discards tiles that keep shanten and calls pon/chi when it improves the hand)
 - [x] Toggle AI per player from GUI
 - [x] AI type selection framework (currently only 'simple')

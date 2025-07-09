@@ -390,3 +390,24 @@ def test_action_succeeds_when_allowed() -> None:
     )
     assert resp.status_code == 200
 
+
+def test_start_kyoku_endpoint_and_ws() -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    with client.websocket_connect("/ws/1") as ws:
+        ws.receive_json()  # allowed_actions
+        ws.receive_json()  # start_game
+        ws.receive_json()  # start_kyoku for first hand
+
+        resp = client.post(
+            "/games/1/start-kyoku",
+            json={"dealer": 1, "round": 2},
+        )
+        assert resp.status_code == 200
+        state = api.get_state()
+        assert state.dealer == 1
+        assert state.round_number == 2
+        data = ws.receive_json()
+        assert data["name"] == "start_kyoku"
+        assert data["payload"]["dealer"] == 1
+        assert data["payload"]["round"] == 2
+

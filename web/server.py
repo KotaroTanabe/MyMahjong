@@ -13,6 +13,7 @@ from core.models import GameEvent
 app = FastAPI()
 # very small in-memory id tracker until multi-game support exists
 _next_game_id = 1
+_ws_connections: set[WebSocket] = set()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -33,6 +34,13 @@ class SuggestRequest(BaseModel):
     """Request body for AI discard suggestion."""
 
     hand: list[dict]
+
+
+class StartKyokuRequest(BaseModel):
+    """Request body for starting a new hand."""
+
+    dealer: int
+    round: int
 
 
 @app.get("/health")
@@ -224,6 +232,32 @@ def next_actions(game_id: int) -> dict:
     return {"player_index": idx, "actions": actions}
 
 
+@app.post("/games/{game_id}/start-kyoku")
+async def start_kyoku_route(game_id: int, req: StartKyokuRequest) -> dict:
+    """Start a new hand and notify connected clients."""
+
+    _ = game_id  # placeholder for future multi-game support
+    try:
+        state = api.start_kyoku(req.dealer, req.round)
+    except AssertionError:
+        raise HTTPException(status_code=404, detail="Game not started")
+
+    event = {
+        "name": "start_kyoku",
+        "payload": {
+            "dealer": req.dealer,
+            "round": req.round,
+            "state": asdict(state),
+        },
+    }
+    for ws in list(_ws_connections):
+        try:
+            await ws.send_json(event)
+        except Exception:
+            pass
+    return event
+
+
 class ActionRequest(BaseModel):
     """Request body for game actions."""
 
@@ -301,6 +335,7 @@ async def game_events(websocket: WebSocket, game_id: int) -> None:
     """Stream game events to the client."""
     _ = game_id  # placeholder for future multi-game support
     await websocket.accept()
+    _ws_connections.add(websocket)
     prev_actions: list[list[str]] | None = None
     try:
         # send initial allowed actions if a game is running
@@ -332,3 +367,5 @@ async def game_events(websocket: WebSocket, game_id: int) -> None:
             await asyncio.sleep(0.1)
     except WebSocketDisconnect:
         pass
+    finally:
+        _ws_connections.discard(websocket)
