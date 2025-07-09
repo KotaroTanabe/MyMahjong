@@ -170,11 +170,13 @@ TENPAI_TILES = [
 ]
 
 
-def test_allowed_actions_include_riichi_when_tenpai() -> None:
+def test_allowed_actions_offer_riichi_after_discard() -> None:
     state = api.start_game(["A", "B", "C", "D"])
     state.players[0].hand.tiles = TENPAI_TILES.copy()
+    discard = state.players[0].hand.tiles[-1]
+    api.discard_tile(0, discard)
     actions = api.get_allowed_actions(0)
-    assert "riichi" in actions
+    assert actions == ["riichi", "skip"]
 
 
 def test_allowed_actions_exclude_riichi_when_not_tenpai() -> None:
@@ -187,5 +189,7 @@ def test_allowed_actions_exclude_riichi_when_not_tenpai() -> None:
         models.Tile("sou", 4), models.Tile("sou", 6),
     ]
     state.players[0].hand.tiles = tiles
+    discard = state.players[0].hand.tiles[-1]
+    api.discard_tile(0, discard)
     actions = api.get_allowed_actions(0)
     assert "riichi" not in actions
