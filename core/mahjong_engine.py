@@ -566,6 +566,9 @@ class MahjongEngine:
     def advance_hand(self, winner_index: int | None = None) -> None:
         """Move to the next hand and handle dealer rotation."""
         self._invalidate_cache()
+        if any(p.score <= 0 for p in self.state.players):
+            self.end_game("bankruptcy")
+            return
         if winner_index is None or winner_index == self.state.dealer:
             self.state.honba += 1
         else:
@@ -578,12 +581,15 @@ class MahjongEngine:
         else:
             self.start_kyoku(self.state.dealer, self.state.round_number)
 
-    def end_game(self) -> GameState:
+    def end_game(self, reason: str | None = None) -> GameState:
         """Reset the engine and return the final state."""
         self._invalidate_cache()
         final_state = self.state
         scores = [p.score for p in final_state.players]
-        self._emit("end_game", {"scores": scores})
+        payload: dict[str, Any] = {"scores": scores}
+        if reason is not None:
+            payload["reason"] = reason
+        self._emit("end_game", payload)
         self.state = GameState(wall=Wall())
         wall = self.state.wall
         assert wall is not None

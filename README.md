@@ -132,6 +132,7 @@ Future work will expand these components.
 - [x] end_game
 - [x] start_kyoku
 - [x] ryukyoku detection
+- [x] Game ends on bankruptcy (score ≤ 0)
 - [x] Noten penalty scoring on draws
 - [x] Draw result modal in GUI
 - [x] Win result modal in GUI

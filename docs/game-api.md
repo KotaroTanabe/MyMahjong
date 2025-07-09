@@ -56,7 +56,9 @@ translate them directly.
 | `tsumo`            | `player_index`, `HandResponse`, scores  | Self-drawn win. |
 | `ron`              | `player_index`, `HandResponse`, scores  | Win on discard. |
 | `ryukyoku`         | reason                                  | Hand ends in draw. |
-| `end_game`         | final scores                            | Sent after the last hand. |
+| `end_game`         | final scores, reason                    | Sent after the last hand or on bankruptcy. |
+
+If a player's score drops to zero or below, the reason will be `"bankruptcy"` and the game ends immediately.
 
 Front ends are expected to update their displays or AI processes whenever an
 event is received.  The low level transport (function call, WebSocket, etc.) is
