@@ -173,9 +173,10 @@ def get_mjai_log() -> str:
     assert _engine is not None, "Game not started"
     import json
     from dataclasses import asdict, is_dataclass
+    from typing import Any, Mapping, cast
 
-    def encode(obj: object) -> object:
-        if is_dataclass(obj):
+    def encode(obj: Any) -> Any:
+        if is_dataclass(obj) and not isinstance(obj, type):
             return {k: encode(v) for k, v in asdict(obj).items()}
         if isinstance(obj, dict):
             return {k: encode(v) for k, v in obj.items()}
@@ -186,7 +187,10 @@ def get_mjai_log() -> str:
     history = _engine.get_event_history()
     lines = []
     for e in history:
-        payload = {"type": e.name, **encode(e.payload)}
+        payload = {
+            "type": e.name,
+            **cast(Mapping[str, Any], encode(e.payload)),
+        }
         lines.append(json.dumps(payload, ensure_ascii=False))
     return "\n".join(lines)
 
