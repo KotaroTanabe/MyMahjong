@@ -316,12 +316,19 @@ def game_action(game_id: int, req: ActionRequest) -> dict:
         except ValueError as err:
             raise HTTPException(status_code=409, detail=str(err))
         return {"status": "ok"}
-    if req.action == "riichi":
+    if req.action == "riichi" and req.tile:
+        tile = models.Tile(**req.tile)
+        try:
+            api.discard_tile(req.player_index, tile)
+        except ValueError as err:
+            raise HTTPException(status_code=409, detail=str(err))
         try:
             api.declare_riichi(req.player_index)
         except ValueError as e:
             raise HTTPException(status_code=409, detail=str(e))
         return {"status": "ok"}
+    if req.action == "riichi":
+        raise HTTPException(status_code=409, detail="Tile required")
     if req.action == "tsumo" and req.tile:
         tile = models.Tile(**req.tile)
         try:

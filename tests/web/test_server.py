@@ -218,7 +218,7 @@ def test_additional_action_endpoints() -> None:
 
     resp = client.post(
         "/games/1/action",
-        json={"player_index": 0, "action": "riichi"},
+        json={"player_index": 0, "action": "riichi", "tile": {"suit": "man", "value": 1}},
     )
     assert resp.status_code == 409
 
@@ -558,6 +558,30 @@ def test_kan_invalid_tiles_returns_409() -> None:
         },
     )
     assert resp.status_code == 409
+
+
+def test_riichi_action_discards_and_flags_player() -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    state = api.get_state()
+    tiles = [
+        models.Tile("man", 1), models.Tile("man", 1),
+        models.Tile("man", 2), models.Tile("man", 2),
+        models.Tile("man", 3), models.Tile("man", 3),
+        models.Tile("pin", 4), models.Tile("pin", 4),
+        models.Tile("pin", 5), models.Tile("pin", 5),
+        models.Tile("sou", 6), models.Tile("sou", 6),
+        models.Tile("sou", 7), models.Tile("sou", 8),
+    ]
+    player = state.players[state.current_player]
+    player.hand.tiles = tiles.copy()
+    tile = player.hand.tiles[-1]
+    resp = client.post(
+        "/games/1/action",
+        json={"player_index": state.current_player, "action": "riichi", "tile": tile.__dict__},
+    )
+    assert resp.status_code == 200
+    assert player.riichi
+    assert tile in player.river
 def test_start_kyoku_endpoint_and_ws() -> None:
     client.post("/games", json={"players": ["A", "B", "C", "D"]})
     with client.websocket_connect("/ws/1") as ws:

@@ -133,6 +133,7 @@ Future work will expand these components.
 - [x] declare_tsumo
 - [x] declare_ron
 - [x] declare_riichi
+- [x] riichi action discards and declares in one step
 - [x] skip
 - [x] end_game
 - [x] start_kyoku
