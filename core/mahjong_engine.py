@@ -724,6 +724,25 @@ class MahjongEngine:
                 if has(last.value + 1) and has(last.value + 2):
                     actions.add("chi")
 
+            # Ron check - temporarily add discard to hand and evaluate
+            player.hand.tiles.append(last)
+            try:
+                result = self.ruleset.calculate_score(
+                    player.hand.tiles,
+                    player.hand.melds,
+                    last,
+                    is_tsumo=False,
+                )
+            except Exception:
+                result = None
+            finally:
+                player.hand.tiles.pop()
+            if result and (
+                (result.cost and result.cost.get("total", 0) > 0) or
+                (result.han is not None and result.han > 0)
+            ):
+                actions.add("ron")
+
         counts: dict[tuple[str, int], int] = {}
         for t in tiles:
             key = (t.suit, t.value)
