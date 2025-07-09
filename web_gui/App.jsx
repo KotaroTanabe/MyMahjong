@@ -18,9 +18,13 @@ export default function App() {
   const [connectionStatus, setConnectionStatus] = useState(null);
   const [players, setPlayers] = useState('A,B,C,D');
   const [gameId, setGameId] = useState(() => localStorage.getItem('gameId') || '');
-  const [gameState, setGameState] = useState(null);
+  const [gameData, setGameData] = useState({
+    state: null,
+    allowed: [[], [], [], []],
+  });
+  const gameState = gameData.state;
+  const allowedActions = gameData.allowed;
   const [events, setEvents] = useState([]);
-  const [allowedActions, setAllowedActions] = useState([[], [], [], []]);
   function log(level, message) {
     setEvents((evts) => [...evts.slice(-19), `[${level}] ${message}`]);
   }
@@ -68,7 +72,7 @@ export default function App() {
       });
       if (resp.ok) {
         const data = await resp.json();
-        setGameState(data);
+        setGameData((d) => ({ ...d, state: data }));
         setGameId(String(data.id));
         localStorage.setItem('gameId', String(data.id));
         setStatus('Game started');
@@ -85,10 +89,11 @@ export default function App() {
     try {
       if (!id) return;
       log('debug', `GET /games/${id} - restoring game state`);
-      const resp = await fetch(`${server.replace(/\/$/, '')}/games/${id}`);
-      if (resp.ok) {
-        setGameState(await resp.json());
-      }
+        const resp = await fetch(`${server.replace(/\/$/, '')}/games/${id}`);
+        if (resp.ok) {
+          const data = await resp.json();
+          setGameData((d) => ({ ...d, state: data }));
+        }
     } catch {
       // ignore
     }
@@ -102,7 +107,7 @@ export default function App() {
       const evt = JSON.parse(e.data);
       log('info', formatEvent(evt));
       if (evt.name === 'allowed_actions') {
-        setAllowedActions(evt.payload?.actions || [[], [], [], []]);
+        setGameData((d) => ({ ...d, allowed: evt.payload?.actions || [[], [], [], []] }));
         setEvents((evts) => {
           const line = `${formatEvent(evt)} ${eventToMjaiJson(evt)}`;
           return [...evts.slice(-9), line];
@@ -112,8 +117,12 @@ export default function App() {
       if (evt.name === 'end_game') {
         wsRef.current?.close();
       }
-      setGameState((prev) => {
-        const next = applyEvent(prev, evt);
+      setGameData((prev) => {
+        const nextState = applyEvent(prev.state, evt);
+        const next = { ...prev, state: nextState };
+        if (evt.name === 'tsumo' || evt.name === 'ron' || evt.name === 'ryukyoku') {
+          next.allowed = [[], [], [], []];
+        }
         setEvents((evts) => {
           const lines = [];
           if (evt.name === 'draw_tile') {
@@ -130,12 +139,7 @@ export default function App() {
         });
         return next;
       });
-      if (
-        evt.name === 'tsumo' ||
-        evt.name === 'ron' ||
-        evt.name === 'ryukyoku'
-      ) {
-        setAllowedActions([[], [], [], []]);
+      if (evt.name === 'tsumo' || evt.name === 'ron' || evt.name === 'ryukyoku') {
         return;
       }
       if (evt.name !== 'next_actions' && gameId) {
