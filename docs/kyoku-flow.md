@@ -8,10 +8,8 @@ flowchart TD
     B -- tsumo --> C[declare_tsumo()]
     B -- kan --> D[call_kan() and draw replacement]
     D --> E1[emit draw_tile(source: dead_wall)]
-    B -- none --> E{declare_riichi()?}
-    E -- yes --> F[declare_riichi()]
-    E -- no --> G[discard_tile()]
-    F --> G
+    B -- none --> E[riichi() or discard_tile()]
+    E --> F[waiting for claims]
     G --> H[waiting for claims]
     H -->|ron| I[declare_ron()]
     H -->|kan| J[call_kan()]
@@ -26,7 +24,7 @@ Each node corresponds to a method in `MahjongEngine`:
 - `call_kan()` – form a kan meld and draw a replacement tile.
   The engine emits a `draw_tile` event immediately with `source: "dead_wall"`.
 - `declare_tsumo()` – self-drawn win; updates scores and ends the hand.
-- `declare_riichi()` – declare riichi and set `must_tsumogiri`.
+- `riichi()` – discard a tile and declare riichi in one step.
 - `discard_tile()` – place a tile in the river and set `waiting_for_claims`.
 - `declare_ron()` – win on another player's discard.
 - `call_pon()` / `call_chi()` – claim the discard to form a meld.

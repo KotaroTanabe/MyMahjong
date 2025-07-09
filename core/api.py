@@ -252,20 +252,7 @@ def get_allowed_actions(player_index: int) -> list[str]:
 
     assert _engine is not None, "Game not started"
     engine = _engine
-    actions = engine.get_allowed_actions(player_index)
-
-    # Only allow riichi immediately after the player discards.
-    last = engine.state.last_discard_player
-    player = engine.state.players[player_index]
-    if (
-        last == player_index
-        and not player.riichi
-        and not player.has_open_melds()
-        and engine._is_tenpai(player)
-    ):
-        return ["riichi", "skip"]
-
-    return actions
+    return engine.get_allowed_actions(player_index)
 
 
 def get_chi_options(player_index: int) -> list[list[Tile]]:

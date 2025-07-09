@@ -732,8 +732,9 @@ class MahjongEngine:
                 actions.add("kan")
 
         if (
-            self._claims_open
-            and last_player == player_index
+            not self._claims_open
+            and player_index == state.current_player
+            and len(player.hand.tiles) % 3 == 2
             and not player.riichi
             and not player.has_open_melds()
             and self._is_tenpai(player)
