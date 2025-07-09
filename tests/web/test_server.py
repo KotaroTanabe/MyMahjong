@@ -313,6 +313,33 @@ def test_auto_action_endpoint() -> None:
     assert "suit" in tile and "value" in tile
 
 
+def test_auto_action_wrong_turn_returns_409() -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    state = api.get_state()
+    wrong = (state.current_player + 1) % 4
+    resp = client.post(
+        "/games/1/action",
+        json={"player_index": wrong, "action": "auto", "ai_type": "simple"},
+    )
+    assert resp.status_code == 409
+
+
+def test_auto_action_claim_phase_checks_player() -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    state = api.get_state()
+    start = state.current_player
+    tile = state.players[start].hand.tiles[0]
+    client.post(
+        "/games/1/action",
+        json={"player_index": start, "action": "discard", "tile": tile.__dict__},
+    )
+    resp = client.post(
+        "/games/1/action",
+        json={"player_index": start, "action": "auto"},
+    )
+    assert resp.status_code == 409
+
+
 def test_shanten_endpoint() -> None:
     client.post("/games", json={"players": ["A", "B", "C", "D"]})
     resp = client.get("/games/1/shanten/0")

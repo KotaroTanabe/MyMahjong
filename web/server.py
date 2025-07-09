@@ -344,11 +344,20 @@ def game_action(game_id: int, req: ActionRequest) -> dict:
         return {"status": "ok"}
     if req.action == "auto":
         ai_type = req.ai_type or "simple"
-        tile = api.auto_play_turn(
-            req.player_index,
-            ai_type=ai_type,
-            claim_players=[req.player_index],
+        state = api.get_state()
+        allowed_players = (
+            state.waiting_for_claims if state.waiting_for_claims else [state.current_player]
         )
+        if req.player_index not in allowed_players:
+            raise HTTPException(status_code=409, detail="Action not allowed")
+        try:
+            tile = api.auto_play_turn(
+                req.player_index,
+                ai_type=ai_type,
+                claim_players=[req.player_index],
+            )
+        except ValueError as err:
+            raise HTTPException(status_code=409, detail=str(err))
         return asdict(tile)
     raise HTTPException(status_code=400, detail="Unknown action")
 
