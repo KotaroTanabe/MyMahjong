@@ -218,8 +218,8 @@ remain to be built:
 - [x] Closed and added kan support with replacement draws and new dora
   indicators.
 - [x] Tracking honba and riichi sticks in `GameState`.
-- [x] Automatic round progression with dealer repeats and hanchan end
-  detection.
+- [x] Automatic round progression with dealer repeats and configurable round
+  limit (east-only or hanchan).
 - [x] Exhaustive draw conditions: four kans and nine terminals detection.
 - [ ] Chankan ron on kan declarations.
 - [ ] Exhaustive draw condition: four riichi.

@@ -4,10 +4,13 @@ from __future__ import annotations
 import requests
 
 
-def create_game(server: str, players: list[str]) -> dict:
+def create_game(server: str, players: list[str], *, max_rounds: int | None = None) -> dict:
     """Create a remote game and return the JSON response."""
     url = f"{server.rstrip('/')}/games"
-    resp = requests.post(url, json={"players": players})
+    data: dict[str, object] = {"players": players}
+    if max_rounds is not None:
+        data["max_rounds"] = max_rounds
+    resp = requests.post(url, json=data)
     resp.raise_for_status()
     return resp.json()
 
