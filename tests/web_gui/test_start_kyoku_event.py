@@ -6,4 +6,4 @@ def test_start_kyoku_event_resets_state() -> None:
     assert "case 'start_kyoku'" in text, 'start_kyoku event not handled'
     idx = text.index("case 'start_kyoku'")
     snippet = text[idx: idx + 120]
-    assert 'return event.payload.state' in snippet
+    assert 'event.payload.state' in snippet

@@ -2,15 +2,26 @@ export function applyEvent(state, event) {
   if (!state) return state;
   const newState = JSON.parse(JSON.stringify(state));
   if (!Array.isArray(newState.waiting_for_claims)) newState.waiting_for_claims = [];
+  const prevEvent = state._last_event;
   switch (event.name) {
     case 'start_game':
-      return event.payload.state;
+      return { ...event.payload.state, _last_event: event };
     case 'start_kyoku':
-      return event.payload.state;
+      return { ...event.payload.state, _last_event: event };
     case 'draw_tile': {
       const p = newState.players[event.payload.player_index];
       if (p) p.hand.tiles.push(event.payload.tile);
-      if (newState.wall?.tiles?.length) newState.wall.tiles.pop();
+      const fromDead =
+        event.payload.replacement === true ||
+        (prevEvent?.name === 'meld' &&
+          typeof prevEvent.payload?.meld?.type === 'string' &&
+          prevEvent.payload.meld.type.includes('kan'));
+      if (fromDead) {
+        if (newState.wall?.dead_wall?.length) newState.wall.dead_wall.shift();
+        if (newState.dead_wall?.length) newState.dead_wall.shift();
+      } else if (newState.wall?.tiles?.length) {
+        newState.wall.tiles.pop();
+      }
       break;
     }
     case 'discard': {
@@ -112,5 +123,6 @@ export function applyEvent(state, event) {
     default:
       break;
   }
+  newState._last_event = event;
   return newState;
 }

@@ -25,6 +25,20 @@ tile: {suit: 'pin', value: 1}}};\n"
     assert output == '1'
 
 
+def test_replacement_draw_uses_dead_wall() -> None:
+    code = (
+        "import { applyEvent } from './web_gui/applyEvent.js';\n"
+        "const state = {players:[{hand:{tiles:[], melds:[]}, river:[]}], wall:{tiles:[{suit:'pin', value:1}], dead_wall:[{suit:'sou', value:9}]}, dead_wall:[{suit:'sou', value:9}]};\n"
+        "const meldEvt = {name:'meld', payload:{player_index:0, meld:{tiles:[{suit:'pin',value:1},{suit:'pin',value:1},{suit:'pin',value:1},{suit:'pin',value:1}], type:'kan'}}};\n"
+        "const afterMeld = applyEvent(state, meldEvt);\n"
+        "const drawEvt = {name:'draw_tile', payload:{player_index:0, tile:{suit:'sou', value:9}}};\n"
+        "const next = applyEvent(afterMeld, drawEvt);\n"
+        "console.log(next.wall.tiles.length + ':' + next.dead_wall.length + ':' + next.wall.dead_wall.length);"
+    )
+    output = run_node(code)
+    assert output == '1:0:0'
+
+
 def test_skip_updates_current_player() -> None:
     code = (
         "import { applyEvent } from './web_gui/applyEvent.js';\n"
