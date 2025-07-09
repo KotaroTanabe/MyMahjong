@@ -168,6 +168,33 @@ def get_tenhou_log() -> str:
     return events_to_tenhou_json(history)
 
 
+def get_mjai_log() -> str:
+    """Return the accumulated event log in MJAI JSON format."""
+    assert _engine is not None, "Game not started"
+    import json
+    from dataclasses import asdict, is_dataclass
+    from typing import Any, Mapping, cast
+
+    def encode(obj: Any) -> Any:
+        if is_dataclass(obj) and not isinstance(obj, type):
+            return {k: encode(v) for k, v in asdict(obj).items()}
+        if isinstance(obj, dict):
+            return {k: encode(v) for k, v in obj.items()}
+        if isinstance(obj, list):
+            return [encode(v) for v in obj]
+        return obj
+
+    history = _engine.get_event_history()
+    lines = []
+    for e in history:
+        payload = {
+            "type": e.name,
+            **cast(Mapping[str, Any], encode(e.payload)),
+        }
+        lines.append(json.dumps(payload, ensure_ascii=False))
+    return "\n".join(lines)
+
+
 def get_event_history() -> list[GameEvent]:
     """Return the full event history."""
 

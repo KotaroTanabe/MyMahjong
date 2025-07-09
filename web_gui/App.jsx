@@ -164,6 +164,42 @@ export default function App() {
     setShowLog(true);
   }
 
+  async function downloadLog(url, filename) {
+    try {
+      const resp = await fetch(url);
+      if (!resp.ok) return;
+      const data = await resp.json();
+      const blob = new Blob([data.log], { type: 'application/json' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      try {
+        link.click();
+      } catch {
+        /* ignore */
+      }
+      URL.revokeObjectURL(link.href);
+    } catch {
+      /* ignore */
+    }
+  }
+
+  async function downloadTenhou() {
+    if (!gameId) return;
+    await downloadLog(
+      `${server.replace(/\/$/, '')}/games/${gameId}/log`,
+      `game_${gameId}_tenhou.json`,
+    );
+  }
+
+  async function downloadMjai() {
+    if (!gameId) return;
+    await downloadLog(
+      `${server.replace(/\/$/, '')}/games/${gameId}/mjai-log`,
+      `game_${gameId}_mjai.json`,
+    );
+  }
+
   function openWebSocket(id = gameId) {
     if (!id) return;
     const url = `${server.replace(/\/$/, '').replace('http', 'ws')}/ws/${id}`;
@@ -219,6 +255,16 @@ export default function App() {
             <div className="control ml-2">
               <Button aria-label="Show log" onClick={openLogModal}>
                 Log
+              </Button>
+            </div>
+            <div className="control ml-2">
+              <Button aria-label="Download MJAI log" onClick={downloadMjai}>
+                MJAI
+              </Button>
+            </div>
+            <div className="control ml-2">
+              <Button aria-label="Download Tenhou log" onClick={downloadTenhou}>
+                Tenhou
               </Button>
             </div>
           </>

@@ -71,6 +71,18 @@ def get_log(game_id: int) -> dict:
     return {"log": data}
 
 
+@app.get("/games/{game_id}/mjai-log")
+def get_mjai_log(game_id: int) -> dict:
+    """Return the MJAI-format event log for the current game."""
+
+    _ = game_id  # placeholder for future multi-game support
+    try:
+        data = api.get_mjai_log()
+    except AssertionError:
+        raise HTTPException(status_code=404, detail="Game not started")
+    return {"log": data}
+
+
 @app.get("/games/{game_id}/events")
 def get_events(game_id: int) -> dict:
     """Return raw event history."""
