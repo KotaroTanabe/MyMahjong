@@ -58,6 +58,23 @@ def test_call_chi_missing_discard() -> None:
     assert caller.hand.melds[0].type == "chi"
 
 
+def test_call_chi_replaces_discard_instance() -> None:
+    state = api.start_game(["A", "B", "C", "D"])
+    tile = models.Tile("man", 3)
+    discarder = state.players[0]
+    caller = state.players[1]
+    discarder.hand.tiles.append(tile)
+    api.discard_tile(0, tile)
+    discard_ref = discarder.river[-1]
+    caller.hand.tiles.extend([models.Tile("man", 1), models.Tile("man", 2)])
+    api.call_chi(
+        1,
+        [models.Tile("man", 1), models.Tile("man", 2), models.Tile("man", 3)],
+    )
+    meld = caller.hand.melds[0]
+    assert any(t is discard_ref for t in meld.tiles)
+
+
 def test_end_game_creates_new_state() -> None:
     state = api.start_game(["A", "B", "C", "D"])
     finished = api.end_game()
