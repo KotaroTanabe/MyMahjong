@@ -254,6 +254,13 @@ def get_allowed_actions(player_index: int) -> list[str]:
     return _engine.get_allowed_actions(player_index)
 
 
+def get_chi_options(player_index: int) -> list[list[Tile]]:
+    """Return chi tile pairs available to ``player_index``."""
+
+    assert _engine is not None, "Game not started"
+    return _engine.get_chi_options(player_index)
+
+
 def get_all_allowed_actions() -> list[list[str]]:
     """Return allowed actions for all players."""
 
