@@ -61,23 +61,31 @@ def call_chi(player_index: int, tiles: list[Tile]) -> None:
     """
     assert _engine is not None, "Game not started"
 
-    if len(tiles) == 2:
-        last_tile = _engine.state.last_discard
-        last_player = _engine.state.last_discard_player
-        if last_tile is None or last_player is None:
-            raise ValueError("No discard available for chi")
+    last_tile = _engine.state.last_discard
+    last_player = _engine.state.last_discard_player
+    if last_tile is None or last_player is None:
+        raise ValueError("No discard available for chi")
 
-        hand_tiles = sorted(tiles, key=lambda t: t.value)
-        called_from = (player_index - last_player) % len(_engine.state.players)
+    # Remove any discard representation so the engine instance is used.
+    hand_tiles = [
+        t
+        for t in tiles
+        if not (t.suit == last_tile.suit and t.value == last_tile.value)
+    ]
+    if len(hand_tiles) != 2:
+        raise ValueError("Chi requires exactly two tiles from hand")
 
-        if called_from == 1:
-            tiles = [last_tile, *hand_tiles]
-        elif called_from == 3:
-            tiles = [*hand_tiles, last_tile]
-        else:
-            tiles = sorted([*hand_tiles, last_tile], key=lambda t: t.value)
+    hand_tiles = sorted(hand_tiles, key=lambda t: t.value)
+    called_from = (player_index - last_player) % len(_engine.state.players)
 
-    _engine.call_chi(player_index, tiles)
+    if called_from == 1:
+        meld_tiles = [last_tile, *hand_tiles]
+    elif called_from == 3:
+        meld_tiles = [*hand_tiles, last_tile]
+    else:
+        meld_tiles = sorted([*hand_tiles, last_tile], key=lambda t: t.value)
+
+    _engine.call_chi(player_index, meld_tiles)
 
 
 def call_pon(player_index: int, tiles: list[Tile]) -> None:
