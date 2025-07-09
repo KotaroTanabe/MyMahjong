@@ -716,7 +716,13 @@ class MahjongEngine:
             if counts[key] >= 4:
                 actions.add("kan")
 
-        if not player.riichi and self._is_tenpai(player):
+        if (
+            self._claims_open
+            and last_player == player_index
+            and not player.riichi
+            and not player.has_open_melds()
+            and self._is_tenpai(player)
+        ):
             actions.add("riichi")
 
         return sorted(actions)

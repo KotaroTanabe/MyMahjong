@@ -256,10 +256,12 @@ def get_allowed_actions(player_index: int) -> list[str]:
 
     # Only allow riichi immediately after the player discards.
     last = engine.state.last_discard_player
+    player = engine.state.players[player_index]
     if (
         last == player_index
-        and not engine.state.players[player_index].riichi
-        and engine._is_tenpai(engine.state.players[player_index])
+        and not player.riichi
+        and not player.has_open_melds()
+        and engine._is_tenpai(player)
     ):
         return ["riichi", "skip"]
 
