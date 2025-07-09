@@ -11,6 +11,7 @@ export function Controls({
   aiActive = false,
   allowedActions = [],
   waitingForClaims = [],
+  waitingForRiichi = false,
   lastDiscard = null,
   log = () => {},
   onError = () => {},
@@ -109,6 +110,15 @@ export function Controls({
     active &&
     allowedActions.includes(action) &&
     (action !== 'skip' || waitingForClaims.length > 0);
+
+  if (waitingForRiichi && playerIndex === activePlayer) {
+    return (
+      <div className="controls">
+        <Button onClick={riichi}>Riichi</Button>
+        <Button onClick={skip}>Skip</Button>
+      </div>
+    );
+  }
 
   return (
     <div className="controls">

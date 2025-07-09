@@ -378,6 +378,16 @@ async def game_events(websocket: WebSocket, game_id: int) -> None:
                 await websocket.send_json(asdict(event))
                 if event.name == "round_end":
                     prev_actions = None
+                if event.name == "discard":
+                    try:
+                        updated = api.get_all_allowed_actions()
+                    except AssertionError:
+                        updated = None
+                    if updated is not None:
+                        prev_actions = updated
+                        await websocket.send_json(
+                            {"name": "allowed_actions", "payload": {"actions": updated}}
+                        )
             try:
                 actions = api.get_all_allowed_actions()
             except AssertionError:

@@ -34,11 +34,22 @@ export default function PlayerPanel({
     [allowedActions.join(',')]
   );
   const [actions, setActions] = useState(allowedActionsMemo);
+  const [waitingForRiichi, setWaitingForRiichi] = useState(false);
   const [error, setError] = useState(null);
   const controllerRef = useRef(null);
 
   useEffect(() => {
     setActions(allowedActionsMemo);
+    if (
+      playerIndex === 0 &&
+      allowedActionsMemo.length === 2 &&
+      allowedActionsMemo.includes('riichi') &&
+      allowedActionsMemo.includes('skip')
+    ) {
+      setWaitingForRiichi(true);
+    } else if (playerIndex === 0) {
+      setWaitingForRiichi(false);
+    }
   }, [allowedActionsMemo]);
 
   useEffect(() => {
@@ -56,6 +67,16 @@ export default function PlayerPanel({
           setError(`Failed to fetch actions: ${acts.error}`);
         } else if (Array.isArray(acts)) {
           setActions(acts);
+          if (
+            playerIndex === 0 &&
+            acts.length === 2 &&
+            acts.includes('riichi') &&
+            acts.includes('skip')
+          ) {
+            setWaitingForRiichi(true);
+          } else if (playerIndex === 0) {
+            setWaitingForRiichi(false);
+          }
         }
       })
       .catch((err) => {
@@ -92,6 +113,7 @@ export default function PlayerPanel({
         playerIndex={playerIndex}
         activePlayer={activePlayer}
         waitingForClaims={waiting}
+        waitingForRiichi={playerIndex === 0 ? waitingForRiichi : false}
         aiActive={aiActive}
         allowedActions={actions}
         lastDiscard={state?.last_discard}
