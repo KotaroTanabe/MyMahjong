@@ -28,6 +28,7 @@ Future work will expand these components.
 - [x] GameState JSON serialization
 - [x] Tenhou.net/6 log export ([format described](docs/tenhou-json.md))
 - [x] Copy Tenhou log after each hand
+- [x] Convert MJAI logs to Tenhou format
 - [ ] Full Tenhou log features (meld notation, yaku info)
 - [x] RuleSet interface for scoring
 - [x] Local single-player play via CLI

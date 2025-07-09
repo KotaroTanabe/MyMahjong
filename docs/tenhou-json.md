@@ -6,6 +6,9 @@ This document describes the structure of the JSON logs output by the
 `events_to_tenhou_json` helper in the **core** package. The format is
 modeled after the logs produced by `tenhou.net/6`.
 
+Logs can be generated directly from engine events or converted from a
+newline separated MJAI log using the `mjai_log_to_tenhou_json` helper.
+
 ## Overview
 
 A log object has four top-level keys:
