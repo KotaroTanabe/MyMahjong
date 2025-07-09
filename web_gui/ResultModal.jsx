@@ -23,6 +23,17 @@ export default function ResultModal({ result, onClose, onCopyLog }) {
                 </ul>
               )}
             </>
+          ) : type === 'end_game' ? (
+            <>
+              <p>Game over{result.reason ? ` (${result.reason})` : ''}</p>
+              {Array.isArray(scores) && (
+                <ul>
+                  {scores.map((s, i) => (
+                    <li key={i}>Player {i + 1}: {s}</li>
+                  ))}
+                </ul>
+              )}
+            </>
           ) : (
             <>
               <p>

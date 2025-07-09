@@ -137,6 +137,7 @@ Future work will expand these components.
 - [x] Noten penalty scoring on draws
 - [x] Draw result modal in GUI
 - [x] Win result modal in GUI
+- [x] End game result modal with final scores
 - [x] standard wall initialization
 - [x] dead wall & dora indicator tracking
 - [x] wanpai separation and yama remaining count

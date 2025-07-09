@@ -90,6 +90,16 @@ export function applyEvent(state, event) {
       newState.result = { type: 'ryukyoku', ...event.payload };
       break;
     }
+    case 'end_game': {
+      if (Array.isArray(event.payload.scores)) {
+        newState.players.forEach((p, i) => {
+          if (p) p.score = event.payload.scores[i];
+        });
+      }
+      newState.result = { type: 'end_game', ...event.payload };
+      newState.waiting_for_claims = [];
+      break;
+    }
     case 'round_end':
       break;
     case 'claims_closed':

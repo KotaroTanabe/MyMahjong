@@ -160,3 +160,15 @@ def test_round_end_keeps_result() -> None:
     )
     output = run_node(code)
     assert output == 'tsumo'
+
+
+def test_end_game_sets_result_and_scores() -> None:
+    code = (
+        "import { applyEvent } from './web_gui/applyEvent.js';\n"
+        "const state = {players:[{score:25000},{score:25000},{score:25000},{score:25000}]};\n"
+        "const evt = {name:'end_game', payload:{scores:[26000,24000,24000,26000]}};\n"
+        "const newState = applyEvent(state, evt);\n"
+        "console.log(newState.result.type + ':' + newState.players[0].score + ':' + newState.waiting_for_claims.length);"
+    )
+    output = run_node(code)
+    assert output == 'end_game:26000:0'
