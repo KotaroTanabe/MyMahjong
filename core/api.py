@@ -11,10 +11,10 @@ from mahjong.hand_calculating.hand_response import HandResponse
 _engine: MahjongEngine | None = None
 
 
-def start_game(player_names: list[str]) -> GameState:
+def start_game(player_names: list[str], *, max_rounds: int = 8) -> GameState:
     """Initialize a new game and return its state."""
     global _engine
-    _engine = MahjongEngine()
+    _engine = MahjongEngine(max_rounds=max_rounds)
     for i, name in enumerate(player_names):
         if i < len(_engine.state.players):
             _engine.state.players[i].name = name
@@ -151,6 +151,12 @@ def end_game() -> GameState:
     """End the current game and reset the engine."""
     assert _engine is not None, "Game not started"
     return _engine.end_game()
+
+
+def is_game_over() -> bool:
+    """Return True if the current game has ended."""
+    assert _engine is not None, "Game not started"
+    return _engine.is_game_over
 
 
 def pop_events() -> list[GameEvent]:

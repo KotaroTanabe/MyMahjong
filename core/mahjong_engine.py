@@ -27,15 +27,18 @@ def _hand_response_dict(resp: HandResponse) -> dict[str, Any]:
 class MahjongEngine:
     """Simplified engine that wraps the `mahjong` library."""
 
-    def __init__(self, ruleset: RuleSet | None = None) -> None:
+    def __init__(self, ruleset: RuleSet | None = None, *, max_rounds: int = 8) -> None:
         self.ruleset: RuleSet = ruleset or StandardRuleSet()
         self.state = GameState(wall=Wall())
+        self.state.max_rounds = max_rounds
         self.state.players = [Player(name=f"Player {i}") for i in range(4)]
         self.state.current_player = 0
         self.events: list[GameEvent] = []
         self.event_history: list[GameEvent] = []
         self._cached_allowed_actions: list[list[str]] | None = None
         self._claims_open = False
+        self.game_over = False
+        self._final_state: GameState | None = None
         self._emit("start_game", {"state": self.state})
         self.start_kyoku(dealer=0, round_number=1)
 
@@ -588,17 +591,30 @@ class MahjongEngine:
             self.state.dealer = (self.state.dealer + 1) % len(self.state.players)
             self.state.round_number += 1
 
-        if self.state.round_number > 8:
+        if self.state.round_number > self.state.max_rounds:
             self.end_game()
         else:
+            self._emit(
+                "round_end",
+                {
+                    "next_dealer": self.state.dealer,
+                    "next_round": self.state.round_number,
+                },
+            )
             self.start_kyoku(self.state.dealer, self.state.round_number)
 
     def end_game(self) -> GameState:
         """Reset the engine and return the final state."""
+        if self.game_over:
+            assert self._final_state is not None
+            return self._final_state
+
         self._invalidate_cache()
         final_state = self.state
         scores = [p.score for p in final_state.players]
         self._emit("end_game", {"scores": scores})
+        self.game_over = True
+        self._final_state = final_state
         self.state = GameState(wall=Wall())
         wall = self.state.wall
         assert wall is not None
@@ -679,3 +695,8 @@ class MahjongEngine:
             self._cached_allowed_actions = [self._compute_allowed_actions(i) for i in range(len(self.state.players))]
 
         return self._cached_allowed_actions[player_index]
+
+    @property
+    def is_game_over(self) -> bool:
+        """Return True if ``end_game`` has been called."""
+        return self.game_over

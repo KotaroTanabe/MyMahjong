@@ -24,9 +24,20 @@ def test_honba_increments_on_draw() -> None:
 
 
 def test_hanchan_ends_after_south4() -> None:
-    engine = MahjongEngine()
+    engine = MahjongEngine(max_rounds=8)
     engine.pop_events()
     for _ in range(8):
+        winner = (engine.state.dealer + 1) % 4
+        tile = engine.state.players[winner].hand.tiles[0]
+        engine.declare_tsumo(winner, tile)
+    events = engine.pop_events()
+    assert events[-1].name == "end_game"
+
+
+def test_east_only_ends_after_east4() -> None:
+    engine = MahjongEngine(max_rounds=4)
+    engine.pop_events()
+    for _ in range(4):
         winner = (engine.state.dealer + 1) % 4
         tile = engine.state.players[winner].hand.tiles[0]
         engine.declare_tsumo(winner, tile)

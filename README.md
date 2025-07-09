@@ -143,6 +143,7 @@ Future work will expand these components.
 - [x] current player tracking
 - [x] Wait for all players to skip before next draw
 - [x] `claims_closed` event emitted when the claim window ends
+- [x] `round_end` event emitted between hands
 - [x] Enforce tsumogiri after riichi
 - [x] Riichi event includes player score and stick count
 - [x] Validate closed-hand tenpai requirement for riichi
@@ -221,6 +222,11 @@ remain to be built:
   detection.
  - [x] Exhaustive draw conditions: four kans, nine terminals, four riichi, and four winds detection.
  - [ ] Chankan ron on kan declarations.
+- [x] Automatic round progression with dealer repeats and configurable round
+  limit (east-only or hanchan).
+- [x] Exhaustive draw conditions: four kans and nine terminals detection.
+- [ ] Chankan ron on kan declarations.
+- [ ] Exhaustive draw condition: four riichi.
 - [ ] Complete MJAI protocol adapter for external AIs.
 - [ ] External AI integration using the adapter.
 

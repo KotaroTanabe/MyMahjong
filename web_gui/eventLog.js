@@ -30,6 +30,8 @@ export function formatEvent(evt) {
       return 'Game started';
     case 'ryukyoku':
       return `Ryukyoku: ${evt.payload.reason}`;
+    case 'round_end':
+      return 'Round ended';
     case 'end_game':
       return 'Game ended';
     default:

@@ -12,7 +12,7 @@ def test_start_command_runs() -> None:
 
 
 def test_start_command_remote(monkeypatch) -> None:
-    def fake_create(server: str, players: list[str]) -> dict:
+    def fake_create(server: str, players: list[str], *, max_rounds: int | None = None) -> dict:
         return {"players": [{"name": p} for p in players]}
 
     monkeypatch.setattr("cli.remote_game.create_game", fake_create)

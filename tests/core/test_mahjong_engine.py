@@ -102,6 +102,19 @@ def test_end_game_resets_state() -> None:
     assert engine.state.riichi_sticks == 0
 
 
+def test_end_game_ignored_on_subsequent_calls() -> None:
+    engine = MahjongEngine()
+    engine.pop_events()  # clear start_game/start_kyoku
+    first = engine.end_game()
+    events = engine.pop_events()
+    assert events and events[-1].name == "end_game"
+    second = engine.end_game()
+    events = engine.pop_events()
+    assert not any(e.name == "end_game" for e in events)
+    assert first is second
+    assert engine.is_game_over
+
+
 def test_remaining_tiles_property() -> None:
     engine = MahjongEngine()
     remaining = engine.remaining_tiles
@@ -226,6 +239,7 @@ def test_event_log() -> None:
         "discard",
         "riichi",
         "tsumo",
+        "round_end",
         "start_kyoku",
         "end_game",
     ]

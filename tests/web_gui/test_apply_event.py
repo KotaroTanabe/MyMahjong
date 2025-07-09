@@ -148,3 +148,15 @@ def test_skip_ignored_when_not_waiting() -> None:
     )
     output = run_node(code)
     assert output == '0:0'
+
+
+def test_round_end_keeps_result() -> None:
+    code = (
+        "import { applyEvent } from './web_gui/applyEvent.js';\n"
+        "const state = {result:{type:'tsumo'}};\n"
+        "const evt = {name:'round_end'};\n"
+        "const newState = applyEvent(state, evt);\n"
+        "console.log(newState.result.type);"
+    )
+    output = run_node(code)
+    assert output == 'tsumo'

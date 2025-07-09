@@ -49,6 +49,7 @@ class GameState:
     current_player: int = 0
     dealer: int = 0
     round_number: int = 1
+    max_rounds: int = 8
     honba: int = 0
     riichi_sticks: int = 0
     kan_count: int = 0

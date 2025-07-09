@@ -19,13 +19,13 @@ The following classes defined in `core.models` are used throughout the API:
 | `Meld`     | Collection of tiles forming a meld.   |
 | `Hand`     | Player hand consisting of tiles and melds. |
 | `Player`   | Seat information including hand and score. |
-| `GameState`| Aggregated state of an ongoing game.  |
+| `GameState`| Aggregated state of an ongoing game including `max_rounds`.  |
 
 ## Commands (GUI/CLI -> Core)
 
 | Command            | Arguments                               | Purpose |
 | ------------------ | --------------------------------------- | ------- |
-| `start_game`       | list of player names                    | Begin a new hanchan. Returns `GameState`. |
+| `start_game`       | list of player names, `max_rounds`=8    | Begin a new game with the specified round limit. Returns `GameState`. |
 | `draw_tile`        | `player_index`                          | Draw the next tile for a player. |
 | `discard_tile`     | `player_index`, `Tile`                  | Discard a tile from the player's hand. |
 | `call_chi`         | `player_index`, `tiles`                 | Call `chi` using the given tiles. When only two tiles are provided the current discard is automatically added. |
@@ -56,6 +56,7 @@ translate them directly.
 | `tsumo`            | `player_index`, `HandResponse`, scores  | Self-drawn win. |
 | `ron`              | `player_index`, `HandResponse`, scores  | Win on discard. |
 | `ryukyoku`         | reason                                  | Hand ends in draw. |
+| `round_end`        | next dealer and round                   | Fired before the next hand begins. |
 | `end_game`         | final scores                            | Sent after the last hand. |
 
 Front ends are expected to update their displays or AI processes whenever an
