@@ -31,6 +31,9 @@ export default function App() {
   const [mode, setMode] = useState('game');
   const [peek, setPeek] = useState(false);
   const [sortHand, setSortHand] = useState(true);
+  const [aiDelay, setAiDelay] = useState(() =>
+    Number(localStorage.getItem('aiDelay') || 0),
+  );
   const [showSettings, setShowSettings] = useState(false);
   const [showLog, setShowLog] = useState(false);
   const wsRef = useRef(null);
@@ -42,6 +45,10 @@ export default function App() {
   useEffect(() => {
     if (gameId) localStorage.setItem('gameId', gameId);
   }, [gameId]);
+
+  useEffect(() => {
+    localStorage.setItem('aiDelay', String(aiDelay));
+  }, [aiDelay]);
 
   useEffect(() => {
     if (gameState?.result?.type === 'end_game') {
@@ -337,6 +344,17 @@ export default function App() {
               style={{ width: '20em' }}
             />
           </label>
+          <label className="label mr-2">
+            AI delay (ms):
+            <input
+              className="input"
+              type="number"
+              min="0"
+              value={aiDelay}
+              onChange={(e) => setAiDelay(Number(e.target.value))}
+              style={{ width: '6em' }}
+            />
+          </label>
           <div className="control">
             <Button onClick={startGame}>Start Game</Button>
           </div>
@@ -398,15 +416,16 @@ export default function App() {
         </div>
       )}
       {mode === 'game' ? (
-        <GameBoard
-          state={gameState}
-          server={server}
-          gameId={gameId}
-          peek={peek}
-          sortHand={sortHand}
-          log={log}
-          allowedActions={allowedActions}
-        />
+          <GameBoard
+            state={gameState}
+            server={server}
+            gameId={gameId}
+            peek={peek}
+            sortHand={sortHand}
+            log={log}
+            allowedActions={allowedActions}
+            aiDelay={aiDelay}
+          />
       ) : mode === 'practice' ? (
         <Practice server={server} sortHand={sortHand} log={log} />
       ) : (
