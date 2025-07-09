@@ -63,9 +63,19 @@ def call_chi(player_index: int, tiles: list[Tile]) -> None:
 
     if len(tiles) == 2:
         last_tile = _engine.state.last_discard
-        if last_tile is None:
+        last_player = _engine.state.last_discard_player
+        if last_tile is None or last_player is None:
             raise ValueError("No discard available for chi")
-        tiles = sorted(tiles + [last_tile], key=lambda t: t.value)
+
+        hand_tiles = sorted(tiles, key=lambda t: t.value)
+        called_from = (player_index - last_player) % len(_engine.state.players)
+
+        if called_from == 1:
+            tiles = [last_tile, *hand_tiles]
+        elif called_from == 3:
+            tiles = [*hand_tiles, last_tile]
+        else:
+            tiles = sorted([*hand_tiles, last_tile], key=lambda t: t.value)
 
     _engine.call_chi(player_index, tiles)
 
