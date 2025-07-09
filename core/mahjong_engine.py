@@ -582,7 +582,11 @@ class MahjongEngine:
         self.state.current_player = new_player
 
     def advance_hand(self, winner_index: int | None = None) -> None:
-        """Move to the next hand and handle dealer rotation."""
+        """Move to the next hand and handle dealer rotation.
+
+        If any player has zero or negative points after scoring, the game ends
+        immediately with the reason ``"bankruptcy"``.
+        """
         self._invalidate_cache()
         if winner_index is None or winner_index == self.state.dealer:
             self.state.honba += 1
@@ -590,6 +594,11 @@ class MahjongEngine:
             self.state.honba = 0
             self.state.dealer = (self.state.dealer + 1) % len(self.state.players)
             self.state.round_number += 1
+
+        scores = [p.score for p in self.state.players]
+        if any(score <= 0 for score in scores):
+            self.end_game(reason="bankruptcy")
+            return
 
         if self.state.round_number > self.state.max_rounds:
             self.end_game()
@@ -603,8 +612,15 @@ class MahjongEngine:
             )
             self.start_kyoku(self.state.dealer, self.state.round_number)
 
-    def end_game(self) -> GameState:
-        """Reset the engine and return the final state."""
+    def end_game(self, *, reason: str | None = None) -> GameState:
+        """Reset the engine and return the final state.
+
+        Parameters
+        ----------
+        reason:
+            Optional reason for ending the game. When a player goes bankrupt the
+            reason ``"bankruptcy"`` is used.
+        """
         if self.game_over:
             assert self._final_state is not None
             return self._final_state
@@ -612,7 +628,10 @@ class MahjongEngine:
         self._invalidate_cache()
         final_state = self.state
         scores = [p.score for p in final_state.players]
-        self._emit("end_game", {"scores": scores})
+        payload: dict[str, Any] = {"scores": scores}
+        if reason is not None:
+            payload["reason"] = reason
+        self._emit("end_game", payload)
         self.game_over = True
         self._final_state = final_state
         self.state = GameState(wall=Wall())
