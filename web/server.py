@@ -252,13 +252,21 @@ def game_action(game_id: int, req: ActionRequest) -> dict:
         except IndexError:
             raise HTTPException(status_code=409, detail="Wall is empty")
         return asdict(tile)
+    # invalid discards raise ValueError from the engine
     if req.action == "discard" and req.tile:
         tile = models.Tile(**req.tile)
-        api.discard_tile(req.player_index, tile)
+        try:
+            api.discard_tile(req.player_index, tile)
+        except ValueError as e:
+            raise HTTPException(status_code=409, detail=str(e))
         return {"status": "ok"}
+    # engine can raise ValueError when chi is not possible
     if req.action == "chi" and req.tiles:
         tiles = [models.Tile(**t) for t in req.tiles]
-        api.call_chi(req.player_index, tiles)
+        try:
+            api.call_chi(req.player_index, tiles)
+        except ValueError as e:
+            raise HTTPException(status_code=409, detail=str(e))
         return {"status": "ok"}
     if req.action == "pon" and req.tiles:
         tiles = [models.Tile(**t) for t in req.tiles]
