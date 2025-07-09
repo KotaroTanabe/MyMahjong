@@ -1,7 +1,7 @@
 """Convert engine events to tenhou.net/6 style JSON logs."""
 from __future__ import annotations
 import json
-from typing import Any, List
+from typing import Any, Iterable, List
 
 from .models import GameEvent, Tile, GameState
 
@@ -70,3 +70,28 @@ def events_to_tenhou_json(events: List[GameEvent]) -> str:
         "log": log,
     }
     return json.dumps(data, ensure_ascii=False)
+
+
+def mjai_log_to_tenhou_json(lines: Iterable[str]) -> str:
+    """Convert MJAI log ``lines`` to Tenhou-style JSON."""
+
+    events: list[GameEvent] = []
+    for line in lines:
+        line = line.strip()
+        if not line:
+            continue
+        data = json.loads(line)
+        name = data.pop("type")
+        payload: dict[str, Any] = {}
+        for k, v in data.items():
+            if name == "start_kyoku" and k == "state":
+                from .ai_adapter import json_to_game_state
+
+                payload[k] = json_to_game_state(json.dumps(v))
+            elif isinstance(v, dict) and "suit" in v and "value" in v:
+                payload[k] = Tile(**v)
+            else:
+                payload[k] = v
+        events.append(GameEvent(name=name, payload=payload))
+
+    return events_to_tenhou_json(events)
