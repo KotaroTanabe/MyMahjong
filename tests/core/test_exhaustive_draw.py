@@ -44,3 +44,69 @@ def test_nine_terminals_triggers_ryukyoku() -> None:
     )
     assert engine.state.honba == 1
 
+
+def _set_tenpai_hand(player) -> None:
+    player.hand.tiles = [
+        Tile("man", 1), Tile("man", 1),
+        Tile("man", 2), Tile("man", 2),
+        Tile("man", 3), Tile("man", 3),
+        Tile("pin", 4), Tile("pin", 4),
+        Tile("pin", 5), Tile("pin", 5),
+        Tile("sou", 6), Tile("sou", 6),
+        Tile("sou", 7), Tile("sou", 8),
+    ]
+
+
+def test_four_riichi_triggers_ryukyoku() -> None:
+    engine = MahjongEngine()
+    engine.pop_events()
+    for p in engine.state.players:
+        _set_tenpai_hand(p)
+    for i in range(4):
+        engine.declare_riichi(i)
+    events = engine.pop_events()
+    assert any(
+        e.name == "ryukyoku" and e.payload.get("reason") == "four_riichi"
+        for e in events
+    )
+    assert engine.state.honba == 1
+
+
+def test_four_winds_triggers_ryukyoku() -> None:
+    engine = MahjongEngine()
+    engine.pop_events()
+    engine.state.players[0].hand.tiles[-1] = Tile("wind", 1)
+    east0 = engine.state.players[0].hand.tiles[-1]
+    engine.discard_tile(0, east0)
+    engine.skip(1)
+    engine.skip(2)
+    engine.skip(3)
+    engine.draw_tile(1)
+    engine.state.players[1].hand.tiles[-1] = Tile("wind", 1)
+    east1 = engine.state.players[1].hand.tiles[-1]
+    engine.discard_tile(1, east1)
+    engine.skip(2)
+    engine.skip(3)
+    engine.skip(0)
+    engine.draw_tile(2)
+    engine.state.players[2].hand.tiles[-1] = Tile("wind", 1)
+    east2 = engine.state.players[2].hand.tiles[-1]
+    engine.discard_tile(2, east2)
+    engine.skip(3)
+    engine.skip(0)
+    engine.skip(1)
+    engine.draw_tile(3)
+    engine.state.players[3].hand.tiles[-1] = Tile("wind", 1)
+    east3 = engine.state.players[3].hand.tiles[-1]
+    engine.discard_tile(3, east3)
+    engine.skip(0)
+    engine.skip(1)
+    engine.skip(2)
+    engine.draw_tile(0)
+    events = engine.pop_events()
+    assert any(
+        e.name == "ryukyoku" and e.payload.get("reason") == "four_winds"
+        for e in events
+    )
+    assert engine.state.honba == 1
+
