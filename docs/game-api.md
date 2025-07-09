@@ -31,7 +31,7 @@ The following classes defined in `core.models` are used throughout the API:
 | `riichi`           | `player_index`, `Tile`                  | Discard a tile and declare riichi in one step. |
 | `call_chi`         | `player_index`, `tiles`                 | Call `chi` using the given tiles. Two hand tiles may be passed and the discard is automatically inserted, or a full meld may be provided. Any discard tile sent by the front end is replaced with the engine's instance. |
 | `call_pon`         | `player_index`, `tiles`                 | Call `pon` using the given tiles. |
-| `call_kan`         | `player_index`, `tiles`                 | Declare an open or closed `kan`. |
+| `call_kan`         | `player_index`, `tiles`                 | Declare an open or closed `kan`. For an open kan, three hand tiles may be passed and the discard is inserted automatically. Any discard tile sent by the front end is replaced with the engine's instance. |
 | `declare_ron`      | `player_index`, `Tile`                  | Win on another player's discard. |
 | `declare_tsumo`    | `player_index`, `Tile`                  | Win on self-drawn tile. |
 | `skip`             | `player_index`                          | Pass on an action. |

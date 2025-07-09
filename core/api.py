@@ -95,9 +95,33 @@ def call_pon(player_index: int, tiles: list[Tile]) -> None:
 
 
 def call_kan(player_index: int, tiles: list[Tile]) -> None:
-    """Public wrapper for MahjongEngine.call_kan."""
+    """Public wrapper for MahjongEngine.call_kan.
+
+    ``tiles`` may contain either the full meld including the discarded tile or
+    just the three tiles from the caller's hand. When only three tiles are
+    provided the current discard is automatically inserted and any matching
+    tile in ``tiles`` is replaced with the engine instance so object identity
+    checks succeed.
+    """
+
     assert _engine is not None, "Game not started"
-    _engine.call_kan(player_index, tiles)
+
+    meld_tiles = tiles
+    last_tile = _engine.state.last_discard
+    last_player = _engine.state.last_discard_player
+
+    if len(tiles) == 3:
+        if last_tile is None or last_player is None:
+            raise ValueError("No discard available for kan")
+        meld_tiles = [last_tile, *tiles]
+
+    if last_tile is not None:
+        meld_tiles = [
+            last_tile if t.suit == last_tile.suit and t.value == last_tile.value else t
+            for t in meld_tiles
+        ]
+
+    _engine.call_kan(player_index, meld_tiles)
 
 
 def declare_tsumo(player_index: int, tile: Tile) -> HandResponse:
