@@ -36,6 +36,8 @@ class MahjongEngine:
         self.event_history: list[GameEvent] = []
         self._cached_allowed_actions: list[list[str]] | None = None
         self._claims_open = False
+        self.game_over = False
+        self._final_state: GameState | None = None
         self._emit("start_game", {"state": self.state})
         self.start_kyoku(dealer=0, round_number=1)
 
@@ -580,10 +582,16 @@ class MahjongEngine:
 
     def end_game(self) -> GameState:
         """Reset the engine and return the final state."""
+        if self.game_over:
+            assert self._final_state is not None
+            return self._final_state
+
         self._invalidate_cache()
         final_state = self.state
         scores = [p.score for p in final_state.players]
         self._emit("end_game", {"scores": scores})
+        self.game_over = True
+        self._final_state = final_state
         self.state = GameState(wall=Wall())
         wall = self.state.wall
         assert wall is not None
@@ -664,3 +672,8 @@ class MahjongEngine:
             self._cached_allowed_actions = [self._compute_allowed_actions(i) for i in range(len(self.state.players))]
 
         return self._cached_allowed_actions[player_index]
+
+    @property
+    def is_game_over(self) -> bool:
+        """Return True if ``end_game`` has been called."""
+        return self.game_over
