@@ -40,6 +40,28 @@ describe('PlayerPanel layout styles', () => {
   });
 });
 
+describe('PlayerPanel seat wind display', () => {
+  it('shows seat wind next to player name', () => {
+    const { getByText } = render(
+      <PlayerPanel
+        seat="east"
+        player={{ name: 'A', score: 25000, seat_wind: 'east' }}
+        hand={[]}
+        melds={[]}
+        riverTiles={[]}
+        server=""
+        gameId="1"
+        playerIndex={0}
+        activePlayer={0}
+        aiActive={false}
+        state={{ players: [] }}
+        allowedActions={[]}
+      />,
+    );
+    expect(getByText(/A \(東\)/)).toBeTruthy();
+  });
+});
+
 describe('PlayerPanel fetch cancellation', () => {
   it('aborts previous request when props change', async () => {
     let aborted = false;

@@ -49,6 +49,7 @@ Future work will expand these components.
 - [x] Meld area component
 - [x] Center display (dora & wall count)
 - [x] Display honba & riichi stick counts
+- [x] Show current round (e.g. 東1局) next to honba count
 - [x] Meld display from game state
 - [x] Melds positioned to the right of the player's hand
 - [x] Called tile rotated within melds
@@ -155,6 +156,7 @@ Future work will expand these components.
 - [x] Validate closed-hand tenpai requirement for riichi
  - [x] action dispatch helper
   - [x] seat wind tracking
+  - [x] Seat wind shown beside each player name in the GUI
 
 ## Game mode turn flow
 
