@@ -70,6 +70,18 @@ class MahjongEngine:
         if len(unique) >= 9:
             self._resolve_ryukyoku("nine_terminals")
 
+    def _check_four_winds(self) -> None:
+        """Detect four identical wind discards at the start of the hand."""
+        rivers = [p.river for p in self.state.players]
+        if not all(len(r) == 1 for r in rivers):
+            return
+        tiles = [r[0] for r in rivers]
+        if not all(t.suit == "wind" for t in tiles):
+            return
+        first_val = tiles[0].value
+        if all(t.value == first_val for t in tiles):
+            self._resolve_ryukyoku("four_winds")
+
     def _emit(self, name: str, payload: dict) -> None:
         evt = GameEvent(name=name, payload=payload)
         self.events.append(evt)
@@ -182,6 +194,7 @@ class MahjongEngine:
             raise ValueError("Waiting for other players to claim discard")
         if player_index != self.state.current_player:
             raise ValueError("Not player's turn")
+        self._check_four_winds()
         assert self.state.wall is not None
         tile = self.state.wall.draw_tile()
         self.state.players[player_index].draw(tile)
@@ -235,6 +248,8 @@ class MahjongEngine:
                 "riichi_sticks": self.state.riichi_sticks,
             },
         )
+        if all(p.riichi for p in self.state.players):
+            self._resolve_ryukyoku("four_riichi")
 
     def calculate_score(
         self, player_index: int, win_tile: Tile

@@ -18,7 +18,7 @@ The following features are still missing from the `core` package to allow a full
 - Detect the end of a hanchan.
 
 ## Exhaustive draw conditions
-- Detect rare draw scenarios such as four kans, four riichi, and nine terminals.
+- Detect rare draw scenarios such as four kans, four riichi, four winds, and nine terminals.
 - Emit a `ryukyoku` event with the specific reason.
 
 ## MJAI protocol adapter
