@@ -99,6 +99,7 @@ export default function GameBoard({
             body: JSON.stringify(body),
           }).catch(() => {});
         } else if (
+          waiting.includes(idx) &&
           allowedActions[idx]?.length === 1 &&
           allowedActions[idx][0] === "skip" &&
           !skipSent.current.has(idx)

@@ -6,7 +6,6 @@ import { applyEvent } from './applyEvent.js';
 import Button from './Button.jsx';
 import EventLogModal from './EventLogModal.jsx';
 import { formatEvent, eventToMjaiJson } from './eventLog.js';
-import { logNextActions } from './eventFlow.js';
 import './style.css';
 import { FiRefreshCw, FiEye, FiEyeOff, FiCheck, FiShuffle, FiSettings, FiCopy } from "react-icons/fi";
 
@@ -141,11 +140,6 @@ export default function App() {
       });
       if (evt.name === 'tsumo' || evt.name === 'ron' || evt.name === 'ryukyoku') {
         return;
-      }
-      if (evt.name !== 'next_actions' && gameId) {
-        logNextActions(server, gameId, log, (line) =>
-          setEvents((evts) => [...evts.slice(-9), line]),
-        );
       }
     } catch {
       // ignore parse errors

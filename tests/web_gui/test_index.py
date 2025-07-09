@@ -102,6 +102,11 @@ def test_app_opens_websocket() -> None:
     assert '/ws/${' in text
 
 
+def test_app_no_longer_fetches_next_actions() -> None:
+    text = Path('web_gui/App.jsx').read_text()
+    assert 'logNextActions' not in text
+
+
 def test_controls_use_server_prop() -> None:
     text = Path('web_gui/Controls.jsx').read_text()
     assert 'server' in text

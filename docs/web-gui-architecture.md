@@ -22,10 +22,9 @@ Each component receives only the data it needs so the interface remains simple a
 1. After the page loads, `App` fetches the current game state via `GET /games/{id}`.
 2. `App` opens a WebSocket to `/ws/{id}` and listens for events.
 3. Incoming events update the React state, which re-renders the `GameBoard`.
-4. The GUI queries `/games/{id}/next-actions` to determine which player acts next
-   and what actions are possible. The set of allowed actions for each player is
-   pushed to the client via an `allowed_actions` WebSocket event, so no extra
-   requests are needed when claims are possible.
+4. The server broadcasts `next_actions` events over the WebSocket whenever the
+   active player or their options change. This eliminates the need for HTTP
+   polling.
 5. If the only action is `draw`, the server performs it automatically and returns
    the subsequent player instead.
 6. Otherwise the GUI checks if that player is AI-controlled and either requests
