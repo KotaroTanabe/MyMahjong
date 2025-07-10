@@ -24,8 +24,14 @@ export function formatEvent(evt) {
       return `Turn start for player ${p}`;
     case 'next_actions':
       return `Next actions for player ${p}: ${evt.payload.actions.join(', ')}`;
-    case 'start_kyoku':
-      return `Start hand ${evt.payload.round}`;
+    case 'start_kyoku': {
+      const round = evt.payload?.round ?? 1;
+      const honba = evt.payload?.state?.honba ?? 0;
+      const winds = ['\u6771', '\u5357', '\u897f', '\u5317'];
+      const wind = winds[Math.floor((round - 1) / 4)] || winds[0];
+      const hand = ((round - 1) % 4) + 1;
+      return `=====${wind}${hand}\u5c40 ${honba}\u672c\u5834=================`;
+    }
     case 'start_game':
       return 'Game started';
     case 'ryukyoku':
