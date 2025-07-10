@@ -599,8 +599,6 @@ class MahjongEngine:
                     # All players have passed on the discard; draw for next player
                     next_player = self.state.current_player
                     self.draw_tile(next_player)
-                    # draw_tile advances current_player; reset to drawer
-                    self.state.current_player = next_player
             return
         if player_index != self.state.current_player:
             return
