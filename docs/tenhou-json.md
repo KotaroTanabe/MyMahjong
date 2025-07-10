@@ -76,3 +76,23 @@ specification:
 
 Despite these limitations, the produced logs can be consumed by tools
 expecting the basic `tenhou.net/6` structure.
+
+## Validation
+
+The `core.tenhou_validator` module provides a simple checker that ensures
+logs follow this specification. It enforces the following rules:
+
+1. Tile codes must be integers in the `11`&ndash;`47` range.
+2. Within a single hand each tile code may appear at most four times across
+   dora indicators, starting hands and action arrays.
+3. The last element of a hand is either `["流局"]` or
+   `["和了", [Δ0, Δ1, Δ2, Δ3], …]`.
+4. Top level fields must contain four player names, a non-empty rule
+   description with an ``aka`` value of ``0`` or higher and at least one hand
+   entry.
+
+Validate a JSON log file with:
+
+```bash
+python -m core.tenhou_validator path/to/log.json
+```

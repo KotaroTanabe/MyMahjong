@@ -13,6 +13,7 @@ __all__ = [
     "ai",
     "api",
     "tenhou_log",
+    "tenhou_validator",
     "models",
     "rules",
     "shanten_quiz",

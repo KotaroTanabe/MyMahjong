@@ -29,6 +29,7 @@ Future work will expand these components.
 - [x] Tenhou.net/6 log export ([format described](docs/tenhou-json.md))
 - [x] Copy Tenhou log after each hand
 - [x] Convert MJAI logs to Tenhou format
+- [x] Tenhou log validator
 - [ ] Full Tenhou log features (meld notation, yaku info)
 - [x] RuleSet interface for scoring
 - [x] Local single-player play via CLI
@@ -350,6 +351,15 @@ npm ci --prefix web_gui
 ```
 
 The GUI will automatically connect to the local FastAPI server's REST endpoints.
+
+### Validate Tenhou logs
+
+Use the validator to check that exported logs follow the documented
+format:
+
+```bash
+python -m core.tenhou_validator my_log.json
+```
 
 ## Deployed to
 
