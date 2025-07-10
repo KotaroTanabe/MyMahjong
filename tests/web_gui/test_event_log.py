@@ -65,3 +65,13 @@ def test_format_round_end() -> None:
     )
     output = run_node(code)
     assert output == 'Round ended'
+
+
+def test_format_start_kyoku() -> None:
+    code = (
+        "import { formatEvent } from './web_gui/eventLog.js';\n"
+        "const evt = {name:'start_kyoku', payload:{round:1, state:{honba:2}}};\n"
+        "console.log(formatEvent(evt));"
+    )
+    output = run_node(code)
+    assert output.startswith('=====\u67711\u5c40 2\u672c\u5834')
