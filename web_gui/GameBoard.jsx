@@ -34,6 +34,7 @@ export default function GameBoard({
   const lastDrawPlayer = useRef(null);
   const [error, setError] = useState(null);
   const [result, setResult] = useState(null);
+  const [selectingRiichi, setSelectingRiichi] = useState(false);
   // Players 1-3 (west, north, east) act as AI by default
   const [aiPlayers, setAiPlayers] = useState([false, true, true, true]);
   const [aiTypes] = useState(["simple", "simple", "simple", "simple"]);
@@ -93,6 +94,9 @@ export default function GameBoard({
 
   useEffect(() => {
     if (!gameId || result || state?.result) return;
+    if (state?.current_player !== 0 || (state?.waiting_for_claims?.length ?? 0) > 0) {
+      setSelectingRiichi(false);
+    }
     const waiting = state?.waiting_for_claims ?? [];
     if (waiting.length > 0) {
       if (JSON.stringify(waiting) !== JSON.stringify(prevWaiting.current)) {
@@ -248,6 +252,37 @@ export default function GameBoard({
   const remaining = state?.wall?.tiles?.length ?? 0;
   const dora = state?.wall?.tiles?.[0] ? [tileLabel(state.wall.tiles[0])] : [];
 
+  function startRiichi() {
+    setSelectingRiichi(true);
+  }
+
+  async function riichi(tile) {
+    setSelectingRiichi(false);
+    try {
+      if (!gameId) return;
+      if (typeof tile === "string") return;
+      log(
+        "debug",
+        `POST /games/${gameId}/action riichi - user selected tile`,
+      );
+      const resp = await fetch(`${server.replace(/\/$/, "")}/games/${gameId}/action`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ player_index: 0, action: "riichi", tile }),
+      });
+      if (!resp.ok) {
+        let message = `Riichi failed: ${resp.status}`;
+        try {
+          const data = await resp.json();
+          if (data.detail) message = data.detail;
+        } catch {}
+        setError(message);
+      }
+    } catch {
+      setError("Failed to contact server");
+    }
+  }
+
   async function discard(tile) {
     try {
       if (!gameId) return;
@@ -342,7 +377,11 @@ export default function GameBoard({
           melds={southMelds}
           riverTiles={(south?.river ?? []).map(tileLabel)}
           onDiscard={
-            state?.current_player === 0 && !aiPlayers[0] ? discard : undefined
+            state?.current_player === 0 && !aiPlayers[0]
+              ? selectingRiichi
+                ? riichi
+                : discard
+              : undefined
           }
           allowedActions={allowedActions[0] || []}
           state={state}
@@ -352,6 +391,8 @@ export default function GameBoard({
           activePlayer={state?.current_player}
           aiActive={aiPlayers[0]}
           toggleAI={toggleAI}
+          selectingRiichi={selectingRiichi}
+          onRiichi={startRiichi}
         />
       </div>
       <ResultModal

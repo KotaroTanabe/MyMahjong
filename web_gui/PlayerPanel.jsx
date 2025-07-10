@@ -22,6 +22,7 @@ export default function PlayerPanel({
   melds,
   riverTiles,
   onDiscard,
+  onRiichi,
   drawn = false,
   server,
   gameId,
@@ -32,6 +33,7 @@ export default function PlayerPanel({
   state,
   log = () => {},
   allowedActions = [],
+  selectingRiichi = false,
 }) {
   const waiting = state?.waiting_for_claims ?? [];
   const isWaiting = waiting.includes(playerIndex);
@@ -130,6 +132,8 @@ export default function PlayerPanel({
         lastDiscard={state?.last_discard}
         log={log}
         onError={setError}
+        onRiichi={onRiichi}
+        selectingRiichi={selectingRiichi}
       />
       {error && (
         <ErrorModal message={error} onClose={() => setError(null)} />
