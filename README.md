@@ -104,6 +104,7 @@ Future work will expand these components.
 - [x] Copy event log to clipboard
 - [x] MJAI JSON shown alongside log entries
 - [x] Event log modal with copy button
+- [x] Round separator lines in event log
 - [x] Debug logging of GUI API calls
 - [x] Error modal shows server rejection
 - [x] Chi option modal when multiple chi choices are available
