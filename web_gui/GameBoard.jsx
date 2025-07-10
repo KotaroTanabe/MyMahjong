@@ -17,6 +17,9 @@ export default function GameBoard({
   log = () => {},
   allowedActions = [[], [], [], []],
   aiDelay = 0,
+  showLog = null,
+  downloadTenhou = null,
+  downloadMjai = null,
 }) {
   const players = state?.players ?? [];
   const south = players[0];
@@ -355,6 +358,9 @@ export default function GameBoard({
         result={result}
         onClose={() => setResult(null)}
         onCopyLog={copyLog}
+        onShowLog={showLog}
+        onDownloadTenhou={downloadTenhou}
+        onDownloadMjai={downloadMjai}
       />
       <ErrorModal message={error} onClose={() => setError(null)} />
     </>

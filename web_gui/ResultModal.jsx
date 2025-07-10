@@ -1,8 +1,16 @@
 import React from 'react';
 import Hand from './Hand.jsx';
 import { tileToEmoji } from './tileUtils.js';
+import Button from './Button.jsx';
 
-export default function ResultModal({ result, onClose, onCopyLog }) {
+export default function ResultModal({
+  result,
+  onClose,
+  onCopyLog,
+  onShowLog,
+  onDownloadTenhou,
+  onDownloadMjai,
+}) {
   if (!result) return null;
   const { type, scores } = result;
   return (
@@ -57,10 +65,35 @@ export default function ResultModal({ result, onClose, onCopyLog }) {
               )}
             </>
           )}
-          {onCopyLog && (
-            <button className="button mt-2" onClick={onCopyLog}>
-              Copy Log
-            </button>
+          {(onShowLog || onCopyLog || onDownloadMjai || onDownloadTenhou) && (
+            <div className="field is-grouped mt-2">
+              {onShowLog && (
+                <div className="control">
+                  <Button aria-label="Show log" onClick={onShowLog}>
+                    Log
+                  </Button>
+                </div>
+              )}
+              {onCopyLog && (
+                <div className="control">
+                  <Button onClick={onCopyLog}>Copy Log</Button>
+                </div>
+              )}
+              {onDownloadMjai && (
+                <div className="control">
+                  <Button aria-label="Download MJAI log" onClick={onDownloadMjai}>
+                    MJAI
+                  </Button>
+                </div>
+              )}
+              {onDownloadTenhou && (
+                <div className="control">
+                  <Button aria-label="Download Tenhou log" onClick={onDownloadTenhou}>
+                    Tenhou
+                  </Button>
+                </div>
+              )}
+            </div>
           )}
         </div>
       </div>

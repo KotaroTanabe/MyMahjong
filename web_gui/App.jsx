@@ -430,6 +430,9 @@ export default function App() {
             log={log}
             allowedActions={allowedActions}
             aiDelay={aiDelay}
+            showLog={openLogModal}
+            downloadTenhou={downloadTenhou}
+            downloadMjai={downloadMjai}
           />
       ) : mode === 'practice' ? (
         <Practice server={server} sortHand={sortHand} log={log} />

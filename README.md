@@ -111,6 +111,7 @@ Future work will expand these components.
 - [x] Cancel in-flight next actions requests
 - [x] Download Tenhou log
 - [x] Download MJAI log
+- [x] Log access from result modal
 - [x] 何切る問題 mode
   - [x] CLI practice command
   - [x] AI recommendation
