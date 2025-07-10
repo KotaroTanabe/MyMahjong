@@ -15,6 +15,8 @@ export function Controls({
   lastDiscard = null,
   log = () => {},
   onError = () => {},
+  onRiichi = null,
+  selectingRiichi = false,
 }) {
   const [message, setMessage] = useState('');
   const [chiOptions, setChiOptions] = useState(null);
@@ -88,7 +90,11 @@ export function Controls({
   }
 
   function riichi() {
-    simple('riichi');
+    if (onRiichi) {
+      onRiichi();
+    } else {
+      simple('riichi');
+    }
   }
 
   function tsumo() {
@@ -115,6 +121,10 @@ export function Controls({
     active &&
     allowedActions.includes(action) &&
     (action !== 'skip' || waitingForClaims.length > 0);
+
+  if (selectingRiichi && playerIndex === activePlayer) {
+    return <div className="controls">Select tile for riichi</div>;
+  }
 
   if (waitingForRiichi && playerIndex === activePlayer) {
     return (
