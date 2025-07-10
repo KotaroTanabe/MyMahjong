@@ -760,6 +760,21 @@ class MahjongEngine:
         ):
             actions.add("riichi")
 
+        if (
+            player_index == state.current_player
+            and len(player.hand.tiles) % 3 == 2
+        ):
+            win_tile = player.hand.tiles[-1]
+            try:
+                result = self.calculate_score(player_index, win_tile)
+            except Exception:
+                result = None
+            if result and (
+                (result.cost and result.cost.get("total", 0) > 0)
+                or (result.han is not None and result.han > 0)
+            ):
+                actions.add("tsumo")
+
         return sorted(actions)
 
     def get_allowed_actions(self, player_index: int) -> list[str]:
