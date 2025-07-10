@@ -200,6 +200,12 @@ def test_result_modal_has_copy_button() -> None:
     text = Path('web_gui/ResultModal.jsx').read_text()
     assert 'Copy Log' in text
 
+def test_result_modal_has_log_options() -> None:
+    text = Path('web_gui/ResultModal.jsx').read_text()
+    assert 'aria-label="Show log"' in text
+    assert 'aria-label="Download MJAI log"' in text
+    assert 'aria-label="Download Tenhou log"' in text
+
 
 def test_event_log_modal_component_exists() -> None:
     modal = Path('web_gui/EventLogModal.jsx')
