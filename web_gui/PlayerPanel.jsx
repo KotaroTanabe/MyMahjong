@@ -34,6 +34,7 @@ export default function PlayerPanel({
   log = () => {},
   allowedActions = [],
   selectingRiichi = false,
+  onRetry = null,
 }) {
   const waiting = state?.waiting_for_claims ?? [];
   const isWaiting = waiting.includes(playerIndex);
@@ -144,7 +145,11 @@ export default function PlayerPanel({
         selectingRiichi={selectingRiichi}
       />
       {error && (
-        <ErrorModal message={error} onClose={() => setError(null)} />
+        <ErrorModal
+          message={error}
+          onClose={() => setError(null)}
+          onRetry={onRetry}
+        />
       )}
     </div>
   );

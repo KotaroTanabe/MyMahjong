@@ -7,7 +7,11 @@ import Button from './Button.jsx';
 import EventLogModal from './EventLogModal.jsx';
 import { formatEvent, eventToMjaiJson } from './eventLog.js';
 import { logNextActions } from './eventFlow.js';
-import { cleanupAllowedActions } from './allowedActions.js';
+import {
+  cleanupAllowedActions,
+  getAllAllowedActions,
+} from './allowedActions.js';
+import { getClaims } from './claims.js';
 import { cleanupNextActions } from './nextActions.js';
 import './style.css';
 import { FiRefreshCw, FiEye, FiEyeOff, FiCheck, FiShuffle, FiSettings, FiCopy } from "react-icons/fi";
@@ -113,6 +117,23 @@ export default function App() {
         }
     } catch {
       // ignore
+    }
+  }
+
+  async function refreshState() {
+    if (!gameId) return;
+    await fetchGameState(gameId);
+    const actions = await getAllAllowedActions(server, gameId, log, {
+      requestId: 'retry-actions',
+    });
+    if (actions && Array.isArray(actions)) {
+      setGameData((d) => ({ ...d, allowed: actions }));
+    }
+    const claims = await getClaims(server, gameId, log, {
+      requestId: 'retry-claims',
+    });
+    if (claims && !claims.error) {
+      setGameData((d) => ({ ...d, claims: claims.claims || [[], [], [], []] }));
     }
   }
 
@@ -448,6 +469,7 @@ export default function App() {
           showLog={openLogModal}
           downloadTenhou={downloadTenhou}
           downloadMjai={downloadMjai}
+          onRetry={refreshState}
         />
       ) : mode === 'practice' ? (
         <Practice server={server} sortHand={sortHand} log={log} />
