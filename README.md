@@ -112,6 +112,7 @@ Future work will expand these components.
 - [x] Error modal shows server rejection
 - [x] Conflict detail logged and displayed on 409 errors
 - [x] Player and action included in 409 error messages
+- [x] Custom engine exceptions with FastAPI handlers
 - [x] Chi option modal when multiple chi choices are available
 - [x] Cancel in-flight allowed actions requests
 - [x] Cancel in-flight next actions requests

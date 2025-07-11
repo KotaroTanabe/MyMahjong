@@ -1,5 +1,6 @@
 import pytest
 from core.mahjong_engine import MahjongEngine
+from core.exceptions import NotYourTurnError
 
 
 def test_draw_advances_turn() -> None:
@@ -21,7 +22,7 @@ def test_discard_advances_turn() -> None:
 def test_draw_out_of_turn_raises_error() -> None:
     engine = MahjongEngine()
     wrong_player = (engine.state.current_player + 1) % len(engine.state.players)
-    with pytest.raises(ValueError):
+    with pytest.raises(NotYourTurnError):
         engine.draw_tile(wrong_player)
 
 
@@ -29,5 +30,5 @@ def test_discard_out_of_turn_raises_error() -> None:
     engine = MahjongEngine()
     wrong_player = (engine.state.current_player + 1) % len(engine.state.players)
     tile = engine.state.players[wrong_player].hand.tiles[0]
-    with pytest.raises(ValueError):
+    with pytest.raises(NotYourTurnError):
         engine.discard_tile(wrong_player, tile)

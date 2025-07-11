@@ -17,4 +17,5 @@ __all__ = [
     "models",
     "rules",
     "shanten_quiz",
+    "exceptions",
 ]

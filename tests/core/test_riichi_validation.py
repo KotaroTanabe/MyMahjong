@@ -1,5 +1,6 @@
 import pytest
 from core.mahjong_engine import MahjongEngine
+from core.exceptions import InvalidActionError
 from core.models import Tile, Meld
 
 
@@ -25,7 +26,7 @@ def test_riichi_rejected_when_not_tenpai() -> None:
         Tile("pin", 1), Tile("pin", 2), Tile("sou", 3), Tile("sou", 4),
     ]
     player.hand.tiles = base + [Tile("sou", 6)]
-    with pytest.raises(ValueError):
+    with pytest.raises(InvalidActionError):
         engine.declare_riichi(0)
 
 
@@ -36,5 +37,5 @@ def test_riichi_rejected_with_open_meld() -> None:
     player.hand.melds.append(
         Meld(tiles=[Tile("man", 1)] * 3, type="pon")
     )
-    with pytest.raises(ValueError):
+    with pytest.raises(InvalidActionError):
         engine.declare_riichi(0)
