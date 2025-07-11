@@ -35,7 +35,9 @@ export function formatEvent(evt) {
     case 'start_game':
       return 'Game started';
     case 'ryukyoku':
-      return `Ryukyoku: ${evt.payload.reason}`;
+      return `\u6d41\u5c40（${evt.payload.reason}）／点数: ${
+        Array.isArray(evt.payload.scores) ? evt.payload.scores.join(' / ') : ''
+      }`;
     case 'round_end':
       return 'Round ended';
     case 'end_game':
