@@ -5,7 +5,7 @@ from mahjong.hand_calculating.hand_response import HandResponse
 
 
 class ScoringRuleSet(RuleSet):
-    def calculate_score(self, hand_tiles, melds, win_tile, *, is_tsumo=True):
+    def calculate_score(self, hand_tiles, melds, win_tile, *, is_tsumo=True, **_):
         return HandResponse(han=1, cost={"total": 8000})
 
 

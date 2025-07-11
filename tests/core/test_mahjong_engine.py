@@ -218,12 +218,12 @@ def test_ron_updates_scores_and_emits_event() -> None:
 
 
 class DummyRuleSet(RuleSet):
-    def calculate_score(self, hand_tiles, melds, win_tile, *, is_tsumo=True):
+    def calculate_score(self, hand_tiles, melds, win_tile, *, is_tsumo=True, **_):
         return HandResponse(han=1)
 
 
 class ScoringRuleSet(RuleSet):
-    def calculate_score(self, hand_tiles, melds, win_tile, *, is_tsumo=True):
+    def calculate_score(self, hand_tiles, melds, win_tile, *, is_tsumo=True, **_):
         return HandResponse(han=1, cost={"total": 8000})
 
 

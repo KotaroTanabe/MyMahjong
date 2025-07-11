@@ -8,6 +8,7 @@ from mahjong.hand_calculating.hand import HandCalculator
 from mahjong.hand_calculating.hand_config import HandConfig
 from mahjong.hand_calculating.hand_response import HandResponse
 from mahjong.tile import TilesConverter
+from mahjong.constants import EAST, SOUTH, WEST, NORTH
 
 from .models import Tile, Meld
 
@@ -36,6 +37,10 @@ class RuleSet:
         win_tile: Tile,
         *,
         is_tsumo: bool = True,
+        is_riichi: bool = False,
+        is_ippatsu: bool = False,
+        seat_wind: str | None = None,
+        round_wind: str | None = None,
     ) -> HandResponse:
         """Return scoring for the given hand."""
         raise NotImplementedError
@@ -54,6 +59,10 @@ class StandardRuleSet(RuleSet):
         win_tile: Tile,
         *,
         is_tsumo: bool = True,
+        is_riichi: bool = False,
+        is_ippatsu: bool = False,
+        seat_wind: str | None = None,
+        round_wind: str | None = None,
     ) -> HandResponse:
         counts = [0] * 34
         for t in hand_tiles:
@@ -66,7 +75,19 @@ class StandardRuleSet(RuleSet):
             _tile_to_index(win_tile), tiles_136
         )
         assert win_tile_136 is not None, "Winning tile not found in hand"
-        config = HandConfig(is_tsumo=is_tsumo)
+        wind_map = {
+            "east": EAST,
+            "south": SOUTH,
+            "west": WEST,
+            "north": NORTH,
+        }
+        config = HandConfig(
+            is_tsumo=is_tsumo,
+            is_riichi=is_riichi,
+            is_ippatsu=is_ippatsu,
+            player_wind=wind_map.get(seat_wind) if seat_wind else None,
+            round_wind=wind_map.get(round_wind) if round_wind else None,
+        )
         return self.calculator.estimate_hand_value(
             tiles_136, win_tile_136, config=config
         )

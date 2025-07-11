@@ -171,6 +171,7 @@ Future work will expand these components.
 - [x] Enforce tsumogiri after riichi
 - [x] Riichi event includes player score and stick count
 - [x] Ippatsu flag tracking for riichi wins
+- [x] Riichi & ippatsu yaku scoring
 - [x] Validate closed-hand tenpai requirement for riichi
  - [x] action dispatch helper
   - [x] seat wind tracking
