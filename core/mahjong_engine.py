@@ -211,7 +211,9 @@ class MahjongEngine:
         if self.state.waiting_for_claims:
             raise InvalidActionError("Waiting for other players to claim discard")
         if player_index != self.state.current_player:
-            raise NotYourTurnError("Not player's turn")
+            raise NotYourTurnError(
+                f"Player {player_index} attempted draw on player {self.state.current_player}'s turn"
+            )
         player = self.state.players[player_index]
         if len(player.hand.tiles) % 3 != 1:
             raise InvalidActionError("Cannot draw before discarding")
@@ -235,7 +237,9 @@ class MahjongEngine:
         if self.state.waiting_for_claims:
             raise InvalidActionError("Waiting for other players to claim discard")
         if player_index != self.state.current_player:
-            raise NotYourTurnError("Not player's turn")
+            raise NotYourTurnError(
+                f"Player {player_index} attempted discard on player {self.state.current_player}'s turn"
+            )
         player = self.state.players[player_index]
         if player.must_tsumogiri and player.hand.tiles and player.hand.tiles[-1] is not tile:
             raise InvalidActionError(

@@ -21,14 +21,24 @@ def test_discard_advances_turn() -> None:
 
 def test_draw_out_of_turn_raises_error() -> None:
     engine = MahjongEngine()
-    wrong_player = (engine.state.current_player + 1) % len(engine.state.players)
-    with pytest.raises(NotYourTurnError):
+    current = engine.state.current_player
+    wrong_player = (current + 1) % len(engine.state.players)
+    with pytest.raises(NotYourTurnError) as exc:
         engine.draw_tile(wrong_player)
+    assert (
+        str(exc.value)
+        == f"Player {wrong_player} attempted draw on player {current}'s turn"
+    )
 
 
 def test_discard_out_of_turn_raises_error() -> None:
     engine = MahjongEngine()
-    wrong_player = (engine.state.current_player + 1) % len(engine.state.players)
+    current = engine.state.current_player
+    wrong_player = (current + 1) % len(engine.state.players)
     tile = engine.state.players[wrong_player].hand.tiles[0]
-    with pytest.raises(NotYourTurnError):
+    with pytest.raises(NotYourTurnError) as exc:
         engine.discard_tile(wrong_player, tile)
+    assert (
+        str(exc.value)
+        == f"Player {wrong_player} attempted discard on player {current}'s turn"
+    )
