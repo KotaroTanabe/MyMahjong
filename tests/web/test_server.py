@@ -133,6 +133,19 @@ def test_discard_action_endpoint() -> None:
     assert resp.json() == {"status": "ok"}
 
 
+def test_action_logging_includes_request(caplog: pytest.LogCaptureFixture) -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    state = api.get_state()
+    tile = state.players[state.current_player].hand.tiles[0]
+    with caplog.at_level(logging.INFO):
+        resp = client.post(
+            "/games/1/action",
+            json={"player_index": state.current_player, "action": DISCARD, "tile": tile.__dict__},
+        )
+    assert resp.status_code == 200
+    assert any("POST /games/1/action" in rec.message and "discard" in rec.message for rec in caplog.records)
+
+
 def test_discard_invalid_tile_returns_409() -> None:
     client.post("/games", json={"players": ["A", "B", "C", "D"]})
     state = api.get_state()
