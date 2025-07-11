@@ -63,7 +63,7 @@ describe('GameBoard discard', () => {
     const label = `Discard ${tileDescription({ suit: 'man', value: 1 })}`;
     const btn = screen.getAllByRole('button', { name: label })[0];
     await userEvent.click(btn);
-    const modal = await screen.findByText('Action not allowed');
+    const modal = await screen.findByText(/Action not allowed/);
     expect(modal).toBeTruthy();
   });
 });

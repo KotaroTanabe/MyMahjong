@@ -287,7 +287,10 @@ def game_action(game_id: int, req: ActionRequest) -> dict:
             req.action,
             allowed,
         )
-        raise HTTPException(status_code=409, detail="Action not allowed")
+        raise HTTPException(
+            status_code=409,
+            detail=f"Action not allowed: player {req.player_index} attempted {req.action}. allowed={allowed}",
+        )
     if req.action == "draw":
         try:
             tile = api.draw_tile(req.player_index)
@@ -369,7 +372,10 @@ def game_action(game_id: int, req: ActionRequest) -> dict:
                 req.player_index,
                 allowed_players,
             )
-            raise HTTPException(status_code=409, detail="Action not allowed")
+            raise HTTPException(
+                status_code=409,
+                detail=f"Action not allowed: player {req.player_index} attempted auto. allowed players={allowed_players}",
+            )
         try:
             tile = api.auto_play_turn(
                 req.player_index,

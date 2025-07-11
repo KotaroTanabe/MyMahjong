@@ -453,7 +453,9 @@ def test_action_rejected_when_not_allowed(caplog: pytest.LogCaptureFixture) -> N
             },
         )
     assert resp.status_code == 409
-    assert resp.json()["detail"] == "Action not allowed"
+    detail = resp.json()["detail"]
+    assert detail.startswith("Action not allowed:")
+    assert "player 1" in detail and "chi" in detail
     assert any("disallowed action" in rec.message for rec in caplog.records)
 
 
