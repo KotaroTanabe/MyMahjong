@@ -26,8 +26,8 @@ def test_tenhou_log_includes_all_starting_hands() -> None:
     engine.end_game()
     data = json.loads(events_to_tenhou_json(engine.pop_events()))
     kyoku = data["log"][0]
-    # After meta arrays we have four starting hand arrays
-    hands = kyoku[4:8]
+    # After meta arrays hands appear every three elements
+    hands = [kyoku[i] for i in range(4, 16, 3)]
     assert len(hands[0]) in {13, 14}
     assert all(len(hand) == 13 for hand in hands[1:])
 
