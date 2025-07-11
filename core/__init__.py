@@ -19,4 +19,5 @@ __all__ = [
     "shanten_quiz",
     "exceptions",
     "actions",
+    "engine_manager",
 ]

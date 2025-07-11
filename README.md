@@ -159,6 +159,7 @@ Future work will expand these components.
 - [x] configurable ruleset
 - [x] detailed event log (player actions and backend responses)
 - [x] current player tracking
+- [x] Multiple concurrent game instances via EngineManager
 - [x] Wait for all players to skip before next draw
 - [x] `claims_closed` event emitted when the claim window ends
 - [x] `round_end` event emitted between hands

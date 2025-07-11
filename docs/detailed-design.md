@@ -77,7 +77,7 @@ This layer allows the CLI and web server to run AI opponents without embedding A
 
 ## Build and Test Strategy
 
-The repository will eventually include automated linting, type checking, and tests via GitHub Actions. Each package will contain its own unit tests. The monorepo layout allows a single CI workflow to install dependencies and execute all checks. Since no source code is present yet, these jobs currently do nothing.
+The repository now contains several Python packages along with a React front-end. Continuous integration runs flake8 and mypy, builds the packages, and executes unit tests including the GUI's Vitest suite. A single GitHub Actions workflow installs all dependencies with `uv` and verifies every package before merging changes.
 
 ---
 
