@@ -203,7 +203,7 @@ def test_allowed_actions_offer_riichi_on_turn() -> None:
     state = api.start_game(["A", "B", "C", "D"])
     state.players[0].hand.tiles = TENPAI_TILES.copy()
     actions = api.get_allowed_actions(0)
-    assert actions == [RIICHI]
+    assert RIICHI in actions and "discard" in actions
 
 
 def test_allowed_actions_exclude_riichi_when_not_tenpai() -> None:
