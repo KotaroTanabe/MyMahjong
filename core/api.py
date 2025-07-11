@@ -297,6 +297,29 @@ def get_all_allowed_actions() -> list[list[str]]:
     ]
 
 
+def get_claim_options() -> list[list[str]]:
+    """Return claim options for every player.
+
+    Each list contains actions like ``chi`` or ``ron`` if the player can
+    claim the most recent discard. Players not able to act have an empty list.
+    """
+
+    assert _engine is not None, "Game not started"
+    state = _engine.state
+    opts: list[list[str]] = []
+    for i in range(len(state.players)):
+        if i in state.waiting_for_claims:
+            actions = [
+                a
+                for a in _engine.get_allowed_actions(i)
+                if a in {CHI, PON, KAN, RON, SKIP}
+            ]
+            opts.append(actions)
+        else:
+            opts.append([])
+    return opts
+
+
 def _player_actions(player_index: int) -> list[str]:
     """Return full action list for ``player_index`` including draw/discard."""
 
@@ -323,7 +346,9 @@ def get_next_actions() -> tuple[int, list[str]]:
 
     while True:
         state = _engine.state
-        idx = state.waiting_for_claims[0] if state.waiting_for_claims else state.current_player
+        if state.waiting_for_claims:
+            return state.current_player, []
+        idx = state.current_player
         actions = _player_actions(idx)
         if actions == [DRAW]:
             _engine.draw_tile(idx)

@@ -233,6 +233,18 @@ def chi_options(game_id: int, player_index: int) -> dict:
     return {"options": [dump(o) for o in options]}
 
 
+@app.get("/games/{game_id}/claims")
+def claim_options(game_id: int) -> dict:
+    """Return discard claim options for all players."""
+
+    try:
+        with manager.use_engine(game_id):
+            claims = api.get_claim_options()
+    except KeyError:
+        raise HTTPException(status_code=404, detail="Game not started")
+    return {"claims": claims}
+
+
 @app.get("/games/{game_id}/allowed-actions")
 def allowed_actions_all(game_id: int) -> dict:
     """Return allowed actions for all players."""
@@ -511,9 +523,15 @@ async def game_events(websocket: WebSocket, game_id: int) -> None:
                 if event.name == "discard":
                     try:
                         with manager.use_engine(game_id):
+                            claims = api.get_claim_options()
                             updated = api.get_all_allowed_actions()
                     except KeyError:
+                        claims = None
                         updated = None
+                    if claims is not None:
+                        await websocket.send_json(
+                            {"name": "claims", "payload": {"claims": claims}}
+                        )
                     if updated is not None:
                         prev_actions = updated
                         await websocket.send_json(

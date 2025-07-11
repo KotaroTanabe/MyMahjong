@@ -42,6 +42,10 @@ export function applyEvent(state, event) {
         .filter((i) => i !== event.payload.player_index);
       break;
     }
+    case 'claims': {
+      newState.claim_options = event.payload.claims || [];
+      break;
+    }
     case 'meld': {
       const p = newState.players[event.payload.player_index];
       if (p) {

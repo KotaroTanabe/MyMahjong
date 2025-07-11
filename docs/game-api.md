@@ -56,6 +56,7 @@ translate them directly.
 | `draw_tile`        | `player_index`, `Tile`, `source`        | Tile drawn from the wall. When emitted after a kan, `source` will be `"dead_wall"`. |
 | `discard`          | `player_index`, `Tile`                  | Tile placed into the river. |
 | `meld`             | `player_index`, `Meld`                  | Meld call (chi/pon/kan). |
+| `claims`           | claim options per player                | Sent after each discard. |
 | `claims_closed`    | none                                    | No player called the discard. |
 | `riichi`           | `player_index`                          | Player declares riichi after their discard. |
 | `tsumo`            | `player_index`, `HandResponse`, scores  | Self-drawn win. |
@@ -84,6 +85,7 @@ know which player is expected to act and what actions they may take:
 
 - `GET /games/{id}/next-actions` returns the next player index and that player's
   allowed actions.
+- `GET /games/{id}/claims` returns claim options for every player when waiting on a discard.
 - `GET /games/{id}/allowed-actions/{player_index}` returns the allowed actions for
   a single player.
 - `GET /games/{id}/allowed-actions` returns the allowed actions for all players.

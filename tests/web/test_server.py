@@ -318,6 +318,28 @@ def test_websocket_streams_events() -> None:
         assert data["name"] == "draw_tile"
 
 
+def test_claims_endpoint_and_ws_event() -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    with client.websocket_connect("/ws/1") as ws:
+        ws.receive_json()  # allowed_actions
+        ws.receive_json()  # start_game
+        ws.receive_json()  # start_kyoku
+        state = api.get_state()
+        tile = state.players[state.current_player].hand.tiles[0]
+        client.post(
+            "/games/1/action",
+            json={"player_index": state.current_player, "action": DISCARD, "tile": tile.__dict__},
+        )
+        disc = ws.receive_json()
+        assert disc["name"] == "discard"
+        claims = ws.receive_json()
+        assert claims["name"] == "claims"
+        data = client.get("/games/1/claims")
+        assert data.status_code == 200
+        body = data.json()
+        assert len(body["claims"]) == 4
+
+
 def test_practice_endpoints() -> None:
     prob = client.get("/practice")
     assert prob.status_code == 200
@@ -480,6 +502,25 @@ def test_next_actions_endpoint_deduplicates_events() -> None:
     assert resp2.status_code == 200
     events = api.pop_events()
     assert not any(e.name == "next_actions" for e in events)
+
+
+def test_next_actions_after_claims() -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    state = api.get_state()
+    tile = state.players[state.current_player].hand.tiles[0]
+    client.post(
+        "/games/1/action",
+        json={"player_index": state.current_player, "action": DISCARD, "tile": tile.__dict__},
+    )
+    resp = client.get("/games/1/next-actions")
+    assert resp.status_code == 200
+    assert resp.json()["actions"] == []
+    for p in list(state.waiting_for_claims):
+        client.post("/games/1/action", json={"player_index": p, "action": SKIP})
+    resp = client.get("/games/1/next-actions")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "discard" in data["actions"]
 
 
 def test_action_rejected_when_not_allowed(caplog: pytest.LogCaptureFixture) -> None:
