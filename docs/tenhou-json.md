@@ -75,9 +75,8 @@ Our implementation currently supports only a subset of this
 specification:
 
 - Ura dora markers are always empty.
-- Meld calls are omitted – only draws and discards are recorded.
-- The result array stores only score deltas without yaku or winner
-  information.
+- The result array stores only score deltas and a simple win record
+  without detailed point strings or yaku information.
 
 Despite these limitations, the produced logs can be consumed by tools
 expecting the basic `tenhou.net/6` structure.
