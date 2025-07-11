@@ -80,7 +80,8 @@ export default function GameBoard({
       enable &&
       idx === state?.current_player &&
       gameId &&
-      hasDrawnTile(state?.players?.[idx], idx)
+      hasDrawnTile(state?.players?.[idx], idx) &&
+      (allowedActions[idx]?.includes("discard") ?? false)
     ) {
       const tiles = state.players[idx].hand.tiles;
       const tile = tiles[tiles.length - 1];
@@ -151,8 +152,9 @@ export default function GameBoard({
     const last = state?.last_discard;
     const count = tiles.length;
     const drew = lastDrawPlayer.current === current;
+    const allowed = allowedActions[current] || [];
     prevPlayer.current = current;
-    if (count % 3 === 1 && last) {
+    if (count % 3 === 1 && last && allowed.includes("draw")) {
       const action = aiPlayers[current] ? "auto" : "draw";
       const body = { player_index: current, action };
       if (action === "auto") body.ai_type = aiTypes[current];
@@ -161,7 +163,7 @@ export default function GameBoard({
         `POST /games/${gameId}/action ${action} - next player action`,
       );
       sendAction(body, action === "auto");
-    } else if (count % 3 === 2 && aiPlayers[current] && drew) {
+    } else if (count % 3 === 2 && aiPlayers[current] && drew && allowed.includes("discard")) {
       const body = {
         player_index: current,
         action: "auto",

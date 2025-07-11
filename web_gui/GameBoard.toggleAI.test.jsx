@@ -22,12 +22,24 @@ describe('GameBoard AI toggle mid-turn', () => {
     global.fetch = fetchMock;
     const state = mockState();
     const { getAllByLabelText, rerender } = render(
-      <GameBoard state={state} server="http://s" gameId="1" />,
+      <GameBoard
+        state={state}
+        server="http://s"
+        gameId="1"
+        allowedActions={[['draw'], [], [], []]}
+      />,
     );
     await Promise.resolve();
     fetchMock.mockClear();
     // simulate draw
-    rerender(<GameBoard state={mockState(14)} server="http://s" gameId="1" />);
+    rerender(
+      <GameBoard
+        state={mockState(14)}
+        server="http://s"
+        gameId="1"
+        allowedActions={[['discard'], [], [], []]}
+      />,
+    );
     await Promise.resolve();
     fireEvent.click(getAllByLabelText('Enable AI')[0]);
     await Promise.resolve();
