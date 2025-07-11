@@ -120,13 +120,15 @@ export default function GameBoard({
       }
       waiting.forEach((idx) => {
         if (aiPlayers[idx]) {
-          const body = {
-            player_index: idx,
-            action: "auto",
-            ai_type: aiTypes[idx],
-          };
-          log("debug", `POST /games/${gameId}/action auto - resolve claims`);
-          sendAction(body, true);
+          if (allowedActions[idx]?.length) {
+            const body = {
+              player_index: idx,
+              action: "auto",
+              ai_type: aiTypes[idx],
+            };
+            log("debug", `POST /games/${gameId}/action auto - resolve claims`);
+            sendAction(body, true);
+          }
         } else if (
           allowedActions[idx]?.length === 1 &&
           allowedActions[idx][0] === "skip" &&
