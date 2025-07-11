@@ -12,7 +12,7 @@ import {
   getAllAllowedActions,
 } from './allowedActions.js';
 import { getClaims } from './claims.js';
-import { cleanupNextActions } from './nextActions.js';
+import { cleanupNextActions, getNextActions } from './nextActions.js';
 import './style.css';
 import { FiRefreshCw, FiEye, FiEyeOff, FiCheck, FiShuffle, FiSettings, FiCopy } from "react-icons/fi";
 
