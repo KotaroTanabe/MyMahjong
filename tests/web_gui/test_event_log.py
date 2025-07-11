@@ -75,3 +75,13 @@ def test_format_start_kyoku() -> None:
     )
     output = run_node(code)
     assert output.startswith('=====\u67711\u5c40 2\u672c\u5834')
+
+
+def test_format_ryukyoku() -> None:
+    code = (
+        "import { formatEvent } from './web_gui/eventLog.js';\n"
+        "const evt = {name:'ryukyoku', payload:{reason:'wall_empty', scores:[25000,25000,25000,25000]}};\n"
+        "console.log(formatEvent(evt));"
+    )
+    output = run_node(code)
+    assert output.startswith('\u6d41\u5c40（wall_empty）')

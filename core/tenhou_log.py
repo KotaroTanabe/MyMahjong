@@ -62,6 +62,11 @@ def events_to_tenhou_json(events: List[GameEvent]) -> str:
             kyoku.append(["和了", delta, []])
             log.append(kyoku)
             kyoku = None
+        elif ev.name == "ryukyoku" and kyoku is not None:
+            kyoku.extend(per_player)
+            kyoku.append(["流局"])
+            log.append(kyoku)
+            kyoku = None
 
     data = {
         "title": ["", ""],

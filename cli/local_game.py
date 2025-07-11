@@ -23,6 +23,11 @@ def run_game(players: list[str], *, max_rounds: int = 8) -> None:
         name = state.players[player_index].name
         tile = api.auto_play_turn()
         click.echo(f"{name} drew {tile.suit}{tile.value} and discarded it")
+        for ev in api.pop_events():
+            if ev.name == "ryukyoku":
+                reason = ev.payload.get("reason")
+                scores = ev.payload.get("scores")
+                click.echo(f"\u6d41\u5c40({reason}) \u2192 scores: {scores}")
     if not api.is_game_over():
         api.end_game()
     click.echo("Game ended")
