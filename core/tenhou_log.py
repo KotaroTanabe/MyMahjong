@@ -52,6 +52,16 @@ def meld_to_string(meld: Meld) -> str:
     return "".join(codes)
 
 
+def _ura_dora_from_state(state: GameState) -> list[Tile]:
+    """Return ura dora indicators based on ``state``."""
+    ura: list[Tile] = []
+    for i in range(len(state.dora_indicators)):
+        idx = len(state.dead_wall) - (4 + 2 * i)
+        if idx >= 0:
+            ura.append(state.dead_wall[idx])
+    return ura
+
+
 def events_to_tenhou_json(events: List[GameEvent]) -> str:
     """Serialize ``events`` into a tenhou.net/6 JSON log."""
     names: List[str] = []
@@ -62,10 +72,13 @@ def events_to_tenhou_json(events: List[GameEvent]) -> str:
     riichi_pending: list[bool] = []
     start_scores: list[int] = []
     last_discard_player: int | None = None
+    current_state: GameState | None = None
+    next_dora_index = 0
 
     for ev in events:
         if ev.name == "start_kyoku":
             state: GameState = ev.payload["state"]
+            current_state = state
             names = [p.name for p in state.players]
             kyoku = [
                 [ev.payload.get("dealer", 0), state.honba, state.riichi_sticks],
@@ -73,6 +86,7 @@ def events_to_tenhou_json(events: List[GameEvent]) -> str:
                 [tile_to_code(t) for t in state.dora_indicators],
                 [],
             ]
+            next_dora_index = len(state.dora_indicators)
             for player in state.players:
                 kyoku.append([tile_to_code(t) for t in player.hand.tiles])
             takes = [[] for _ in state.players]
@@ -83,6 +97,16 @@ def events_to_tenhou_json(events: List[GameEvent]) -> str:
         elif ev.name == "draw_tile":
             p = ev.payload["player_index"]
             takes[p].append(tile_to_code(ev.payload["tile"]))
+            if (
+                ev.payload.get("from_dead_wall")
+                and current_state is not None
+                and kyoku is not None
+            ):
+                if next_dora_index < len(current_state.dora_indicators):
+                    kyoku[2].append(
+                        tile_to_code(current_state.dora_indicators[next_dora_index])
+                    )
+                    next_dora_index += 1
             last_discard_player = None
         elif ev.name == "discard":
             p = ev.payload["player_index"]
@@ -120,6 +144,10 @@ def events_to_tenhou_json(events: List[GameEvent]) -> str:
                 if han is not None and fu is not None:
                     point_str = f"{han}han{fu}fu"
             result_info = [win_player, deal_in, win_player, point_str, *yaku_list]
+            if current_state is not None:
+                kyoku[3] = [
+                    tile_to_code(t) for t in _ura_dora_from_state(current_state)
+                ]
             for i in range(4):
                 kyoku.append(takes[i])
                 kyoku.append(dahai[i])

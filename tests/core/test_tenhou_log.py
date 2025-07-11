@@ -1,5 +1,10 @@
 from core.mahjong_engine import MahjongEngine
-from core.tenhou_log import events_to_tenhou_json, mjai_log_to_tenhou_json
+from core.tenhou_log import (
+    events_to_tenhou_json,
+    mjai_log_to_tenhou_json,
+    _ura_dora_from_state,
+    tile_to_code,
+)
 from core.models import Tile
 import json
 from dataclasses import asdict, is_dataclass
@@ -74,3 +79,32 @@ def test_events_to_tenhou_json_draw() -> None:
     data = json.loads(events_to_tenhou_json(engine.pop_events()))
     kyoku = data["log"][0]
     assert kyoku[-1][0] == "全員不聴"
+
+
+def test_tenhou_log_updates_dora_on_kan() -> None:
+    engine = MahjongEngine()
+    tiles = [Tile("man", 1) for _ in range(4)]
+    engine.state.players[0].hand.tiles = tiles.copy()
+    engine.call_kan(0, tiles)
+    tile = engine.state.players[0].hand.tiles[0]
+    engine.declare_tsumo(0, tile)
+    engine.end_game()
+    events = engine.pop_events()
+    state = next(e.payload["state"] for e in events if e.name == "start_kyoku")
+    data = json.loads(events_to_tenhou_json(events))
+    kyoku = data["log"][0]
+    assert len(kyoku[2]) == len(state.dora_indicators)
+    assert len(kyoku[3]) == len(state.dora_indicators)
+
+
+def test_tenhou_log_ura_dora_on_win() -> None:
+    engine = MahjongEngine()
+    tile = engine.state.players[0].hand.tiles[0]
+    engine.declare_tsumo(0, tile)
+    engine.end_game()
+    events = engine.pop_events()
+    state = next(e.payload["state"] for e in events if e.name == "start_kyoku")
+    expected = [tile_to_code(t) for t in _ura_dora_from_state(state)]
+    data = json.loads(events_to_tenhou_json(events))
+    kyoku = data["log"][0]
+    assert kyoku[3] == expected
