@@ -70,6 +70,7 @@ Future work will expand these components.
 - [x] Allowed actions pushed via WebSocket events
 - [x] Next actions API
 - [x] Next actions logged to event history
+- [x] EngineManager tracks games by ID
 - [x] GUI fetches next actions after every event
 - [x] GUI follows next actions from core
 - [x] Meld and win actions via GUI

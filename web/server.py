@@ -12,8 +12,6 @@ from core import api, models, shanten_quiz
 from core.models import GameEvent
 
 app = FastAPI()
-# very small in-memory id tracker until multi-game support exists
-_next_game_id = 1
 _ws_connections: set[WebSocket] = set()
 logger = logging.getLogger(__name__)
 
@@ -25,9 +23,9 @@ class GameActionError(Exception):
 def handle_conflict(func):
     """Convert ``GameActionError`` to an HTTP 409 error with logging."""
 
-    def wrapper(req: "ActionRequest"):
+    def wrapper(game_id: int, req: "ActionRequest"):
         try:
-            return func(req)
+            return func(game_id, req)
         except GameActionError as err:
             _raise_conflict(req.player_index, req.action, str(err))
 
@@ -81,33 +79,31 @@ def health() -> dict[str, str]:
 @app.post("/games")
 def create_game(req: CreateGameRequest) -> dict:
     """Create a new game and return its id and state."""
-    global _next_game_id
     if req.max_rounds is not None:
-        state = api.start_game(req.players, max_rounds=req.max_rounds)
+        game_id, state = api.manager.create_game(
+            req.players, max_rounds=req.max_rounds
+        )
     else:
-        state = api.start_game(req.players)
-    game_id = _next_game_id
-    _next_game_id += 1
+        game_id, state = api.manager.create_game(req.players)
     return {"id": game_id, **asdict(state)}
 
 
 @app.get("/games/{game_id}")
 def get_game(game_id: int) -> dict:
     """Return basic game state for the given game id."""
-    # For now we ignore game_id and return the singleton engine state
     try:
-        return asdict(api.get_state())
-    except AssertionError:
+        state = api.manager.get_state(game_id)
+    except KeyError:
         raise HTTPException(status_code=404, detail="Game not started")
+    return asdict(state)
 
 
 @app.get("/games/{game_id}/log")
 def get_log(game_id: int) -> dict:
     """Return the Tenhou-format log for the current game."""
-    _ = game_id  # placeholder for future multi-game support
     try:
-        data = api.get_tenhou_log()
-    except AssertionError:
+        data = api.manager.get_tenhou_log(game_id)
+    except KeyError:
         raise HTTPException(status_code=404, detail="Game not started")
     return {"log": data}
 
@@ -116,10 +112,9 @@ def get_log(game_id: int) -> dict:
 def get_mjai_log(game_id: int) -> dict:
     """Return the MJAI-format event log for the current game."""
 
-    _ = game_id  # placeholder for future multi-game support
     try:
-        data = api.get_mjai_log()
-    except AssertionError:
+        data = api.manager.get_mjai_log(game_id)
+    except KeyError:
         raise HTTPException(status_code=404, detail="Game not started")
     return {"log": data}
 
@@ -128,10 +123,9 @@ def get_mjai_log(game_id: int) -> dict:
 def get_events(game_id: int) -> dict:
     """Return raw event history."""
 
-    _ = game_id  # placeholder for future multi-game support
     try:
-        events = [asdict(e) for e in api.get_event_history()]
-    except AssertionError:
+        events = [asdict(e) for e in api.manager.get_event_history(game_id)]
+    except KeyError:
         raise HTTPException(status_code=404, detail="Game not started")
     return {"events": events}
 
@@ -179,11 +173,9 @@ def shanten_quiz_check(req: QuizRequest) -> dict:
 @app.get("/games/{game_id}/shanten/{player_index}")
 def shanten_number(game_id: int, player_index: int) -> dict:
     """Return the shanten number for ``player_index`` in the current game."""
-
-    _ = game_id  # placeholder for future multi-game support
     try:
-        state = api.get_state()
-    except AssertionError:
+        state = api.manager.get_state(game_id)
+    except KeyError:
         raise HTTPException(status_code=404, detail="Game not started")
     try:
         tiles = state.players[player_index].hand.tiles
@@ -196,11 +188,9 @@ def shanten_number(game_id: int, player_index: int) -> dict:
 @app.get("/games/{game_id}/allowed-actions/{player_index}")
 def allowed_actions(game_id: int, player_index: int) -> dict:
     """Return allowed actions for ``player_index``."""
-
-    _ = game_id  # placeholder for future multi-game support
     try:
-        actions = api.get_allowed_actions(player_index)
-    except AssertionError:
+        actions = api.manager.get_allowed_actions(game_id, player_index)
+    except KeyError:
         raise HTTPException(status_code=404, detail="Game not started")
     except IndexError:
         raise HTTPException(status_code=404, detail="Player not found")
@@ -211,10 +201,9 @@ def allowed_actions(game_id: int, player_index: int) -> dict:
 def chi_options(game_id: int, player_index: int) -> dict:
     """Return chi tile pairs for ``player_index``."""
 
-    _ = game_id  # placeholder for future multi-game support
     try:
-        options = api.get_chi_options(player_index)
-    except AssertionError:
+        options = api.manager.get_chi_options(game_id, player_index)
+    except KeyError:
         raise HTTPException(status_code=404, detail="Game not started")
     except IndexError:
         raise HTTPException(status_code=404, detail="Player not found")
@@ -228,11 +217,9 @@ def chi_options(game_id: int, player_index: int) -> dict:
 @app.get("/games/{game_id}/allowed-actions")
 def allowed_actions_all(game_id: int) -> dict:
     """Return allowed actions for all players."""
-
-    _ = game_id  # placeholder for future multi-game support
     try:
-        actions = api.get_all_allowed_actions()
-    except AssertionError:
+        actions = api.manager.get_all_allowed_actions(game_id)
+    except KeyError:
         raise HTTPException(status_code=404, detail="Game not started")
     return {"actions": actions}
 
@@ -241,34 +228,20 @@ def allowed_actions_all(game_id: int) -> dict:
 def next_actions(game_id: int) -> dict:
     """Return the next actor index and their allowed actions."""
 
-    _ = game_id  # placeholder for future multi-game support
     try:
-        idx, actions = api.get_next_actions()
-    except AssertionError:
+        idx, actions = api.manager.get_next_actions(game_id)
+    except KeyError:
         raise HTTPException(status_code=404, detail="Game not started")
-    if api._engine is not None:
-        payload = {"player_index": idx, "actions": actions}
-        last = api._engine.event_history[-1] if api._engine.event_history else None
-        if (
-            last is None
-            or last.name != "next_actions"
-            or last.payload.get("player_index") != idx
-            or last.payload.get("actions") != actions
-        ):
-            evt = GameEvent(name="next_actions", payload=payload)
-            api._engine.events.append(evt)
-            api._engine.event_history.append(evt)
+    api.record_next_actions(game_id, idx, actions)
     return {"player_index": idx, "actions": actions}
 
 
 @app.post("/games/{game_id}/start-kyoku")
 async def start_kyoku_route(game_id: int, req: StartKyokuRequest) -> dict:
     """Start a new hand and notify connected clients."""
-
-    _ = game_id  # placeholder for future multi-game support
     try:
-        state = api.start_kyoku(req.dealer, req.round)
-    except AssertionError:
+        state = api.manager.start_kyoku(game_id, req.dealer, req.round)
+    except KeyError:
         raise HTTPException(status_code=404, detail="Game not started")
 
     event = {
@@ -298,9 +271,9 @@ class ActionRequest(BaseModel):
 
 
 @handle_conflict
-def _draw(req: ActionRequest) -> dict:
+def _draw(game_id: int, req: ActionRequest) -> dict:
     try:
-        tile = api.draw_tile(req.player_index)
+        tile = api.manager.draw_tile(game_id, req.player_index)
     except IndexError:
         raise GameActionError("Wall is empty")
     except ValueError as err:
@@ -309,106 +282,106 @@ def _draw(req: ActionRequest) -> dict:
 
 
 @handle_conflict
-def _discard(req: ActionRequest) -> dict:
+def _discard(game_id: int, req: ActionRequest) -> dict:
     if not req.tile:
         raise GameActionError("Tile required")
     tile = models.Tile(**req.tile)
     try:
-        api.discard_tile(req.player_index, tile)
+        api.manager.discard_tile(game_id, req.player_index, tile)
     except ValueError as err:
         raise GameActionError(str(err))
     return {"status": "ok"}
 
 
 @handle_conflict
-def _chi(req: ActionRequest) -> dict:
+def _chi(game_id: int, req: ActionRequest) -> dict:
     if not req.tiles:
         raise GameActionError("Tiles required")
     tiles = [models.Tile(**t) for t in req.tiles]
     try:
-        api.call_chi(req.player_index, tiles)
+        api.manager.call_chi(game_id, req.player_index, tiles)
     except ValueError as err:
         raise GameActionError(str(err))
     return {"status": "ok"}
 
 
 @handle_conflict
-def _pon(req: ActionRequest) -> dict:
+def _pon(game_id: int, req: ActionRequest) -> dict:
     if not req.tiles:
         raise GameActionError("Tiles required")
     tiles = [models.Tile(**t) for t in req.tiles]
     try:
-        api.call_pon(req.player_index, tiles)
+        api.manager.call_pon(game_id, req.player_index, tiles)
     except ValueError as err:
         raise GameActionError(str(err))
     return {"status": "ok"}
 
 
 @handle_conflict
-def _kan(req: ActionRequest) -> dict:
+def _kan(game_id: int, req: ActionRequest) -> dict:
     if not req.tiles:
         raise GameActionError("Tiles required")
     tiles = [models.Tile(**t) for t in req.tiles]
     try:
-        api.call_kan(req.player_index, tiles)
+        api.manager.call_kan(game_id, req.player_index, tiles)
     except ValueError as err:
         raise GameActionError(str(err))
     return {"status": "ok"}
 
 
 @handle_conflict
-def _riichi(req: ActionRequest) -> dict:
+def _riichi(game_id: int, req: ActionRequest) -> dict:
     if not req.tile:
         raise GameActionError("Tile required")
     tile = models.Tile(**req.tile)
     try:
-        api.discard_tile(req.player_index, tile)
+        api.manager.discard_tile(game_id, req.player_index, tile)
     except ValueError as err:
         raise GameActionError(str(err))
     try:
-        api.declare_riichi(req.player_index)
+        api.manager.declare_riichi(game_id, req.player_index)
     except ValueError as err:
         raise GameActionError(str(err))
     return {"status": "ok"}
 
 
 @handle_conflict
-def _tsumo(req: ActionRequest) -> dict:
+def _tsumo(game_id: int, req: ActionRequest) -> dict:
     if not req.tile:
         raise GameActionError("Tile required")
     tile = models.Tile(**req.tile)
     try:
-        result = api.declare_tsumo(req.player_index, tile)
+        result = api.manager.declare_tsumo(game_id, req.player_index, tile)
     except ValueError as err:
         raise GameActionError(str(err))
     return result.__dict__
 
 
 @handle_conflict
-def _ron(req: ActionRequest) -> dict:
+def _ron(game_id: int, req: ActionRequest) -> dict:
     if not req.tile:
         raise GameActionError("Tile required")
     tile = models.Tile(**req.tile)
     try:
-        result = api.declare_ron(req.player_index, tile)
+        result = api.manager.declare_ron(game_id, req.player_index, tile)
     except ValueError as err:
         raise GameActionError(str(err))
     return result.__dict__
 
 
 @handle_conflict
-def _skip(req: ActionRequest) -> dict:
+def _skip(game_id: int, req: ActionRequest) -> dict:
     try:
-        api.skip(req.player_index)
+        api.manager.skip(game_id, req.player_index)
     except ValueError as err:
         raise GameActionError(str(err))
     return {"status": "ok"}
 
 
 @handle_conflict
-def _auto(req: ActionRequest) -> dict:
+def _auto(game_id: int, req: ActionRequest) -> dict:
     ai_type = req.ai_type or "simple"
-    state = api.get_state()
+    state = api.manager.get_state(game_id)
     allowed_players = (
         state.waiting_for_claims if state.waiting_for_claims else [state.current_player]
     )
@@ -417,7 +390,8 @@ def _auto(req: ActionRequest) -> dict:
             f"Action not allowed: player {req.player_index} attempted auto. allowed players={allowed_players}"
         )
     try:
-        tile = api.auto_play_turn(
+        tile = api.manager.auto_play_turn(
+            game_id,
             req.player_index,
             ai_type=ai_type,
             claim_players=[req.player_index],
@@ -444,10 +418,9 @@ ACTION_HANDLERS = {
 @app.post("/games/{game_id}/action")
 def game_action(game_id: int, req: ActionRequest) -> dict:
     """Perform a simple game action and return its result."""
-    _ = game_id  # placeholder for future multi-game support
     try:
-        allowed = api.get_allowed_actions(req.player_index)
-    except AssertionError:
+        allowed = api.manager.get_allowed_actions(game_id, req.player_index)
+    except KeyError:
         raise HTTPException(status_code=404, detail="Game not started")
     except IndexError:
         raise HTTPException(status_code=404, detail="Player not found")
@@ -467,29 +440,28 @@ def game_action(game_id: int, req: ActionRequest) -> dict:
     handler = ACTION_HANDLERS.get(req.action)
     if not handler:
         raise HTTPException(status_code=400, detail="Unknown action")
-    return handler(req)
+    return handler(game_id, req)
 
 
 @app.websocket("/ws/{game_id}")
 async def game_events(websocket: WebSocket, game_id: int) -> None:
     """Stream game events to the client."""
-    _ = game_id  # placeholder for future multi-game support
     await websocket.accept()
     _ws_connections.add(websocket)
     prev_actions: list[list[str]] | None = None
     try:
         # send initial allowed actions if a game is running
         try:
-            prev_actions = api.get_all_allowed_actions()
+            prev_actions = api.manager.get_all_allowed_actions(game_id)
             await websocket.send_json(
                 {"name": "allowed_actions", "payload": {"actions": prev_actions}}
             )
-        except AssertionError:
+        except KeyError:
             prev_actions = None
         while True:
             try:
-                events = api.pop_events()
-            except AssertionError:
+                events = api.manager.pop_events(game_id)
+            except KeyError:
                 events = []
             for event in events:
                 await websocket.send_json(asdict(event))
@@ -497,8 +469,8 @@ async def game_events(websocket: WebSocket, game_id: int) -> None:
                     prev_actions = None
                 if event.name == "discard":
                     try:
-                        updated = api.get_all_allowed_actions()
-                    except AssertionError:
+                        updated = api.manager.get_all_allowed_actions(game_id)
+                    except KeyError:
                         updated = None
                     if updated is not None:
                         prev_actions = updated
@@ -506,8 +478,8 @@ async def game_events(websocket: WebSocket, game_id: int) -> None:
                             {"name": "allowed_actions", "payload": {"actions": updated}}
                         )
             try:
-                actions = api.get_all_allowed_actions()
-            except AssertionError:
+                actions = api.manager.get_all_allowed_actions(game_id)
+            except KeyError:
                 actions = None
             if actions is not None and actions != prev_actions:
                 prev_actions = actions

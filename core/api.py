@@ -3,9 +3,13 @@ from __future__ import annotations
 
 from .mahjong_engine import MahjongEngine
 from .models import GameState, Tile, GameEvent, GameAction
+from .engine_manager import EngineManager
 from .ai import AI_REGISTRY
 from . import practice, shanten_quiz
 from mahjong.hand_calculating.hand_response import HandResponse
+
+# Engine manager for multi-game support
+manager = EngineManager()
 
 # Singleton engine instance used by interfaces
 _engine: MahjongEngine | None = None
@@ -378,3 +382,9 @@ def apply_action(action: GameAction) -> object | None:
         return _engine.end_game()
 
     raise ValueError(f"Unknown action: {action.type}")
+
+
+def record_next_actions(game_id: int, player_index: int, actions: list[str]) -> None:
+    """Log a ``next_actions`` event for ``game_id``."""
+
+    manager.record_next_actions(game_id, player_index, actions)
