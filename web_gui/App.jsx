@@ -7,6 +7,8 @@ import Button from './Button.jsx';
 import EventLogModal from './EventLogModal.jsx';
 import { formatEvent, eventToMjaiJson } from './eventLog.js';
 import { logNextActions } from './eventFlow.js';
+import { cleanupAllowedActions } from './allowedActions.js';
+import { cleanupNextActions } from './nextActions.js';
 import './style.css';
 import { FiRefreshCw, FiEye, FiEyeOff, FiCheck, FiShuffle, FiSettings, FiCopy } from "react-icons/fi";
 
@@ -397,6 +399,8 @@ export default function App() {
     }
     return () => {
       wsRef.current?.close();
+      cleanupAllowedActions();
+      cleanupNextActions();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

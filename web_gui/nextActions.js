@@ -1,8 +1,18 @@
 const controllers = new Map();
 
+export function cleanupNextActions() {
+  for (const controller of controllers.values()) {
+    controller.abort();
+  }
+  controllers.clear();
+}
+
 function prepareSignal(id, signal) {
+  if (!id) {
+    console.warn('getNextActions requires a requestId');
+    return signal;
+  }
   if (signal) return signal;
-  if (!id) return undefined;
   const prev = controllers.get(id);
   if (prev) prev.abort();
   const controller = new AbortController();

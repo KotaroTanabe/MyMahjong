@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { getAllowedActions, getAllAllowedActions, applyAllowedActionsEvent } from './allowedActions.js';
+import { getAllowedActions, getAllAllowedActions, applyAllowedActionsEvent, cleanupAllowedActions } from './allowedActions.js';
 
 describe('getAllowedActions', () => {
   it('fetches server actions', async () => {
@@ -32,6 +32,32 @@ describe('getAllowedActions', () => {
     await Promise.resolve();
     getAllowedActions('http://s', '1', 0, undefined, { requestId: 'x' });
     await Promise.resolve();
+    expect(aborted).toBe(true);
+  });
+
+  it('warns when requestId missing', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const fetchMock = vi.fn(() =>
+      Promise.resolve({ ok: true, json: () => Promise.resolve({ actions: [] }) })
+    );
+    global.fetch = fetchMock;
+    await getAllowedActions('http://s', '1', 0);
+    expect(warn).toHaveBeenCalled();
+    warn.mockRestore();
+  });
+
+  it('cleanup aborts pending controllers', async () => {
+    let aborted = false;
+    const fetchMock = vi.fn((url, opts) => {
+      opts.signal.addEventListener('abort', () => {
+        aborted = true;
+      });
+      return new Promise(() => {});
+    });
+    global.fetch = fetchMock;
+    getAllowedActions('http://s', '1', 0, undefined, { requestId: 'c' });
+    await Promise.resolve();
+    cleanupAllowedActions();
     expect(aborted).toBe(true);
   });
 });
