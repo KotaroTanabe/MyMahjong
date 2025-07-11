@@ -1,6 +1,7 @@
 from fastapi.testclient import TestClient
 import logging
 import pytest
+import time
 
 from web.server import app
 from core.actions import DRAW, DISCARD, CHI, PON, KAN, RIICHI, TSUMO, RON, SKIP, AUTO
@@ -351,6 +352,25 @@ def test_claims_endpoint_and_ws_event() -> None:
         assert data.status_code == 200
         body = data.json()
         assert len(body["claims"]) == 4
+
+
+def test_websocket_pushes_events_immediately() -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    with client.websocket_connect("/ws/1") as ws:
+        ws.receive_json()  # allowed_actions
+        ws.receive_json()  # start_game
+        ws.receive_json()  # start_kyoku
+        state = api.get_state()
+        tile = state.players[state.current_player].hand.tiles[0]
+        start = time.monotonic()
+        client.post(
+            "/games/1/action",
+            json={"player_index": state.current_player, "action": DISCARD, "tile": tile.__dict__},
+        )
+        data = ws.receive_json()
+        duration = time.monotonic() - start
+        assert data["name"] == "discard"
+        assert duration < 0.05
 
 
 def test_practice_endpoints() -> None:

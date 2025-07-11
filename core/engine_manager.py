@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from typing import Dict, Iterator, Tuple
+import asyncio
 
 from .mahjong_engine import MahjongEngine
 from .models import GameEvent, GameState
@@ -38,6 +39,18 @@ class EngineManager:
         events = engine.events[:]
         engine.events.clear()
         return events
+
+    def register_listener(self, game_id: int) -> asyncio.Queue[GameEvent]:
+        """Return a queue that receives events for ``game_id``."""
+        engine = self.get_engine(game_id)
+        return engine.register_observer()
+
+    def unregister_listener(
+        self, game_id: int, queue: asyncio.Queue[GameEvent]
+    ) -> None:
+        """Remove ``queue`` from the engine's listener list."""
+        engine = self.get_engine(game_id)
+        engine.unregister_observer(queue)
 
     @contextmanager
     def use_engine(self, game_id: int) -> Iterator[None]:

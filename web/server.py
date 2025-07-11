@@ -505,9 +505,10 @@ async def game_events(websocket: WebSocket, game_id: int) -> None:
     await websocket.accept()
     _ws_connections.add(websocket)
     prev_actions: list[list[str]] | None = None
+    queue: asyncio.Queue[GameEvent] | None = None
     try:
-        # send initial allowed actions if a game is running
         try:
+            queue = manager.register_listener(game_id)
             with manager.use_engine(game_id):
                 prev_actions = api.get_all_allowed_actions()
             await websocket.send_json(
@@ -515,33 +516,32 @@ async def game_events(websocket: WebSocket, game_id: int) -> None:
             )
         except KeyError:
             prev_actions = None
+            queue = None
         while True:
-            try:
-                with manager.use_engine(game_id):
-                    events = api.pop_events()
-            except KeyError:
-                events = []
-            for event in events:
-                await websocket.send_json(asdict(event))
-                if event.name == "round_end":
-                    prev_actions = None
-                if event.name == "discard":
-                    try:
-                        with manager.use_engine(game_id):
-                            claims = api.get_claim_options()
-                            updated = api.get_all_allowed_actions()
-                    except KeyError:
-                        claims = None
-                        updated = None
-                    if claims is not None:
-                        await websocket.send_json(
-                            {"name": "claims", "payload": {"claims": claims}}
-                        )
-                    if updated is not None:
-                        prev_actions = updated
-                        await websocket.send_json(
-                            {"name": "allowed_actions", "payload": {"actions": updated}}
-                        )
+            if queue is None:
+                await asyncio.sleep(0.1)
+                continue
+            event = await queue.get()
+            await websocket.send_json(asdict(event))
+            if event.name == "round_end":
+                prev_actions = None
+            if event.name == "discard":
+                try:
+                    with manager.use_engine(game_id):
+                        claims = api.get_claim_options()
+                        updated = api.get_all_allowed_actions()
+                except KeyError:
+                    claims = None
+                    updated = None
+                if claims is not None:
+                    await websocket.send_json(
+                        {"name": "claims", "payload": {"claims": claims}}
+                    )
+                if updated is not None:
+                    prev_actions = updated
+                    await websocket.send_json(
+                        {"name": "allowed_actions", "payload": {"actions": updated}}
+                    )
             try:
                 with manager.use_engine(game_id):
                     actions = api.get_all_allowed_actions()
@@ -552,8 +552,12 @@ async def game_events(websocket: WebSocket, game_id: int) -> None:
                 await websocket.send_json(
                     {"name": "allowed_actions", "payload": {"actions": actions}}
                 )
-            await asyncio.sleep(0.1)
     except WebSocketDisconnect:
         pass
     finally:
         _ws_connections.discard(websocket)
+        if queue is not None:
+            try:
+                manager.unregister_listener(game_id, queue)
+            except KeyError:
+                pass

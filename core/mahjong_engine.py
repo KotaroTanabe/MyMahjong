@@ -9,6 +9,7 @@ from .rules import RuleSet, StandardRuleSet, _tile_to_index
 from .exceptions import InvalidActionError, NotYourTurnError
 from mahjong.shanten import Shanten
 from mahjong.hand_calculating.hand_response import HandResponse
+import asyncio
 from dataclasses import asdict
 from typing import Any
 
@@ -37,6 +38,7 @@ class MahjongEngine:
         self.state.current_player = 0
         self.events: list[GameEvent] = []
         self.event_history: list[GameEvent] = []
+        self._queues: list[asyncio.Queue[GameEvent]] = []
         self._cached_allowed_actions: list[list[str]] | None = None
         self._claims_open = False
         self.game_over = False
@@ -103,6 +105,11 @@ class MahjongEngine:
         evt = GameEvent(name=name, payload=payload)
         self.events.append(evt)
         self.event_history.append(evt)
+        for q in list(self._queues):
+            try:
+                q.put_nowait(evt)
+            except asyncio.QueueFull:  # pragma: no cover - unbounded queue
+                pass
 
     def _close_claims(self) -> None:
         """Emit ``claims_closed`` if a discard claim window was open."""
@@ -140,6 +147,17 @@ class MahjongEngine:
         events = self.events[:]
         self.events.clear()
         return events
+
+    def register_observer(self) -> asyncio.Queue[GameEvent]:
+        """Return a queue that receives events as they occur."""
+        queue: asyncio.Queue[GameEvent] = asyncio.Queue()
+        self._queues.append(queue)
+        return queue
+
+    def unregister_observer(self, queue: asyncio.Queue[GameEvent]) -> None:
+        """Remove ``queue`` from the observer list if present."""
+        if queue in self._queues:
+            self._queues.remove(queue)
 
     def get_event_history(self) -> list[GameEvent]:
         """Return all events emitted since the engine was created."""
