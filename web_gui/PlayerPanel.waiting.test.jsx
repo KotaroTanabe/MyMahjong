@@ -22,9 +22,9 @@ function Panel(waiting) {
 }
 
 describe('PlayerPanel waiting-player class', () => {
-  it('adds waiting-player when waiting for claim', () => {
+  it('does not add waiting-player when waiting for claim', () => {
     const { container } = render(Panel([1]));
     const div = container.querySelector('.player-panel');
-    expect(div.className).toContain('waiting-player');
+    expect(div.className).not.toContain('waiting-player');
   });
 });

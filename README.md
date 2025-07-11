@@ -98,7 +98,7 @@ Future work will expand these components.
 - [x] Icon tooltips for peek and sort toggles
 - [x] Favicon with mahjong emoji
 - [x] Highlight active player on board
-- [x] Different color when waiting on calls
+- [x] Discard tile highlighted when waiting on calls
 - [x] 6x4 discard grid rendering
 - [x] Modal error display on failed discard actions
 - [x] Server-side action validation

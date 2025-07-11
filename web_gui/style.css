@@ -204,10 +204,6 @@
   background-color: #fff4ce;
 }
 
-.waiting-player .player-header {
-  font-weight: bold;
-  background-color: #d0f0ff;
-}
 
 .waiting-discard {
   box-shadow: 0 0 0 2px #3399ff;
