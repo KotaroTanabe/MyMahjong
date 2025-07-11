@@ -1,4 +1,6 @@
 from fastapi.testclient import TestClient
+import logging
+import pytest
 
 from web.server import app
 from core import api, models
@@ -435,22 +437,24 @@ def test_next_actions_endpoint_deduplicates_events() -> None:
     assert not any(e.name == "next_actions" for e in events)
 
 
-def test_action_rejected_when_not_allowed() -> None:
+def test_action_rejected_when_not_allowed(caplog: pytest.LogCaptureFixture) -> None:
     client.post("/games", json={"players": ["A", "B", "C", "D"]})
-    resp = client.post(
-        "/games/1/action",
-        json={
-            "player_index": 1,
-            "action": "chi",
-            "tiles": [
-                {"suit": "man", "value": 1},
-                {"suit": "man", "value": 2},
-                {"suit": "man", "value": 3},
-            ],
-        },
-    )
+    with caplog.at_level(logging.INFO):
+        resp = client.post(
+            "/games/1/action",
+            json={
+                "player_index": 1,
+                "action": "chi",
+                "tiles": [
+                    {"suit": "man", "value": 1},
+                    {"suit": "man", "value": 2},
+                    {"suit": "man", "value": 3},
+                ],
+            },
+        )
     assert resp.status_code == 409
     assert resp.json()["detail"] == "Action not allowed"
+    assert any("disallowed action" in rec.message for rec in caplog.records)
 
 
 def test_action_succeeds_when_allowed() -> None:
