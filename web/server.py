@@ -452,6 +452,11 @@ ACTION_HANDLERS = {
 @app.post("/games/{game_id}/action")
 def game_action(game_id: int, req: ActionRequest) -> dict:
     """Perform a simple game action and return its result."""
+    logger.info(
+        "POST /games/%s/action %s",
+        game_id,
+        {k: v for k, v in req.dict().items() if v is not None},
+    )
     try:
         with manager.use_engine(game_id):
             allowed = api.get_allowed_actions(req.player_index)
