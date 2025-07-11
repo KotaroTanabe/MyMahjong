@@ -49,4 +49,21 @@ describe('GameBoard discard', () => {
     const modal = await screen.findByText('Discard failed: 409');
     expect(modal).toBeTruthy();
   });
+  it('shows server detail on conflict', async () => {
+    const fetchMock = vi.fn(() =>
+      Promise.resolve({
+        ok: false,
+        status: 409,
+        json: () => Promise.resolve({ detail: 'Action not allowed' }),
+      })
+    );
+    global.fetch = fetchMock;
+    const state = { current_player: 0, players: mockPlayers(), wall: { tiles: [] } };
+    render(<GameBoard state={state} server="http://s" gameId="1" />);
+    const label = `Discard ${tileDescription({ suit: 'man', value: 1 })}`;
+    const btn = screen.getAllByRole('button', { name: label })[0];
+    await userEvent.click(btn);
+    const modal = await screen.findByText('Action not allowed');
+    expect(modal).toBeTruthy();
+  });
 });
