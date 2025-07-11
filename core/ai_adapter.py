@@ -83,6 +83,9 @@ def json_to_game_state(message: str) -> GameState:
             dora_indicators=[
                 decode_tile(t) for t in wall_data.get("dora_indicators", [])
             ],
+            ura_dora_indicators=[
+                decode_tile(t) for t in wall_data.get("ura_dora_indicators", [])
+            ],
             wanpai_size=wall_data.get("wanpai_size", 14),
         )
 
@@ -90,6 +93,7 @@ def json_to_game_state(message: str) -> GameState:
         players=[decode_player(p) for p in data.get("players", [])],
         wall=wall,
         dora_indicators=[decode_tile(t) for t in data.get("dora_indicators", [])],
+        ura_dora_indicators=[decode_tile(t) for t in data.get("ura_dora_indicators", [])],
         dead_wall=[decode_tile(t) for t in data.get("dead_wall", [])],
         current_player=data.get("current_player", 0),
         dealer=data.get("dealer", 0),

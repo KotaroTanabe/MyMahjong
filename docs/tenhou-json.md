@@ -74,7 +74,8 @@ and losing players, a hand value string and the yaku.
 Our implementation currently supports only a subset of this
 specification:
 
-- Ura dora markers are always empty.
+- Ura dora indicators are recorded but only revealed in the log when a
+  hand is won.
 - The result array stores only score deltas and a simple win record
   without detailed point strings or yaku information.
 

@@ -86,3 +86,26 @@ def test_events_to_tenhou_json_kyoku_num() -> None:
     data = json.loads(events_to_tenhou_json(engine.pop_events()))
     kyoku_info = data["log"][0][0]
     assert kyoku_info == [(3 - 1) * 4 + 2, 1, 0]
+
+
+def test_dora_indicator_appended_on_kan() -> None:
+    engine = MahjongEngine()
+    tiles = [Tile("man", 5) for _ in range(4)]
+    engine.state.players[0].hand.tiles = tiles.copy()
+    engine.call_kan(0, tiles)
+    win_tile = engine.state.players[0].hand.tiles[0]
+    engine.declare_tsumo(0, win_tile)
+    engine.end_game()
+    data = json.loads(events_to_tenhou_json(engine.pop_events()))
+    kyoku = data["log"][0]
+    assert len(kyoku[2]) == 2
+
+
+def test_ura_dora_recorded_on_win() -> None:
+    engine = MahjongEngine()
+    tile = engine.state.players[0].hand.tiles[0]
+    engine.declare_tsumo(0, tile)
+    engine.end_game()
+    data = json.loads(events_to_tenhou_json(engine.pop_events()))
+    kyoku = data["log"][0]
+    assert len(kyoku[3]) == 1

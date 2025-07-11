@@ -29,6 +29,7 @@ class Wall:
     tiles: List[Tile] = field(default_factory=list)
     dead_wall: List[Tile] = field(default_factory=list)
     dora_indicators: List[Tile] = field(default_factory=list)
+    ura_dora_indicators: List[Tile] = field(default_factory=list)
     wanpai_size: int = 14
 
     def __post_init__(self) -> None:
@@ -46,6 +47,10 @@ class Wall:
             self.dora_indicators = [self.dead_wall[-5]]
         else:
             self.dora_indicators = []
+        if self.dead_wall:
+            self.ura_dora_indicators = [self.dead_wall[-1]]
+        else:
+            self.ura_dora_indicators = []
 
     @property
     def remaining_yama_tiles(self) -> int:
