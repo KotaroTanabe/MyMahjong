@@ -57,8 +57,7 @@ def events_to_tenhou_json(events: List[GameEvent]) -> str:
     names: List[str] = []
     log: List[Any] = []
     kyoku: list[Any] | None = None
-    takes: list[list[Any]] = []
-    dahai: list[list[Any]] = []
+    player_data: list[list[list[Any]]] = []  # [ [hand, takes, dahai], ... ]
     riichi_pending: list[bool] = []
     start_scores: list[int] = []
     last_discard_player: int | None = None
@@ -73,23 +72,26 @@ def events_to_tenhou_json(events: List[GameEvent]) -> str:
                 [tile_to_code(t) for t in state.dora_indicators],
                 [],
             ]
+            player_data = []
             for player in state.players:
-                kyoku.append([tile_to_code(t) for t in player.hand.tiles])
-            takes = [[] for _ in state.players]
-            dahai = [[] for _ in state.players]
+                player_data.append([
+                    [tile_to_code(t) for t in player.hand.tiles],
+                    [],
+                    [],
+                ])
             riichi_pending = [False for _ in state.players]
             start_scores = [p.score for p in state.players]
             last_discard_player = None
         elif ev.name == "draw_tile":
             p = ev.payload["player_index"]
-            takes[p].append(tile_to_code(ev.payload["tile"]))
+            player_data[p][1].append(tile_to_code(ev.payload["tile"]))
             last_discard_player = None
         elif ev.name == "discard":
             p = ev.payload["player_index"]
             code = tile_to_code(ev.payload["tile"])
-            dahai[p].append(code)
+            player_data[p][2].append(code)
             if riichi_pending and riichi_pending[p]:
-                takes[p].append(f"r{code}")
+                player_data[p][1].append(f"r{code}")
                 riichi_pending[p] = False
             last_discard_player = p
         elif ev.name == "riichi":
@@ -99,9 +101,9 @@ def events_to_tenhou_json(events: List[GameEvent]) -> str:
         elif ev.name == "meld":
             p = ev.payload["player_index"]
             meld: Meld = ev.payload["meld"]
-            takes[p].append(meld_to_string(meld))
+            player_data[p][1].append(meld_to_string(meld))
             if meld.type == "kan" and meld.called_from is not None:
-                dahai[p].append(0)
+                player_data[p][2].append(0)
         elif ev.name in {"tsumo", "ron"} and kyoku is not None:
             scores = ev.payload.get("scores", start_scores)
             delta = [scores[i] - start_scores[i] for i in range(len(scores))]
@@ -121,25 +123,25 @@ def events_to_tenhou_json(events: List[GameEvent]) -> str:
                     point_str = f"{han}han{fu}fu"
             result_info = [win_player, deal_in, win_player, point_str, *yaku_list]
             for i in range(4):
-                kyoku.append(takes[i])
-                kyoku.append(dahai[i])
+                kyoku.extend(player_data[i])
             kyoku.append(["和了", delta, result_info])
             log.append(kyoku)
             kyoku = None
+            player_data = []
         elif ev.name == "ryukyoku" and kyoku is not None:
             scores = ev.payload.get("scores", start_scores)
             delta = [scores[i] - start_scores[i] for i in range(len(scores))]
             reason_key = ev.payload.get("reason")
             reason = _REASON_MAP.get(str(reason_key), str(reason_key or "不明"))
             for i in range(4):
-                kyoku.append(takes[i])
-                kyoku.append(dahai[i])
+                kyoku.extend(player_data[i])
             if any(delta):
                 kyoku.append(["流局", delta])
             else:
                 kyoku.append([reason])
             log.append(kyoku)
             kyoku = None
+            player_data = []
 
     data = {
         "title": ["", ""],

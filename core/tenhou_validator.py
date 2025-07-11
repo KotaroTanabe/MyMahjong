@@ -86,26 +86,31 @@ def validate_round(rd: Any, idx: int) -> None:
         for x in arr:
             tile_counts[x] = tile_counts.get(x, 0) + 1
 
-    # starting hands
-    for pos in range(4, 8):
-        hand = rd[pos]
+    # per-player arrays
+    pos = 4
+    for player in range(4):
+        if len(rd) <= pos + 2:
+            raise ValidationError(f"round[{idx}] にplayer {player}の配列が不足しています")
+        hand, take, discard = rd[pos], rd[pos + 1], rd[pos + 2]
         if not isinstance(hand, list) or not all(isinstance(x, int) and 11 <= x <= 47 for x in hand):
             raise ValidationError(f"round[{idx}][{pos}] は11<=牌<=47の整数配列である必要があります")
         for x in hand:
             tile_counts[x] = tile_counts.get(x, 0) + 1
 
-    # per-player action arrays
-    for pos in range(8, len(rd) - 1):
-        arr = rd[pos]
-        if not isinstance(arr, list):
-            raise ValidationError(f"round[{idx}][{pos}] は配列である必要があります")
-        for item in arr:
-            if isinstance(item, int):
-                if not 11 <= item <= 47:
-                    raise ValidationError(f"round[{idx}][{pos}] の牌番号は11<=x<=47である必要があります")
-                tile_counts[item] = tile_counts.get(item, 0) + 1
-            elif not isinstance(item, str):
-                raise ValidationError(f"round[{idx}][{pos}] の要素は整数か文字列である必要があります")
+        for arr_idx, arr in enumerate([take, discard], start=pos + 1):
+            if not isinstance(arr, list):
+                raise ValidationError(f"round[{idx}][{arr_idx}] は配列である必要があります")
+            for item in arr:
+                if isinstance(item, int):
+                    if item != 0 and not 11 <= item <= 47:
+                        raise ValidationError(
+                            f"round[{idx}][{arr_idx}] の牌番号は11<=x<=47または0である必要があります"
+                        )
+                    if item != 0:
+                        tile_counts[item] = tile_counts.get(item, 0) + 1
+                elif not isinstance(item, str):
+                    raise ValidationError(f"round[{idx}][{arr_idx}] の要素は整数か文字列である必要があります")
+        pos += 3
 
     for tile, cnt in tile_counts.items():
         if cnt > 4:
