@@ -36,8 +36,9 @@ export default function PlayerPanel({
   selectingRiichi = false,
 }) {
   const waiting = state?.waiting_for_claims ?? [];
-  const isWaiting = waiting.includes(playerIndex);
   const active = playerIndex === activePlayer;
+  const highlightDiscard =
+    waiting.length > 0 && state?.last_discard_player === playerIndex;
   const allowedActionsMemo = useMemo(
     () => allowedActions,
     [allowedActions.join(',')]
@@ -96,7 +97,7 @@ export default function PlayerPanel({
     return () => controller.abort();
   }, [server, gameId, playerIndex, aiActive]);
   return (
-    <div className={`${seat} seat player-panel${active ? ' active-player' : ''}${!active && isWaiting ? ' waiting-player' : ''}`}>
+    <div className={`${seat} seat player-panel${active ? ' active-player' : ''}`}>
       <div className="player-header">
         <span className="riichi-stick">{player?.riichi ? '|' : '\u00a0'}</span>
         <span className="player-name">
@@ -115,6 +116,7 @@ export default function PlayerPanel({
       <River
         tiles={riverTiles}
         style={{ marginBottom: 'calc(var(--tile-font-size) * 0.8)' }}
+        highlightIndex={highlightDiscard ? riverTiles.length - 1 : -1}
       />
       <div className="hand-with-melds" style={{ position: 'relative', zIndex: 1 }}>
         <Hand tiles={hand} onDiscard={onDiscard} drawn={drawn} />

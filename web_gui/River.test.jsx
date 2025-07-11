@@ -10,4 +10,12 @@ describe('River layout', () => {
     expect(cells[0].textContent).toBe('A');
     expect(cells[1].textContent).toBe('B');
   });
+
+  it('highlights specified tile', () => {
+    const { container } = render(
+      <River tiles={['A', 'B']} highlightIndex={1} />,
+    );
+    const cells = container.querySelectorAll('.river .mj-tile');
+    expect(cells[1].className).toContain('waiting-discard');
+  });
 });

@@ -9,22 +9,27 @@ function Panel(waiting) {
       player={{}}
       hand={[]}
       melds={[]}
-      riverTiles={[]}
+      riverTiles={["A"]}
       server=""
       gameId="1"
       playerIndex={1}
       activePlayer={0}
       aiActive={false}
-      state={{ waiting_for_claims: waiting, players: [{}, {}, {}, {}] }}
+      state={{
+        waiting_for_claims: waiting,
+        last_discard_player: 1,
+        last_discard: { suit: 'man', value: 1 },
+        players: [{}, {}, {}, {}],
+      }}
       allowedActions={[]}
     />
   );
 }
 
-describe('PlayerPanel waiting-player class', () => {
-  it('adds waiting-player when waiting for claim', () => {
+describe('PlayerPanel waiting discard highlight', () => {
+  it('highlights last discard when waiting for claim', () => {
     const { container } = render(Panel([1]));
-    const div = container.querySelector('.player-panel');
-    expect(div.className).toContain('waiting-player');
+    const tile = container.querySelector('.river .waiting-discard');
+    expect(tile).not.toBeNull();
   });
 });

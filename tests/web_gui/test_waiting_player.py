@@ -1,15 +1,14 @@
 from pathlib import Path
 
 
-def test_waiting_player_css() -> None:
+def test_waiting_discard_css() -> None:
     css = Path('web_gui/style.css').read_text()
-    assert '.waiting-player' in css
-    start = css.index('.waiting-player')
+    assert '.waiting-discard' in css
+    start = css.index('.waiting-discard')
     block = css[start:css.index('}', start)]
-    assert 'background-color' in block
-    assert '#fff4ce' not in block
+    assert 'box-shadow' in block
 
 
-def test_player_panel_waiting_class() -> None:
-    jsx = Path('web_gui/PlayerPanel.jsx').read_text()
-    assert 'waiting-player' in jsx
+def test_waiting_discard_usage() -> None:
+    jsx = Path('web_gui/River.jsx').read_text()
+    assert 'waiting-discard' in jsx
