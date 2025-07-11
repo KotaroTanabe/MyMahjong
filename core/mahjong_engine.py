@@ -5,6 +5,7 @@ from .models import GameState, Tile, Meld, GameEvent
 from .player import Player
 from .wall import Wall
 from .rules import RuleSet, StandardRuleSet, _tile_to_index
+from .exceptions import InvalidActionError, NotYourTurnError
 from mahjong.shanten import Shanten
 from mahjong.hand_calculating.hand_response import HandResponse
 from dataclasses import asdict
@@ -207,12 +208,12 @@ class MahjongEngine:
         """Draw a tile for the specified player."""
         self._invalidate_cache()
         if self.state.waiting_for_claims:
-            raise ValueError("Waiting for other players to claim discard")
+            raise InvalidActionError("Waiting for other players to claim discard")
         if player_index != self.state.current_player:
-            raise ValueError("Not player's turn")
+            raise NotYourTurnError("Not player's turn")
         player = self.state.players[player_index]
         if len(player.hand.tiles) % 3 != 1:
-            raise ValueError("Cannot draw before discarding")
+            raise InvalidActionError("Cannot draw before discarding")
         if player.ippatsu_available:
             player.ippatsu_available = False
         self._check_four_winds()
@@ -231,13 +232,18 @@ class MahjongEngine:
         """Discard a tile from the specified player's hand."""
         self._invalidate_cache()
         if self.state.waiting_for_claims:
-            raise ValueError("Waiting for other players to claim discard")
+            raise InvalidActionError("Waiting for other players to claim discard")
         if player_index != self.state.current_player:
-            raise ValueError("Not player's turn")
+            raise NotYourTurnError("Not player's turn")
         player = self.state.players[player_index]
         if player.must_tsumogiri and player.hand.tiles and player.hand.tiles[-1] is not tile:
-            raise ValueError("Must discard the drawn tile after declaring riichi")
-        player.discard(tile)
+            raise InvalidActionError(
+                "Must discard the drawn tile after declaring riichi"
+            )
+        try:
+            player.discard(tile)
+        except ValueError:
+            raise InvalidActionError("Tile not in hand")
         player.must_tsumogiri = False
         self._emit("discard", {"player_index": player_index, "tile": tile})
         self.state.current_player = (player_index + 1) % len(self.state.players)
@@ -255,9 +261,9 @@ class MahjongEngine:
 
         player = self.state.players[player_index]
         if player.has_open_melds():
-            raise ValueError("Cannot declare riichi with open melds")
+            raise InvalidActionError("Cannot declare riichi with open melds")
         if not is_tenpai(player.hand.tiles, player.hand.melds):
-            raise ValueError("Cannot declare riichi when not in tenpai")
+            raise InvalidActionError("Cannot declare riichi when not in tenpai")
         player.declare_riichi()
         self.state.riichi_sticks += 1
         self._emit(
@@ -286,37 +292,37 @@ class MahjongEngine:
         for p in self.state.players:
             p.ippatsu_available = False
         if len(tiles) != 3:
-            raise ValueError("Chi requires three tiles")
+            raise InvalidActionError("Chi requires three tiles")
 
         last_tile = self.state.last_discard
         last_player = self.state.last_discard_player
         if last_tile is None or last_player is None:
-            raise ValueError("No discard available for chi")
+            raise InvalidActionError("No discard available for chi")
         if (last_player + 1) % len(self.state.players) != player_index:
-            raise ValueError("Chi must use the previous player's discard")
+            raise InvalidActionError("Chi must use the previous player's discard")
         if last_tile not in tiles:
-            raise ValueError("Discarded tile must be included in meld")
+            raise InvalidActionError("Discarded tile must be included in meld")
 
         suit = tiles[0].suit
         if not all(t.suit == suit for t in tiles):
-            raise ValueError("Chi tiles must have the same suit")
+            raise InvalidActionError("Chi tiles must have the same suit")
         values = sorted(t.value for t in tiles)
         if not (values[1] == values[0] + 1 and values[2] == values[0] + 2):
-            raise ValueError("Chi tiles must be sequential")
+            raise InvalidActionError("Chi tiles must be sequential")
 
         player = self.state.players[player_index]
         needed = tiles[:]
         needed.remove(last_tile)
         for tile in needed:
             if tile not in player.hand.tiles:
-                raise ValueError("Player missing required tiles for chi")
+                raise InvalidActionError("Player missing required tiles for chi")
         for tile in needed:
             idx = next(i for i, t in enumerate(player.hand.tiles) if t == tile)
             player.hand.tiles.pop(idx)
 
         discarder = self.state.players[last_player]
         if not discarder.river or discarder.river[-1] != last_tile:
-            raise ValueError("Discard mismatch")
+            raise InvalidActionError("Discard mismatch")
         discarder.river.pop()
 
         called_index = None
@@ -344,20 +350,20 @@ class MahjongEngine:
         for p in self.state.players:
             p.ippatsu_available = False
         if len(tiles) != 3:
-            raise ValueError("Pon requires three tiles")
+            raise InvalidActionError("Pon requires three tiles")
 
         last_tile = self.state.last_discard
         last_player = self.state.last_discard_player
         if last_tile is None or last_player is None:
-            raise ValueError("No discard available for pon")
+            raise InvalidActionError("No discard available for pon")
         if player_index == last_player:
-            raise ValueError("Cannot pon your own discard")
+            raise InvalidActionError("Cannot pon your own discard")
         if not all(
             t.suit == tiles[0].suit and t.value == tiles[0].value for t in tiles
         ):
-            raise ValueError("Pon tiles must be identical")
+            raise InvalidActionError("Pon tiles must be identical")
         if last_tile.suit != tiles[0].suit or last_tile.value != tiles[0].value:
-            raise ValueError("Discarded tile must match meld tiles")
+            raise InvalidActionError("Discarded tile must match meld tiles")
 
         player = self.state.players[player_index]
         count = sum(
@@ -366,7 +372,7 @@ class MahjongEngine:
             if t.suit == tiles[0].suit and t.value == tiles[0].value
         )
         if count < 2:
-            raise ValueError("Player missing tiles for pon")
+            raise InvalidActionError("Player missing tiles for pon")
         removed = 0
         for i in range(len(player.hand.tiles) - 1, -1, -1):
             if (
@@ -380,7 +386,7 @@ class MahjongEngine:
 
         discarder = self.state.players[last_player]
         if not discarder.river or discarder.river[-1] != last_tile:
-            raise ValueError("Discard mismatch")
+            raise InvalidActionError("Discard mismatch")
         discarder.river.pop()
 
         called_index = None
@@ -408,12 +414,12 @@ class MahjongEngine:
         for p in self.state.players:
             p.ippatsu_available = False
         if len(tiles) != 4:
-            raise ValueError("Kan requires four tiles")
+            raise InvalidActionError("Kan requires four tiles")
 
         suit = tiles[0].suit
         value = tiles[0].value
         if not all(t.suit == suit and t.value == value for t in tiles):
-            raise ValueError("Kan tiles must be identical")
+            raise InvalidActionError("Kan tiles must be identical")
 
         player = self.state.players[player_index]
         last_tile = self.state.last_discard
@@ -422,16 +428,16 @@ class MahjongEngine:
         # Open kan using another player's discard
         if last_tile is not None and last_player is not None:
             if player_index == last_player:
-                raise ValueError("Cannot kan your own discard")
+                raise InvalidActionError("Cannot kan your own discard")
             if last_tile.suit != suit or last_tile.value != value:
-                raise ValueError("Discarded tile must match meld tiles")
+                raise InvalidActionError("Discarded tile must match meld tiles")
             count = sum(
                 1
                 for t in player.hand.tiles
                 if t.suit == suit and t.value == value
             )
             if count < 3:
-                raise ValueError("Player missing tiles for kan")
+                raise InvalidActionError("Player missing tiles for kan")
             meld_tiles: list[Tile] = [last_tile]
             removed = 0
             for i in range(len(player.hand.tiles) - 1, -1, -1):
@@ -443,7 +449,7 @@ class MahjongEngine:
                         break
             discarder = self.state.players[last_player]
             if not discarder.river or discarder.river[-1] != last_tile:
-                raise ValueError("Discard mismatch")
+                raise InvalidActionError("Discard mismatch")
             discarder.river.pop()
             called_index = 0
             called_from = (player_index - last_player) % len(self.state.players)
@@ -481,7 +487,7 @@ class MahjongEngine:
                     None,
                 )
                 if idx is None:
-                    raise ValueError("Player missing tile for added kan")
+                    raise InvalidActionError("Player missing tile for added kan")
                 meld.tiles.append(player.hand.tiles.pop(idx))
                 meld.type = "added_kan"
                 self.state.waiting_for_claims = []
@@ -498,7 +504,7 @@ class MahjongEngine:
         # Closed kan from hand
         count = sum(1 for t in player.hand.tiles if t.suit == suit and t.value == value)
         if count < 4:
-            raise ValueError("Player missing tiles for kan")
+            raise InvalidActionError("Player missing tiles for kan")
         meld_tiles = []
         removed = 0
         for i in range(len(player.hand.tiles) - 1, -1, -1):

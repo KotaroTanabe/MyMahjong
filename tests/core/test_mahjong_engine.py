@@ -1,5 +1,6 @@
 import pytest
 from core.mahjong_engine import MahjongEngine
+from core.exceptions import InvalidActionError
 from core.models import Tile
 from core.rules import RuleSet
 from mahjong.hand_calculating.hand_response import HandResponse
@@ -161,7 +162,7 @@ def test_discard_requires_tsumogiri_after_riichi() -> None:
     _set_tenpai_hand(player)
     tile_to_discard = player.hand.tiles[0]
     engine.declare_riichi(0)
-    with pytest.raises(ValueError):
+    with pytest.raises(InvalidActionError):
         engine.discard_tile(0, tile_to_discard)
 
 
@@ -274,7 +275,7 @@ def test_draw_blocked_until_all_skip() -> None:
     engine = MahjongEngine()
     tile = engine.state.players[0].hand.tiles[0]
     engine.discard_tile(0, tile)
-    with pytest.raises(ValueError):
+    with pytest.raises(InvalidActionError):
         engine.draw_tile(1)
     engine.skip(1)
     engine.skip(2)
@@ -298,7 +299,7 @@ def test_draw_disallowed_after_chi() -> None:
         *([Tile("pin", 1)] * 11),
     ]
     engine.call_chi(caller, [Tile("man", 1), Tile("man", 2), tile])
-    with pytest.raises(ValueError):
+    with pytest.raises(InvalidActionError):
         engine.draw_tile(caller)
 
 
@@ -318,7 +319,7 @@ def test_draw_disallowed_after_pon() -> None:
         *([Tile("sou", 1)] * 11),
     ]
     engine.call_pon(caller, [Tile("pin", 5), Tile("pin", 5), tile])
-    with pytest.raises(ValueError):
+    with pytest.raises(InvalidActionError):
         engine.draw_tile(caller)
 
 
@@ -331,7 +332,7 @@ def test_draw_disallowed_after_kan() -> None:
     engine.draw_tile(caller)
     engine.call_kan(caller, [tile] * 4)
     engine.pop_events()
-    with pytest.raises(ValueError):
+    with pytest.raises(InvalidActionError):
         engine.draw_tile(caller)
 
 

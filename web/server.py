@@ -2,13 +2,15 @@ from __future__ import annotations
 
 from dataclasses import asdict
 
-from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect, Request
 import asyncio
 import logging
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from core import api, models, shanten_quiz
+from core.exceptions import InvalidActionError, NotYourTurnError
 from core.models import GameEvent
 
 app = FastAPI()
@@ -18,18 +20,28 @@ _ws_connections: set[WebSocket] = set()
 logger = logging.getLogger(__name__)
 
 
-class GameActionError(Exception):
-    """Raised when a game action cannot be performed."""
+@app.exception_handler(InvalidActionError)
+@app.exception_handler(NotYourTurnError)
+async def _invalid_action_handler(
+    request: Request, exc: InvalidActionError
+) -> JSONResponse:
+    return JSONResponse(status_code=409, content={"detail": str(exc)})
 
 
 def handle_conflict(func):
-    """Convert ``GameActionError`` to an HTTP 409 error with logging."""
+    """Log conflicts and re-raise action errors."""
 
     def wrapper(req: "ActionRequest"):
         try:
             return func(req)
-        except GameActionError as err:
-            _raise_conflict(req.player_index, req.action, str(err))
+        except (InvalidActionError, NotYourTurnError) as err:
+            logger.info(
+                "409 conflict: player %s attempted %s -> %s",
+                req.player_index,
+                req.action,
+                err,
+            )
+            raise
 
     return wrapper
 
@@ -302,97 +314,97 @@ def _draw(req: ActionRequest) -> dict:
     try:
         tile = api.draw_tile(req.player_index)
     except IndexError:
-        raise GameActionError("Wall is empty")
-    except ValueError as err:
-        raise GameActionError(str(err))
+        raise InvalidActionError("Wall is empty")
+    except (InvalidActionError, NotYourTurnError):
+        raise
     return asdict(tile)
 
 
 @handle_conflict
 def _discard(req: ActionRequest) -> dict:
     if not req.tile:
-        raise GameActionError("Tile required")
+        raise InvalidActionError("Tile required")
     tile = models.Tile(**req.tile)
     try:
         api.discard_tile(req.player_index, tile)
-    except ValueError as err:
-        raise GameActionError(str(err))
+    except (InvalidActionError, NotYourTurnError):
+        raise
     return {"status": "ok"}
 
 
 @handle_conflict
 def _chi(req: ActionRequest) -> dict:
     if not req.tiles:
-        raise GameActionError("Tiles required")
+        raise InvalidActionError("Tiles required")
     tiles = [models.Tile(**t) for t in req.tiles]
     try:
         api.call_chi(req.player_index, tiles)
-    except ValueError as err:
-        raise GameActionError(str(err))
+    except (InvalidActionError, NotYourTurnError):
+        raise
     return {"status": "ok"}
 
 
 @handle_conflict
 def _pon(req: ActionRequest) -> dict:
     if not req.tiles:
-        raise GameActionError("Tiles required")
+        raise InvalidActionError("Tiles required")
     tiles = [models.Tile(**t) for t in req.tiles]
     try:
         api.call_pon(req.player_index, tiles)
-    except ValueError as err:
-        raise GameActionError(str(err))
+    except (InvalidActionError, NotYourTurnError):
+        raise
     return {"status": "ok"}
 
 
 @handle_conflict
 def _kan(req: ActionRequest) -> dict:
     if not req.tiles:
-        raise GameActionError("Tiles required")
+        raise InvalidActionError("Tiles required")
     tiles = [models.Tile(**t) for t in req.tiles]
     try:
         api.call_kan(req.player_index, tiles)
-    except ValueError as err:
-        raise GameActionError(str(err))
+    except (InvalidActionError, NotYourTurnError):
+        raise
     return {"status": "ok"}
 
 
 @handle_conflict
 def _riichi(req: ActionRequest) -> dict:
     if not req.tile:
-        raise GameActionError("Tile required")
+        raise InvalidActionError("Tile required")
     tile = models.Tile(**req.tile)
     try:
         api.discard_tile(req.player_index, tile)
-    except ValueError as err:
-        raise GameActionError(str(err))
+    except (InvalidActionError, NotYourTurnError):
+        raise
     try:
         api.declare_riichi(req.player_index)
-    except ValueError as err:
-        raise GameActionError(str(err))
+    except (InvalidActionError, NotYourTurnError):
+        raise
     return {"status": "ok"}
 
 
 @handle_conflict
 def _tsumo(req: ActionRequest) -> dict:
     if not req.tile:
-        raise GameActionError("Tile required")
+        raise InvalidActionError("Tile required")
     tile = models.Tile(**req.tile)
     try:
         result = api.declare_tsumo(req.player_index, tile)
-    except ValueError as err:
-        raise GameActionError(str(err))
+    except (InvalidActionError, NotYourTurnError):
+        raise
     return result.__dict__
 
 
 @handle_conflict
 def _ron(req: ActionRequest) -> dict:
     if not req.tile:
-        raise GameActionError("Tile required")
+        raise InvalidActionError("Tile required")
     tile = models.Tile(**req.tile)
     try:
         result = api.declare_ron(req.player_index, tile)
-    except ValueError as err:
-        raise GameActionError(str(err))
+    except (InvalidActionError, NotYourTurnError):
+        raise
     return result.__dict__
 
 
@@ -400,8 +412,8 @@ def _ron(req: ActionRequest) -> dict:
 def _skip(req: ActionRequest) -> dict:
     try:
         api.skip(req.player_index)
-    except ValueError as err:
-        raise GameActionError(str(err))
+    except (InvalidActionError, NotYourTurnError):
+        raise
     return {"status": "ok"}
 
 
@@ -413,7 +425,7 @@ def _auto(req: ActionRequest) -> dict:
         state.waiting_for_claims if state.waiting_for_claims else [state.current_player]
     )
     if req.player_index not in allowed_players:
-        raise GameActionError(
+        raise InvalidActionError(
             f"Action not allowed: player {req.player_index} attempted auto. allowed players={allowed_players}"
         )
     try:
@@ -422,8 +434,8 @@ def _auto(req: ActionRequest) -> dict:
             ai_type=ai_type,
             claim_players=[req.player_index],
         )
-    except ValueError as err:
-        raise GameActionError(str(err))
+    except (InvalidActionError, NotYourTurnError):
+        raise
     return asdict(tile)
 
 

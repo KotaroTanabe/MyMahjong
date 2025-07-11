@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from .mahjong_engine import MahjongEngine
+from . import exceptions
 from .models import GameState, Tile, GameEvent, GameAction
 from .ai import AI_REGISTRY
 from . import practice, shanten_quiz
@@ -64,7 +65,7 @@ def call_chi(player_index: int, tiles: list[Tile]) -> None:
     last_tile = _engine.state.last_discard
     last_player = _engine.state.last_discard_player
     if last_tile is None or last_player is None:
-        raise ValueError("No discard available for chi")
+        raise exceptions.InvalidActionError("No discard available for chi")
 
     # Remove any discard representation so the engine instance is used.
     hand_tiles = [
@@ -73,7 +74,7 @@ def call_chi(player_index: int, tiles: list[Tile]) -> None:
         if not (t.suit == last_tile.suit and t.value == last_tile.value)
     ]
     if len(hand_tiles) != 2:
-        raise ValueError("Chi requires exactly two tiles from hand")
+        raise exceptions.InvalidActionError("Chi requires exactly two tiles from hand")
 
     hand_tiles = sorted(hand_tiles, key=lambda t: t.value)
     called_from = (player_index - last_player) % len(_engine.state.players)
@@ -112,7 +113,7 @@ def call_kan(player_index: int, tiles: list[Tile]) -> None:
 
     if len(tiles) == 3:
         if last_tile is None or last_player is None:
-            raise ValueError("No discard available for kan")
+            raise exceptions.InvalidActionError("No discard available for kan")
         meld_tiles = [last_tile, *tiles]
 
     if last_tile is not None:

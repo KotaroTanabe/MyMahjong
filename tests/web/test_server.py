@@ -4,6 +4,7 @@ import pytest
 
 from web.server import app
 from core import api, models
+from core import exceptions as core_exceptions
 
 client = TestClient(app)
 
@@ -96,6 +97,19 @@ def test_draw_without_discard_logs_conflict(caplog: pytest.LogCaptureFixture) ->
         )
     assert resp.status_code == 409
     assert any("409 conflict" in rec.message for rec in caplog.records)
+
+
+def test_invalid_action_handler(monkeypatch) -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+
+    def fail(_idx: int) -> None:
+        raise core_exceptions.InvalidActionError("bad")
+
+    monkeypatch.setattr(api, "draw_tile", fail)
+
+    resp = client.post("/games/1/action", json={"player_index": 0, "action": "draw"})
+    assert resp.status_code == 409
+    assert resp.json() == {"detail": "bad"}
 
 
 def test_discard_action_endpoint() -> None:
