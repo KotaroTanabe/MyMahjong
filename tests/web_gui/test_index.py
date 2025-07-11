@@ -215,4 +215,4 @@ def test_event_log_modal_component_exists() -> None:
 def test_error_modal_has_retry_button() -> None:
     text = Path('web_gui/ErrorModal.jsx').read_text()
     assert 'onRetry' in text
-    assert 'Retry state' in text
+    assert 'aria-label="Retry"' in text

@@ -1,4 +1,5 @@
 import React from 'react';
+import { FiRefreshCw } from 'react-icons/fi';
 import Button from './Button.jsx';
 
 export default function ErrorModal({ message, onClose, onRetry = null }) {
@@ -10,8 +11,14 @@ export default function ErrorModal({ message, onClose, onRetry = null }) {
           <p>{message}</p>
           {onRetry && (
             <div className="has-text-centered mt-2">
-              <Button aria-label="Retry state" onClick={onRetry}>
-                Retry
+              <Button
+                aria-label="Retry"
+                onClick={() => {
+                  onClose();
+                  onRetry();
+                }}
+              >
+                <FiRefreshCw />
               </Button>
             </div>
           )}
