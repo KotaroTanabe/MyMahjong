@@ -178,9 +178,14 @@ def auto_play_turn(
         assert _engine.state.last_discard is not None
         return _engine.state.last_discard
 
-    if player_index is None:
-        idx = _engine.state.current_player
+    current = _engine.state.current_player
+    if player_index is not None and current != player_index:
+        # Claims advanced the turn to another player; do not play for the
+        # original index. Return the drawn tile for the next player instead.
+        player = _engine.state.players[current]
+        return player.hand.tiles[-1]
 
+    idx = current
     return ai(_engine, idx)
 
 
