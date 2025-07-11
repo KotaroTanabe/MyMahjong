@@ -16,6 +16,17 @@ app = FastAPI()
 _next_game_id = 1
 _ws_connections: set[WebSocket] = set()
 logger = logging.getLogger(__name__)
+
+
+def _raise_conflict(player_index: int, action: str, detail: str) -> None:
+    """Log a conflict and raise an HTTP 409 error."""
+    logger.info(
+        "409 conflict: player %s attempted %s -> %s",
+        player_index,
+        action,
+        detail,
+    )
+    raise HTTPException(status_code=409, detail=detail)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -287,18 +298,19 @@ def game_action(game_id: int, req: ActionRequest) -> dict:
             req.action,
             allowed,
         )
-        raise HTTPException(
-            status_code=409,
-            detail=f"Action not allowed: player {req.player_index} attempted {req.action}. allowed={allowed}",
+        _raise_conflict(
+            req.player_index,
+            req.action,
+            f"Action not allowed: player {req.player_index} attempted {req.action}. allowed={allowed}",
         )
     if req.action == "draw":
         try:
             tile = api.draw_tile(req.player_index)
         except IndexError:
-            raise HTTPException(status_code=409, detail="Wall is empty")
+            _raise_conflict(req.player_index, req.action, "Wall is empty")
         except ValueError as err:
             # engine enforces draw/discard sequence
-            raise HTTPException(status_code=409, detail=str(err))
+            _raise_conflict(req.player_index, req.action, str(err))
         return asdict(tile)
     # invalid discards raise ValueError from the engine
     if req.action == "discard" and req.tile:
@@ -306,7 +318,7 @@ def game_action(game_id: int, req: ActionRequest) -> dict:
         try:
             api.discard_tile(req.player_index, tile)
         except ValueError as err:
-            raise HTTPException(status_code=409, detail=str(err))
+            _raise_conflict(req.player_index, req.action, str(err))
         return {"status": "ok"}
     # engine can raise ValueError when chi is not possible
     if req.action == "chi" and req.tiles:
@@ -314,54 +326,54 @@ def game_action(game_id: int, req: ActionRequest) -> dict:
         try:
             api.call_chi(req.player_index, tiles)
         except ValueError as err:
-            raise HTTPException(status_code=409, detail=str(err))
+            _raise_conflict(req.player_index, req.action, str(err))
         return {"status": "ok"}
     if req.action == "pon" and req.tiles:
         tiles = [models.Tile(**t) for t in req.tiles]
         try:
             api.call_pon(req.player_index, tiles)
         except ValueError as err:
-            raise HTTPException(status_code=409, detail=str(err))
+            _raise_conflict(req.player_index, req.action, str(err))
         return {"status": "ok"}
     if req.action == "kan" and req.tiles:
         tiles = [models.Tile(**t) for t in req.tiles]
         try:
             api.call_kan(req.player_index, tiles)
         except ValueError as err:
-            raise HTTPException(status_code=409, detail=str(err))
+            _raise_conflict(req.player_index, req.action, str(err))
         return {"status": "ok"}
     if req.action == "riichi" and req.tile:
         tile = models.Tile(**req.tile)
         try:
             api.discard_tile(req.player_index, tile)
         except ValueError as err:
-            raise HTTPException(status_code=409, detail=str(err))
+            _raise_conflict(req.player_index, req.action, str(err))
         try:
             api.declare_riichi(req.player_index)
         except ValueError as e:
-            raise HTTPException(status_code=409, detail=str(e))
+            _raise_conflict(req.player_index, req.action, str(e))
         return {"status": "ok"}
     if req.action == "riichi":
-        raise HTTPException(status_code=409, detail="Tile required")
+        _raise_conflict(req.player_index, req.action, "Tile required")
     if req.action == "tsumo" and req.tile:
         tile = models.Tile(**req.tile)
         try:
             result = api.declare_tsumo(req.player_index, tile)
         except ValueError as err:
-            raise HTTPException(status_code=409, detail=str(err))
+            _raise_conflict(req.player_index, req.action, str(err))
         return result.__dict__
     if req.action == "ron" and req.tile:
         tile = models.Tile(**req.tile)
         try:
             result = api.declare_ron(req.player_index, tile)
         except ValueError as err:
-            raise HTTPException(status_code=409, detail=str(err))
+            _raise_conflict(req.player_index, req.action, str(err))
         return result.__dict__
     if req.action == "skip":
         try:
             api.skip(req.player_index)
         except ValueError as err:
-            raise HTTPException(status_code=409, detail=str(err))
+            _raise_conflict(req.player_index, req.action, str(err))
         return {"status": "ok"}
     if req.action == "auto":
         ai_type = req.ai_type or "simple"
@@ -375,9 +387,10 @@ def game_action(game_id: int, req: ActionRequest) -> dict:
                 req.player_index,
                 allowed_players,
             )
-            raise HTTPException(
-                status_code=409,
-                detail=f"Action not allowed: player {req.player_index} attempted auto. allowed players={allowed_players}",
+            _raise_conflict(
+                req.player_index,
+                req.action,
+                f"Action not allowed: player {req.player_index} attempted auto. allowed players={allowed_players}",
             )
         try:
             tile = api.auto_play_turn(
@@ -386,7 +399,7 @@ def game_action(game_id: int, req: ActionRequest) -> dict:
                 claim_players=[req.player_index],
             )
         except ValueError as err:
-            raise HTTPException(status_code=409, detail=str(err))
+            _raise_conflict(req.player_index, req.action, str(err))
         return asdict(tile)
     raise HTTPException(status_code=400, detail="Unknown action")
 
