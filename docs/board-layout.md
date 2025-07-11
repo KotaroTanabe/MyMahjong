@@ -41,6 +41,7 @@ corners. The central area holds the remaining wall tiles and dora indicator disp
 To conserve screen space the interface avoids lengthy text and uses small buttons or icons. The layout reserves fixed regions for each player so elements do not jump as the game progresses. Media queries can stack the side players vertically when the viewport becomes narrow, ensuring controls remain accessible on phones.
 The discard areas maintain a minimum height so a player's hand does not shift even when no tiles have been discarded.
 This is enforced via the `.discard-pile` CSS rule which now reserves enough space for four rows (24 tiles).
+When the game waits for claims on the latest discard, that tile receives a blue outline so players can easily identify it.
 
 ### Meld Buttons
 

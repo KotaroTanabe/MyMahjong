@@ -46,6 +46,10 @@ export default function PlayerPanel({
   const [waitingForRiichi, setWaitingForRiichi] = useState(false);
   const [error, setError] = useState(null);
   const controllerRef = useRef(null);
+  const highlightIndex =
+    (waiting.length > 0 && playerIndex === state?.last_discard_player)
+      ? (player?.river?.length ?? 0) - 1
+      : null;
 
   useEffect(() => {
     setActions(allowedActionsMemo);
@@ -114,6 +118,7 @@ export default function PlayerPanel({
       </div>
       <River
         tiles={riverTiles}
+        highlightIndex={highlightIndex}
         style={{ marginBottom: 'calc(var(--tile-font-size) * 0.8)' }}
       />
       <div className="hand-with-melds" style={{ position: 'relative', zIndex: 1 }}>

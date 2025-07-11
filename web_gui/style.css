@@ -209,6 +209,11 @@
   background-color: #d0f0ff;
 }
 
+.waiting-discard {
+  box-shadow: 0 0 0 2px #3399ff;
+  border-radius: 2px;
+}
+
 .player-header .ai-btn {
   margin-left: auto;
   padding: 0.25rem;

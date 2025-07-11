@@ -38,6 +38,7 @@ Future work will expand these components.
 - [x] Join remote games via CLI
 - [x] Draw tile in remote games via CLI
 - [x] View remote game state via CLI
+- [x] Highlight last discard tile when waiting for claims
 - [x] Display player hand shanten via CLI
 - [x] Remote server health check via CLI
 - [x] REST + WebSocket API
