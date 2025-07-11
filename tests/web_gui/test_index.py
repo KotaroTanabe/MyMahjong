@@ -210,3 +210,9 @@ def test_result_modal_has_log_options() -> None:
 def test_event_log_modal_component_exists() -> None:
     modal = Path('web_gui/EventLogModal.jsx')
     assert modal.is_file(), 'EventLogModal.jsx missing'
+
+
+def test_error_modal_has_retry_button() -> None:
+    text = Path('web_gui/ErrorModal.jsx').read_text()
+    assert 'onRetry' in text
+    assert 'Retry state' in text

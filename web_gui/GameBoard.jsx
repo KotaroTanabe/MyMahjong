@@ -21,6 +21,7 @@ export default function GameBoard({
   showLog = null,
   downloadTenhou = null,
   downloadMjai = null,
+  onRetry = null,
 }) {
   const players = state?.players ?? [];
   const south = players[0];
@@ -371,6 +372,7 @@ export default function GameBoard({
           activePlayer={state?.current_player}
           aiActive={aiPlayers[2]}
           toggleAI={toggleAI}
+          onRetry={onRetry}
         />
         <PlayerPanel
           seat="west"
@@ -387,6 +389,7 @@ export default function GameBoard({
           activePlayer={state?.current_player}
           aiActive={aiPlayers[1]}
           toggleAI={toggleAI}
+          onRetry={onRetry}
         />
         <PlayerPanel
           seat="east"
@@ -403,6 +406,7 @@ export default function GameBoard({
           activePlayer={state?.current_player}
           aiActive={aiPlayers[3]}
           toggleAI={toggleAI}
+          onRetry={onRetry}
         />
         <PlayerPanel
           seat="south"
@@ -428,6 +432,7 @@ export default function GameBoard({
           toggleAI={toggleAI}
           selectingRiichi={selectingRiichi}
           onRiichi={startRiichi}
+          onRetry={onRetry}
         />
       </div>
       <ResultModal
@@ -438,7 +443,11 @@ export default function GameBoard({
         onDownloadTenhou={downloadTenhou}
         onDownloadMjai={downloadMjai}
       />
-      <ErrorModal message={error} onClose={() => setError(null)} />
+      <ErrorModal
+        message={error}
+        onClose={() => setError(null)}
+        onRetry={onRetry}
+      />
     </>
   );
 }
