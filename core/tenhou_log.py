@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from typing import Any, Iterable, List
 
-from .models import GameEvent, Tile, GameState
+from .models import GameEvent, Tile, GameState, Meld
 
 
 _TILE_BASE = {
@@ -23,43 +23,98 @@ def tile_to_code(tile: Tile) -> int:
     return base + tile.value
 
 
+def meld_to_string(meld: Meld) -> str:
+    """Return the Tenhou meld notation for ``meld``."""
+    codes = [str(tile_to_code(t)) for t in meld.tiles]
+    if meld.type == "chi":
+        idx = meld.called_from - 1 if meld.called_from is not None else 0
+        codes.insert(idx, "c")
+    elif meld.type == "pon":
+        idx = meld.called_from - 1 if meld.called_from is not None else 0
+        codes.insert(idx, "p")
+    elif meld.type == "kan":
+        idx = meld.called_from - 1 if meld.called_from is not None else 0
+        codes.insert(idx, "m")
+    elif meld.type == "added_kan":
+        idx = meld.called_from - 1 if meld.called_from is not None else 0
+        codes.insert(idx, "k")
+    elif meld.type == "closed_kan":
+        codes.insert(3, "a")
+    return "".join(codes)
+
+
 def events_to_tenhou_json(events: List[GameEvent]) -> str:
     """Serialize ``events`` into a tenhou.net/6 JSON log."""
     names: List[str] = []
     log: List[Any] = []
     kyoku: list[Any] | None = None
-    per_player: list[list[Any]] = []
+    takes: list[list[Any]] = []
+    dahai: list[list[Any]] = []
+    riichi_pending: list[bool] = []
     start_scores: list[int] = []
+    last_discard_player: int | None = None
 
     for ev in events:
         if ev.name == "start_kyoku":
             state: GameState = ev.payload["state"]
             names = [p.name for p in state.players]
             kyoku = [
-                [ev.payload.get("dealer", 0), 0, 0],
+                [ev.payload.get("dealer", 0), state.honba, state.riichi_sticks],
                 [p.score for p in state.players],
                 [tile_to_code(t) for t in state.dora_indicators],
                 [],
             ]
             for player in state.players:
                 kyoku.append([tile_to_code(t) for t in player.hand.tiles])
-            per_player = [[] for _ in state.players]
+            takes = [[] for _ in state.players]
+            dahai = [[] for _ in state.players]
+            riichi_pending = [False for _ in state.players]
             start_scores = [p.score for p in state.players]
+            last_discard_player = None
         elif ev.name == "draw_tile":
-            per_player[ev.payload["player_index"]].append(
-                tile_to_code(ev.payload["tile"])
-            )
+            p = ev.payload["player_index"]
+            takes[p].append(tile_to_code(ev.payload["tile"]))
+            last_discard_player = None
         elif ev.name == "discard":
-            per_player[ev.payload["player_index"]].append(
-                tile_to_code(ev.payload["tile"])
-            )
+            p = ev.payload["player_index"]
+            code = tile_to_code(ev.payload["tile"])
+            dahai[p].append(code)
+            if riichi_pending and riichi_pending[p]:
+                takes[p].append(f"r{code}")
+                riichi_pending[p] = False
+            last_discard_player = p
         elif ev.name == "riichi":
-            per_player[ev.payload["player_index"]].append("reach")
+            p = ev.payload["player_index"]
+            if riichi_pending:
+                riichi_pending[p] = True
+        elif ev.name == "meld":
+            p = ev.payload["player_index"]
+            meld: Meld = ev.payload["meld"]
+            takes[p].append(meld_to_string(meld))
+            if meld.type == "kan" and meld.called_from is not None:
+                dahai[p].append(0)
         elif ev.name in {"tsumo", "ron"} and kyoku is not None:
             scores = ev.payload.get("scores", start_scores)
             delta = [scores[i] - start_scores[i] for i in range(len(scores))]
-            kyoku.extend(per_player)
-            kyoku.append(["和了", delta, []])
+            win_player = ev.payload.get("player_index", 0)
+            if ev.name == "ron":
+                deal_in = last_discard_player if last_discard_player is not None else win_player
+            else:
+                deal_in = win_player
+            result = ev.payload.get("result")
+            point_str = ""
+            yaku_list: list[str] = []
+            if result:
+                han = result.get("han")
+                fu = result.get("fu")
+                yaku_list = result.get("yaku") or []
+                if han is not None and fu is not None:
+                    point_str = f"{han}han{fu}fu"
+            result_info = [win_player, deal_in, win_player, point_str, *yaku_list]
+            for i in range(4):
+                kyoku.append(takes[i])
+                kyoku.append(dahai[i])
+            kyoku.append(["和了", delta, result_info])
             log.append(kyoku)
             kyoku = None
 

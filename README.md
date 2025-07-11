@@ -30,7 +30,8 @@ Future work will expand these components.
 - [x] Copy Tenhou log after each hand
 - [x] Convert MJAI logs to Tenhou format
 - [x] Tenhou log validator
-- [ ] Full Tenhou log features (meld notation, yaku info)
+- [x] Meld notation in Tenhou log
+- [ ] Yaku details in Tenhou log
 - [x] RuleSet interface for scoring
 - [x] Local single-player play via CLI
 - [x] Basic remote game creation via CLI
