@@ -81,10 +81,16 @@ def events_to_tenhou_json(events: List[GameEvent]) -> str:
                 [],
             ]
             player_data = []
-            for player in state.players:
+            for idx, player in enumerate(state.players):
+                hand = [tile_to_code(t) for t in player.hand.tiles]
+                takes: list[Any] = []
+                # Dealer is dealt 14 tiles. The extra tile should be recorded as
+                # the first draw rather than in the starting hand array.
+                if idx == dealer and len(hand) == 14:
+                    takes.append(hand.pop())
                 player_data.append([
-                    [tile_to_code(t) for t in player.hand.tiles],
-                    [],
+                    hand,
+                    takes,
                     [],
                 ])
             riichi_pending = [False for _ in state.players]

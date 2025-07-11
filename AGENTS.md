@@ -14,3 +14,6 @@
   7. `pytest -q`
   8. `npm ci` in `web_gui`
   9. `npx vitest run` in `web_gui`
+
+The Tenhou log format implemented by the project must follow the
+specification in `docs/tenhou-json.md`.
