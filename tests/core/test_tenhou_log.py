@@ -28,8 +28,7 @@ def test_tenhou_log_includes_all_starting_hands() -> None:
     kyoku = data["log"][0]
     # After meta arrays hands appear every three elements
     hands = [kyoku[i] for i in range(4, 16, 3)]
-    assert len(hands[0]) in {13, 14}
-    assert all(len(hand) == 13 for hand in hands[1:])
+    assert all(len(hand) == 13 for hand in hands)
 
 
 def test_mjai_log_conversion() -> None:
