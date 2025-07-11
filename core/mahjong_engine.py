@@ -32,6 +32,11 @@ class MahjongEngine:
     def __init__(self, ruleset: RuleSet | None = None, *, max_rounds: int = 8) -> None:
         self.ruleset: RuleSet = ruleset or StandardRuleSet()
         self.state = GameState(wall=Wall())
+        wall = self.state.wall
+        assert wall is not None
+        self.state.dora_indicators = wall.dora_indicators.copy()
+        self.state.ura_dora_indicators = wall.ura_dora_indicators.copy()
+        self.state.dead_wall = wall.dead_wall.copy()
         self.state.max_rounds = max_rounds
         self.state.players = [Player(name=f"Player {i}") for i in range(4)]
         self.state.current_player = 0
@@ -76,6 +81,11 @@ class MahjongEngine:
             ]
             self.state.wall.dora_indicators.append(new_dora)
             self.state.dora_indicators.append(new_dora)
+        if len(self.state.wall.dead_wall) >= len(self.state.ura_dora_indicators) + 1:
+            ura_tile = self.state.wall.dead_wall[-(len(self.state.ura_dora_indicators) + 1)]
+            if hasattr(self.state.wall, "ura_dora_indicators"):
+                self.state.wall.ura_dora_indicators.append(ura_tile)
+            self.state.ura_dora_indicators.append(ura_tile)
 
     def _check_nine_terminals(self, player: Player) -> None:
         """Detect nine terminals/honors and end the hand."""
@@ -152,6 +162,7 @@ class MahjongEngine:
         wall = self.state.wall
         assert wall is not None
         self.state.dora_indicators = wall.dora_indicators.copy()
+        self.state.ura_dora_indicators = wall.ura_dora_indicators.copy()
         self.state.dead_wall = wall.dead_wall.copy()
         for p in self.state.players:
             p.hand.tiles.clear()
@@ -679,6 +690,7 @@ class MahjongEngine:
         wall = self.state.wall
         assert wall is not None
         self.state.dora_indicators = wall.dora_indicators.copy()
+        self.state.ura_dora_indicators = wall.ura_dora_indicators.copy()
         self.state.dead_wall = wall.dead_wall.copy()
         self.state.players = [Player(name=f"Player {i}") for i in range(4)]
         self.state.current_player = 0

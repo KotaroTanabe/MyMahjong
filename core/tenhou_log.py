@@ -61,6 +61,9 @@ def events_to_tenhou_json(events: List[GameEvent]) -> str:
     riichi_pending: list[bool] = []
     start_scores: list[int] = []
     last_discard_player: int | None = None
+    dead_wall: list[Tile] = []
+    dora_indicators: list[int] = []
+    ura_indicators: list[int] = []
 
     for ev in events:
         if ev.name == "start_kyoku":
@@ -69,10 +72,12 @@ def events_to_tenhou_json(events: List[GameEvent]) -> str:
             dealer = ev.payload.get("dealer", state.dealer)
             round_number = ev.payload.get("round", state.round_number)
             kyoku_num = (round_number - 1) * 4 + dealer
+            dora_indicators = [tile_to_code(t) for t in state.dora_indicators]
+            ura_indicators = [tile_to_code(t) for t in state.ura_dora_indicators]
             kyoku = [
                 [kyoku_num, state.honba, state.riichi_sticks],
                 [p.score for p in state.players],
-                [tile_to_code(t) for t in state.dora_indicators],
+                dora_indicators[:],
                 [],
             ]
             player_data = []
@@ -85,9 +90,22 @@ def events_to_tenhou_json(events: List[GameEvent]) -> str:
             riichi_pending = [False for _ in state.players]
             start_scores = [p.score for p in state.players]
             last_discard_player = None
+            dead_wall = state.dead_wall.copy()
         elif ev.name == "draw_tile":
             p = ev.payload["player_index"]
             player_data[p][1].append(tile_to_code(ev.payload["tile"]))
+            if ev.payload.get("from_dead_wall"):
+                if dead_wall:
+                    dead_wall.pop(0)
+                if len(dead_wall) >= 5 + len(dora_indicators):
+                    new_dora_tile = dead_wall[-(5 + len(dora_indicators))]
+                    code = tile_to_code(new_dora_tile)
+                    if kyoku is not None:
+                        kyoku[2].append(code)
+                    dora_indicators.append(code)
+                if len(dead_wall) >= len(ura_indicators) + 1:
+                    ura_tile = dead_wall[-(len(ura_indicators) + 1)]
+                    ura_indicators.append(tile_to_code(ura_tile))
             last_discard_player = None
         elif ev.name == "discard":
             p = ev.payload["player_index"]
@@ -127,6 +145,7 @@ def events_to_tenhou_json(events: List[GameEvent]) -> str:
             result_info = [win_player, deal_in, win_player, point_str, *yaku_list]
             for i in range(4):
                 kyoku.extend(player_data[i])
+            kyoku[3] = ura_indicators[:]
             kyoku.append(["和了", delta, result_info])
             log.append(kyoku)
             kyoku = None

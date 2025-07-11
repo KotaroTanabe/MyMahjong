@@ -45,6 +45,7 @@ class GameState:
     players: List["Player"] = field(default_factory=list)
     wall: Optional["Wall"] = None
     dora_indicators: List[Tile] = field(default_factory=list)
+    ura_dora_indicators: List[Tile] = field(default_factory=list)
     dead_wall: List[Tile] = field(default_factory=list)
     current_player: int = 0
     dealer: int = 0

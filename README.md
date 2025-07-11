@@ -31,6 +31,7 @@ Future work will expand these components.
 - [x] Convert MJAI logs to Tenhou format
 - [x] Tenhou log validator
 - [x] Meld notation in Tenhou log
+- [x] Ura dora indicators in Tenhou log
 - [ ] Yaku details in Tenhou log
 - [x] RuleSet interface for scoring
 - [x] Local single-player play via CLI
