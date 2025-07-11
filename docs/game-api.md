@@ -39,6 +39,9 @@ The following classes defined in `core.models` are used throughout the API:
 | `end_game`         | none                                    | Terminate the current game. |
 | `get_state`        | none                                    | Retrieve the current `GameState`. |
 | `get_chi_options`  | `player_index`                          | List possible chi tile pairs for the last discard. |
+| `allowed_actions`  | `player_index`                          | Actions the player may perform right now. |
+| `all_allowed_actions`| none                                   | Actions for every player indexed by seat. |
+| `next_actions`     | none                                    | Next player index and their allowed actions. |
 
 ## Events (Core -> GUI/CLI)
 
@@ -68,3 +71,22 @@ Front ends are expected to update their displays or AI processes whenever an
 event is received.  The low level transport (function call, WebSocket, etc.) is
 left to each interface implementation.
 
+
+## Turn and action validation
+
+The engine enforces turn order and only allows actions that are valid at the current moment.
+If a player tries to act when it is not their turn or performs a disallowed action,
+the `/games/{id}/action` endpoint responds with **HTTP 409** and a short message such as
+`"Not player's turn"` or `"Action not allowed: player 2 attempted auto. allowed players=[1]"`.
+
+Before sending an action, clients should consult one of the following endpoints to
+know which player is expected to act and what actions they may take:
+
+- `GET /games/{id}/next-actions` returns the next player index and that player's
+  allowed actions.
+- `GET /games/{id}/allowed-actions/{player_index}` returns the allowed actions for
+  a single player.
+- `GET /games/{id}/allowed-actions` returns the allowed actions for all players.
+
+The same data is also pushed over the WebSocket as an `allowed_actions` event
+whenever it changes. Waiting for these signals ensures actions are accepted by the server.
