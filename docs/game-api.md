@@ -42,6 +42,7 @@ The following classes defined in `core.models` are used throughout the API:
 | `allowed_actions`  | `player_index`                          | Actions the player may perform right now. |
 | `all_allowed_actions`| none                                   | Actions for every player indexed by seat. |
 | `next_actions`     | none                                    | Next player index and their allowed actions. |
+| `claims`           | none                                    | Claim options for every player. |
 
 ## Events (Core -> GUI/CLI)
 
@@ -55,6 +56,7 @@ translate them directly.
 | `start_kyoku`      | dealer seat and round number            | Signals the start of a hand. |
 | `draw_tile`        | `player_index`, `Tile`, `source`        | Tile drawn from the wall. When emitted after a kan, `source` will be `"dead_wall"`. |
 | `discard`          | `player_index`, `Tile`                  | Tile placed into the river. |
+| `claims`           | options for each player                 | Sent immediately after a discard. |
 | `meld`             | `player_index`, `Meld`                  | Meld call (chi/pon/kan). |
 | `claims_closed`    | none                                    | No player called the discard. |
 | `riichi`           | `player_index`                          | Player declares riichi after their discard. |
@@ -87,6 +89,8 @@ know which player is expected to act and what actions they may take:
 - `GET /games/{id}/allowed-actions/{player_index}` returns the allowed actions for
   a single player.
 - `GET /games/{id}/allowed-actions` returns the allowed actions for all players.
+- `GET /games/{id}/claims` returns claim options for all players when the claim window is open.
 
 The same data is also pushed over the WebSocket as an `allowed_actions` event
-whenever it changes. Waiting for these signals ensures actions are accepted by the server.
+whenever it changes. Claim options are sent as a `claims` event immediately after a discard.
+Waiting for these signals ensures actions are accepted by the server.

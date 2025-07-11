@@ -296,6 +296,22 @@ def get_all_allowed_actions() -> list[list[str]]:
     ]
 
 
+def get_claim_options() -> list[dict[str, object]]:
+    """Return claim options for every player."""
+
+    assert _engine is not None, "Game not started"
+    opts = []
+    for i in range(len(_engine.state.players)):
+        actions = [
+            a
+            for a in _engine.get_allowed_actions(i)
+            if a in {"chi", "pon", "kan", "ron", "skip"}
+        ]
+        chi = _engine.get_chi_options(i) if "chi" in actions else []
+        opts.append({"actions": actions, "chi": chi})
+    return opts
+
+
 def _player_actions(player_index: int) -> list[str]:
     """Return full action list for ``player_index`` including draw/discard."""
 
@@ -314,17 +330,17 @@ def _player_actions(player_index: int) -> list[str]:
 def get_next_actions() -> tuple[int, list[str]]:
     """Return the next actor and their allowed actions.
 
-    If the only available action is ``draw`` it is performed automatically and
-    the next actor is returned instead.
+    Only draw actions are performed automatically when no claims are pending.
+    ``waiting_for_claims`` is ignored so callers must wait for claim resolution
+    themselves.
     """
 
     assert _engine is not None, "Game not started"
 
     while True:
-        state = _engine.state
-        idx = state.waiting_for_claims[0] if state.waiting_for_claims else state.current_player
+        idx = _engine.state.current_player
         actions = _player_actions(idx)
-        if actions == ["draw"]:
+        if not _engine.state.waiting_for_claims and actions == ["draw"]:
             _engine.draw_tile(idx)
             continue
         return idx, actions

@@ -23,6 +23,7 @@ describe('GameBoard auto draw', () => {
         server="http://s"
         gameId="1"
         allowedActions={[['draw'], [], [], []]}
+        claimOptions={[{ actions: [], chi: [] }, {}, {}, {}]}
       />,
     );
     await Promise.resolve();
@@ -37,6 +38,7 @@ describe('GameBoard auto draw', () => {
         server="http://s"
         gameId="1"
         allowedActions={[[], ['chi'], ['chi'], ['chi']]}
+        claimOptions={[{}, { actions: ['chi'], chi: [] }, { actions: ['chi'], chi: [] }, { actions: ['chi'], chi: [] }]}
       />,
     );
     await Promise.resolve();
@@ -56,6 +58,7 @@ describe('GameBoard auto draw', () => {
         server="http://s"
         gameId="1"
         allowedActions={[['discard'], [], [], []]}
+        claimOptions={[{ actions: ['discard'], chi: [] }, {}, {}, {}]}
       />,
     );
     await Promise.resolve();

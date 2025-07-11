@@ -16,6 +16,12 @@ export default function GameBoard({
   sortHand = false,
   log = () => {},
   allowedActions = [[], [], [], []],
+  claimOptions = [
+    { actions: [], chi: [] },
+    { actions: [], chi: [] },
+    { actions: [], chi: [] },
+    { actions: [], chi: [] },
+  ],
   aiDelay = 0,
   showLog = null,
   downloadTenhou = null,
@@ -120,8 +126,9 @@ export default function GameBoard({
         skipSent.current.clear();
       }
       waiting.forEach((idx) => {
+        const opts = claimOptions[idx] || { actions: [] };
         if (aiPlayers[idx]) {
-          if (allowedActions[idx]?.length) {
+          if (opts.actions && opts.actions.length) {
             const body = {
               player_index: idx,
               action: "auto",
@@ -131,8 +138,8 @@ export default function GameBoard({
             sendAction(body, true);
           }
         } else if (
-          allowedActions[idx]?.length === 1 &&
-          allowedActions[idx][0] === "skip" &&
+          opts.actions?.length === 1 &&
+          opts.actions[0] === "skip" &&
           !skipSent.current.has(idx)
         ) {
           const body = { player_index: idx, action: "skip" };
@@ -176,7 +183,7 @@ export default function GameBoard({
   }, [
     state?.current_player,
     state?.waiting_for_claims?.length ?? 0,
-    allowedActions.map((a) => a.join(',')).join('|'),
+    claimOptions.map((o) => (o.actions || []).join(',')).join('|'),
     gameId,
     server,
     aiPlayers,

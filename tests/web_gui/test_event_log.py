@@ -58,6 +58,15 @@ def test_format_claims_closed() -> None:
     assert output.startswith('捨て牌に対するアクションはありませんでした')
 
 
+def test_format_claims_event() -> None:
+    code = (
+        "import { formatEvent } from './web_gui/eventLog.js';\n"
+        "console.log(formatEvent({name:'claims'}));"
+    )
+    output = run_node(code)
+    assert output.startswith('Claim options updated')
+
+
 def test_format_round_end() -> None:
     code = (
         "import { formatEvent } from './web_gui/eventLog.js';\n"

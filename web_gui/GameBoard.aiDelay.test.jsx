@@ -25,6 +25,7 @@ describe('GameBoard aiDelay', () => {
         gameId="1"
         aiDelay={500}
         allowedActions={[['draw'], [], [], []]}
+        claimOptions={[{ actions: [], chi: [] }, {}, {}, {}]}
       />,
     );
     await vi.runAllTicks();

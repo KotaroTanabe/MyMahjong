@@ -23,9 +23,16 @@ export default function App() {
   const [gameData, setGameData] = useState({
     state: null,
     allowed: [[], [], [], []],
+    claims: [
+      { actions: [], chi: [] },
+      { actions: [], chi: [] },
+      { actions: [], chi: [] },
+      { actions: [], chi: [] },
+    ],
   });
   const gameState = gameData.state;
   const allowedActions = gameData.allowed;
+  const claimOptions = gameData.claims;
   const [events, setEvents] = useState([]);
   function log(level, message) {
     setEvents((evts) => [...evts.slice(-19), `[${level}] ${message}`]);
@@ -123,6 +130,14 @@ export default function App() {
       log('info', formatEvent(evt));
       if (evt.name === 'allowed_actions') {
         setGameData((d) => ({ ...d, allowed: evt.payload?.actions || [[], [], [], []] }));
+        setEvents((evts) => {
+          const line = `${formatEvent(evt)} ${eventToMjaiJson(evt)}`;
+          return [...evts.slice(-9), line];
+        });
+        return;
+      }
+      if (evt.name === 'claims') {
+        setGameData((d) => ({ ...d, claims: evt.payload?.claims || d.claims }));
         setEvents((evts) => {
           const line = `${formatEvent(evt)} ${eventToMjaiJson(evt)}`;
           return [...evts.slice(-9), line];
@@ -431,10 +446,11 @@ export default function App() {
             gameId={gameId}
             peek={peek}
             sortHand={sortHand}
-            log={log}
-            allowedActions={allowedActions}
-            aiDelay={aiDelay}
-            showLog={openLogModal}
+          log={log}
+          allowedActions={allowedActions}
+          claimOptions={claimOptions}
+          aiDelay={aiDelay}
+          showLog={openLogModal}
             downloadTenhou={downloadTenhou}
             downloadMjai={downloadMjai}
           />

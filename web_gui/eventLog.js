@@ -20,6 +20,8 @@ export function formatEvent(evt) {
       return `Player ${p} skips`;
     case 'claims_closed':
       return '捨て牌に対するアクションはありませんでした';
+    case 'claims':
+      return 'Claim options updated';
     case 'turn_start':
       return `Turn start for player ${p}`;
     case 'next_actions':

@@ -249,6 +249,32 @@ def allowed_actions_all(game_id: int) -> dict:
     return {"actions": actions}
 
 
+@app.get("/games/{game_id}/claims")
+def claim_options_all(game_id: int) -> dict:
+    """Return claim options for all players."""
+
+    _ = game_id  # placeholder for future multi-game support
+    try:
+        options = api.get_claim_options()
+    except AssertionError:
+        raise HTTPException(status_code=404, detail="Game not started")
+
+    def dump_pair(pair: list[models.Tile]) -> list[dict]:
+        return [asdict(t) for t in pair]
+
+    from typing import Any
+
+    def dump_entry(entry: dict[str, Any]) -> dict:
+        actions = entry.get("actions", [])
+        chi_pairs = entry.get("chi", [])
+        return {
+            "actions": actions,
+            "chi": [dump_pair(p) for p in chi_pairs],
+        }
+
+    return {"claims": [dump_entry(e) for e in options]}
+
+
 @app.get("/games/{game_id}/next-actions")
 def next_actions(game_id: int) -> dict:
     """Return the next actor index and their allowed actions."""
@@ -509,14 +535,24 @@ async def game_events(websocket: WebSocket, game_id: int) -> None:
                     prev_actions = None
                 if event.name == "discard":
                     try:
-                        updated = api.get_all_allowed_actions()
+                        claims = api.get_claim_options()
                     except AssertionError:
-                        updated = None
-                    if updated is not None:
-                        prev_actions = updated
-                        await websocket.send_json(
-                            {"name": "allowed_actions", "payload": {"actions": updated}}
-                        )
+                        claims = None
+                    if claims is not None:
+                        from typing import Any, Iterable
+
+                        def encode(entry: dict[str, Any]) -> dict:
+                            actions = entry.get("actions", [])
+                            chi_pairs: Iterable[list[models.Tile]] = entry.get("chi", [])
+                            return {
+                                "actions": actions,
+                                "chi": [
+                                    [asdict(t) for t in pair] for pair in chi_pairs
+                                ],
+                            }
+
+                        payload = {"claims": [encode(c) for c in claims]}
+                        await websocket.send_json({"name": "claims", "payload": payload})
             try:
                 actions = api.get_all_allowed_actions()
             except AssertionError:

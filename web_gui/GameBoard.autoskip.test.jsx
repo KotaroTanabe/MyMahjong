@@ -23,6 +23,7 @@ describe('GameBoard auto skip', () => {
         server="http://s"
         gameId="1"
         allowedActions={[['skip'], [], [], []]}
+        claimOptions={[{ actions: ['skip'], chi: [] }, {}, {}, {}]}
       />,
     );
     await Promise.resolve();

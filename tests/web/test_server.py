@@ -652,3 +652,44 @@ def test_start_kyoku_endpoint_and_ws() -> None:
         assert data["payload"]["dealer"] == 1
         assert data["payload"]["round"] == 2
 
+
+def test_claims_endpoint_and_ws() -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    state = api.get_state()
+    tile = state.players[state.current_player].hand.tiles[-1]
+    with client.websocket_connect("/ws/1") as ws:
+        ws.receive_json()  # allowed_actions
+        ws.receive_json()  # start_game
+        ws.receive_json()  # start_kyoku
+        client.post(
+            "/games/1/action",
+            json={"player_index": state.current_player, "action": "discard", "tile": tile.__dict__},
+        )
+        evt = ws.receive_json()
+        assert evt["name"] == "discard"
+        claims = ws.receive_json()
+        assert claims["name"] == "claims"
+        assert isinstance(claims["payload"]["claims"], list)
+    resp = client.get("/games/1/claims")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "claims" in data and isinstance(data["claims"], list)
+
+
+def test_next_actions_after_claims_close() -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    state = api.get_state()
+    tile = state.players[state.current_player].hand.tiles[-1]
+    client.post(
+        "/games/1/action",
+        json={"player_index": state.current_player, "action": "discard", "tile": tile.__dict__},
+    )
+    waiting = state.waiting_for_claims[:]
+    for idx in waiting:
+        client.post("/games/1/action", json={"player_index": idx, "action": "skip"})
+    resp = client.get("/games/1/next-actions")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["player_index"] == state.current_player
+    assert "discard" in data["actions"]
+
