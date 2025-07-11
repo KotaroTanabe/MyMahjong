@@ -76,6 +76,23 @@ def test_events_to_tenhou_json_draw() -> None:
     assert kyoku[-1][0] == "全員不聴"
 
 
+def test_events_to_tenhou_json_draw_with_tenpai() -> None:
+    engine = MahjongEngine()
+
+    def fake_is_tenpai(player):
+        idx = engine.state.players.index(player)
+        return idx != 1
+
+    engine._is_tenpai = fake_is_tenpai  # type: ignore
+    engine.state.wall.tiles = [Tile("pin", 1)]
+    engine.state.players[engine.state.current_player].hand.tiles.pop()
+    engine.draw_tile(engine.state.current_player)
+    engine.end_game()
+    data = json.loads(events_to_tenhou_json(engine.pop_events()))
+    kyoku = data["log"][0]
+    assert kyoku[-1] == ["流局", [1000, -3000, 1000, 1000]]
+
+
 def test_events_to_tenhou_json_kyoku_num() -> None:
     engine = MahjongEngine()
     engine.pop_events()  # clear start_game/start_kyoku
@@ -85,7 +102,7 @@ def test_events_to_tenhou_json_kyoku_num() -> None:
     engine.end_game()
     data = json.loads(events_to_tenhou_json(engine.pop_events()))
     kyoku_info = data["log"][0][0]
-    assert kyoku_info == [(3 - 1) * 4 + 2, 1, 0]
+    assert kyoku_info == [(3 - 1) * 4 + 2, 0, 0]
 
 
 def test_dora_indicator_appended_on_kan() -> None:

@@ -1,6 +1,7 @@
 """Mahjong game engine wrapper."""
 from __future__ import annotations
 
+from copy import deepcopy
 from .models import GameState, Tile, Meld, GameEvent
 from .player import Player
 from .actions import CHI, PON, KAN, RIICHI, TSUMO, RON, SKIP
@@ -53,7 +54,7 @@ class MahjongEngine:
         self._claims_open = False
         self.game_over = False
         self._final_state: GameState | None = None
-        self._emit("start_game", {"state": self.state})
+        self._emit("start_game", {"state": deepcopy(self.state)})
         self.start_kyoku(dealer=0, round_number=1)
 
     def _invalidate_cache(self) -> None:
@@ -195,7 +196,7 @@ class MahjongEngine:
         self.deal_initial_hands()
         self._emit(
             "start_kyoku",
-            {"dealer": dealer, "round": round_number, "state": self.state},
+            {"dealer": dealer, "round": round_number, "state": deepcopy(self.state)},
         )
         self._check_nine_terminals(self.state.players[dealer])
 
