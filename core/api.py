@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from .mahjong_engine import MahjongEngine
 from .models import GameState, Tile, GameEvent, GameAction
+import asyncio
 from .ai import AI_REGISTRY
 from . import practice, shanten_quiz
 from mahjong.hand_calculating.hand_response import HandResponse
@@ -205,6 +206,18 @@ def pop_events() -> list[GameEvent]:
     """Retrieve and clear pending engine events."""
     assert _engine is not None, "Game not started"
     return _engine.pop_events()
+
+
+def register_observer() -> asyncio.Queue[GameEvent]:
+    """Return a queue that receives future events."""
+    assert _engine is not None, "Game not started"
+    return _engine.register_observer()
+
+
+def unregister_observer(queue: asyncio.Queue[GameEvent]) -> None:
+    """Detach ``queue`` from the engine."""
+    if _engine is not None:
+        _engine.unregister_observer(queue)
 
 
 def get_tenhou_log() -> str:

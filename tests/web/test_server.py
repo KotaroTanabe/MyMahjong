@@ -1,6 +1,7 @@
 from fastapi.testclient import TestClient
 import logging
 import pytest
+import time
 
 from web.server import app
 from core import api, models
@@ -301,6 +302,26 @@ def test_websocket_streams_events() -> None:
         )
         data = ws.receive_json()
         assert data["name"] == "draw_tile"
+
+
+def test_websocket_events_no_poll_delay() -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    with client.websocket_connect("/ws/1") as ws:
+        ws.receive_json()  # allowed_actions
+        ws.receive_json()  # start_game
+        ws.receive_json()  # start_kyoku
+        from core import api
+        assert api._engine is not None
+        api._engine.state.players[0].hand.tiles.pop()
+        start = time.monotonic()
+        client.post(
+            "/games/1/action",
+            json={"player_index": 0, "action": "draw"},
+        )
+        data = ws.receive_json()
+        elapsed = time.monotonic() - start
+        assert data["name"] == "draw_tile"
+        assert elapsed < 0.05
 
 
 def test_practice_endpoints() -> None:

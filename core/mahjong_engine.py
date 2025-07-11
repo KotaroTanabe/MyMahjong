@@ -9,6 +9,7 @@ from mahjong.shanten import Shanten
 from mahjong.hand_calculating.hand_response import HandResponse
 from dataclasses import asdict
 from typing import Any
+import asyncio
 
 
 def _hand_response_dict(resp: HandResponse) -> dict[str, Any]:
@@ -35,12 +36,23 @@ class MahjongEngine:
         self.state.current_player = 0
         self.events: list[GameEvent] = []
         self.event_history: list[GameEvent] = []
+        self._observers: set[asyncio.Queue[GameEvent]] = set()
         self._cached_allowed_actions: list[list[str]] | None = None
         self._claims_open = False
         self.game_over = False
         self._final_state: GameState | None = None
         self._emit("start_game", {"state": self.state})
         self.start_kyoku(dealer=0, round_number=1)
+
+    def register_observer(self) -> asyncio.Queue[GameEvent]:
+        """Return a queue that receives future events."""
+        q: asyncio.Queue[GameEvent] = asyncio.Queue()
+        self._observers.add(q)
+        return q
+
+    def unregister_observer(self, q: asyncio.Queue[GameEvent]) -> None:
+        """Remove ``q`` from the observer list."""
+        self._observers.discard(q)
 
     def _invalidate_cache(self) -> None:
         """Clear cached allowed actions."""
@@ -101,6 +113,11 @@ class MahjongEngine:
         evt = GameEvent(name=name, payload=payload)
         self.events.append(evt)
         self.event_history.append(evt)
+        for q in list(self._observers):
+            try:
+                q.put_nowait(evt)
+            except asyncio.QueueFull:  # pragma: no cover - unbounded queue
+                pass
 
     def _close_claims(self) -> None:
         """Emit ``claims_closed`` if a discard claim window was open."""
