@@ -3,6 +3,20 @@ from __future__ import annotations
 
 from .mahjong_engine import MahjongEngine
 from .models import GameState, Tile, GameEvent, GameAction
+from .actions import (
+    DRAW,
+    DISCARD,
+    CHI,
+    PON,
+    KAN,
+    RIICHI,
+    TSUMO,
+    RON,
+    SKIP,
+    START_KYOKU,
+    ADVANCE_HAND,
+    END_GAME,
+)
 from .ai import AI_REGISTRY
 from . import practice, shanten_quiz
 from mahjong.hand_calculating.hand_response import HandResponse
@@ -304,9 +318,9 @@ def _player_actions(player_index: int) -> list[str]:
     if not state.waiting_for_claims and player_index == state.current_player:
         player = state.players[player_index]
         if len(player.hand.tiles) % 3 == 1:
-            actions.add("draw")
+            actions.add(DRAW)
         else:
-            actions.add("discard")
+            actions.add(DISCARD)
     return sorted(actions)
 
 
@@ -323,7 +337,7 @@ def get_next_actions() -> tuple[int, list[str]]:
         state = _engine.state
         idx = state.waiting_for_claims[0] if state.waiting_for_claims else state.current_player
         actions = _player_actions(idx)
-        if actions == ["draw"]:
+        if actions == [DRAW]:
             _engine.draw_tile(idx)
             continue
         return idx, actions
@@ -334,47 +348,47 @@ def apply_action(action: GameAction) -> object | None:
 
     assert _engine is not None, "Game not started"
 
-    if action.type == "draw":
+    if action.type == DRAW:
         assert action.player_index is not None
         return _engine.draw_tile(action.player_index)
-    if action.type == "discard" and action.tile is not None:
+    if action.type == DISCARD and action.tile is not None:
         assert action.player_index is not None
         _engine.discard_tile(action.player_index, action.tile)
         return None
-    if action.type == "chi" and action.tiles is not None:
+    if action.type == CHI and action.tiles is not None:
         assert action.player_index is not None
         _engine.call_chi(action.player_index, action.tiles)
         return None
-    if action.type == "pon" and action.tiles is not None:
+    if action.type == PON and action.tiles is not None:
         assert action.player_index is not None
         _engine.call_pon(action.player_index, action.tiles)
         return None
-    if action.type == "kan" and action.tiles is not None:
+    if action.type == KAN and action.tiles is not None:
         assert action.player_index is not None
         _engine.call_kan(action.player_index, action.tiles)
         return None
-    if action.type == "riichi":
+    if action.type == RIICHI:
         assert action.player_index is not None
         _engine.declare_riichi(action.player_index)
         return None
-    if action.type == "tsumo" and action.tile is not None:
+    if action.type == TSUMO and action.tile is not None:
         assert action.player_index is not None
         return _engine.declare_tsumo(action.player_index, action.tile)
-    if action.type == "ron" and action.tile is not None:
+    if action.type == RON and action.tile is not None:
         assert action.player_index is not None
         return _engine.declare_ron(action.player_index, action.tile)
-    if action.type == "skip":
+    if action.type == SKIP:
         assert action.player_index is not None
         _engine.skip(action.player_index)
         return None
-    if action.type == "start_kyoku":
+    if action.type == START_KYOKU:
         assert action.dealer is not None and action.round_number is not None
         _engine.start_kyoku(action.dealer, action.round_number)
         return None
-    if action.type == "advance_hand":
+    if action.type == ADVANCE_HAND:
         _engine.advance_hand(action.player_index)
         return None
-    if action.type == "end_game":
+    if action.type == END_GAME:
         return _engine.end_game()
 
     raise ValueError(f"Unknown action: {action.type}")

@@ -4,6 +4,7 @@ import pytest
 
 from web.server import app
 from core import api, models
+from core.actions import CHI, PON, KAN, RIICHI, TSUMO, SKIP, DISCARD, DRAW
 
 client = TestClient(app)
 
@@ -70,7 +71,7 @@ def test_draw_action_endpoint() -> None:
     api._engine.state.players[0].hand.tiles.pop()
     resp = client.post(
         "/games/1/action",
-        json={"player_index": 0, "action": "draw"},
+        json={"player_index": 0, "action": DRAW},
     )
     assert resp.status_code == 200
     tile = resp.json()
@@ -81,7 +82,7 @@ def test_draw_without_discard_returns_409() -> None:
     client.post("/games", json={"players": ["A", "B", "C", "D"]})
     resp = client.post(
         "/games/1/action",
-        json={"player_index": 0, "action": "draw"},
+        json={"player_index": 0, "action": DRAW},
     )
     assert resp.status_code == 409
     assert resp.json() == {"detail": "Cannot draw before discarding"}
@@ -92,7 +93,7 @@ def test_draw_without_discard_logs_conflict(caplog: pytest.LogCaptureFixture) ->
     with caplog.at_level(logging.INFO):
         resp = client.post(
             "/games/1/action",
-            json={"player_index": 0, "action": "draw"},
+            json={"player_index": 0, "action": DRAW},
         )
     assert resp.status_code == 409
     assert any("409 conflict" in rec.message for rec in caplog.records)
@@ -107,12 +108,12 @@ def test_discard_action_endpoint() -> None:
     ] * 13
     draw = client.post(
         "/games/1/action",
-        json={"player_index": state.current_player, "action": "draw"},
+        json={"player_index": state.current_player, "action": DRAW},
     )
     tile = draw.json()
     resp = client.post(
         "/games/1/action",
-        json={"player_index": 0, "action": "discard", "tile": tile},
+        json={"player_index": 0, "action": DISCARD, "tile": tile},
     )
     assert resp.status_code == 200
     assert resp.json() == {"status": "ok"}
@@ -131,7 +132,7 @@ def test_discard_invalid_tile_returns_409() -> None:
             tile["suit"] = "pin" if tile["suit"] == "man" else "sou"
     resp = client.post(
         "/games/1/action",
-        json={"player_index": state.current_player, "action": "discard", "tile": tile},
+        json={"player_index": state.current_player, "action": DISCARD, "tile": tile},
     )
     assert resp.status_code == 409
 
@@ -144,7 +145,7 @@ def test_chi_without_discard_returns_409() -> None:
     state.players[1].hand.tiles = [models.Tile("man", 1), models.Tile("man", 2)]
     client.post(
         "/games/1/action",
-        json={"player_index": 0, "action": "discard", "tile": chi_tile},
+        json={"player_index": 0, "action": DISCARD, "tile": chi_tile},
     )
     assert api._engine is not None
     api.get_allowed_actions(1)  # cache chi as allowed
@@ -155,7 +156,7 @@ def test_chi_without_discard_returns_409() -> None:
         "/games/1/action",
         json={
             "player_index": 1,
-            "action": "chi",
+            "action": CHI,
             "tiles": [
                 {"suit": "man", "value": 1},
                 {"suit": "man", "value": 2},
@@ -175,14 +176,14 @@ def test_additional_action_endpoints() -> None:
     state.players[1].hand.tiles = []
     client.post(
         "/games/1/action",
-        json={"player_index": 0, "action": "discard", "tile": chi_tile},
+        json={"player_index": 0, "action": DISCARD, "tile": chi_tile},
     )
     state.players[1].hand.tiles = [models.Tile("man", 1), models.Tile("man", 2)]
     resp = client.post(
         "/games/1/action",
         json={
             "player_index": 1,
-            "action": "chi",
+            "action": CHI,
             "tiles": [
                 {"suit": "man", "value": 1},
                 {"suit": "man", "value": 2},
@@ -198,14 +199,14 @@ def test_additional_action_endpoints() -> None:
     state.players[0].hand.tiles = []
     client.post(
         "/games/1/action",
-        json={"player_index": 1, "action": "discard", "tile": pon_tile},
+        json={"player_index": 1, "action": DISCARD, "tile": pon_tile},
     )
     state.players[0].hand.tiles = [models.Tile("pin", 1), models.Tile("pin", 1)]
     resp = client.post(
         "/games/1/action",
         json={
             "player_index": 0,
-            "action": "pon",
+            "action": PON,
             "tiles": [
                 pon_tile,
                 {"suit": "pin", "value": 1},
@@ -221,14 +222,14 @@ def test_additional_action_endpoints() -> None:
     state.players[1].hand.tiles = []
     client.post(
         "/games/1/action",
-        json={"player_index": 0, "action": "discard", "tile": kan_tile},
+        json={"player_index": 0, "action": DISCARD, "tile": kan_tile},
     )
     state.players[1].hand.tiles = [models.Tile("sou", 9) for _ in range(3)]
     resp = client.post(
         "/games/1/action",
         json={
             "player_index": 1,
-            "action": "kan",
+            "action": KAN,
             "tiles": [
                 kan_tile,
                 {"suit": "sou", "value": 9},
@@ -241,7 +242,7 @@ def test_additional_action_endpoints() -> None:
 
     resp = client.post(
         "/games/1/action",
-        json={"player_index": 0, "action": "riichi", "tile": {"suit": "man", "value": 1}},
+        json={"player_index": 0, "action": RIICHI, "tile": {"suit": "man", "value": 1}},
     )
     assert resp.status_code == 409
 
@@ -252,19 +253,19 @@ def test_additional_action_endpoints() -> None:
     ]
     draw = client.post(
         "/games/1/action",
-        json={"player_index": state.current_player, "action": "draw"},
+        json={"player_index": state.current_player, "action": DRAW},
     )
     tile = draw.json()
 
     resp = client.post(
         "/games/1/action",
-        json={"player_index": state.current_player, "action": "tsumo", "tile": tile},
+        json={"player_index": state.current_player, "action": TSUMO, "tile": tile},
     )
     assert resp.status_code == 200
 
     resp = client.post(
         "/games/1/action",
-        json={"player_index": state.current_player, "action": "skip"},
+        json={"player_index": state.current_player, "action": SKIP},
     )
     assert resp.status_code == 409
 
@@ -277,7 +278,7 @@ def test_draw_from_empty_wall_returns_error() -> None:
     api._engine.state.players[0].hand.tiles.pop()
     resp = client.post(
         "/games/1/action",
-        json={"player_index": 0, "action": "draw"},
+        json={"player_index": 0, "action": DRAW},
     )
     assert resp.status_code == 409
     assert resp.json() == {"detail": "Wall is empty"}
@@ -297,7 +298,7 @@ def test_websocket_streams_events() -> None:
         api._engine.state.players[0].hand.tiles.pop()
         client.post(
             "/games/1/action",
-            json={"player_index": 0, "action": "draw"},
+            json={"player_index": 0, "action": DRAW},
         )
         data = ws.receive_json()
         assert data["name"] == "draw_tile"
@@ -369,7 +370,7 @@ def test_auto_action_claim_phase_checks_player() -> None:
     tile = state.players[start].hand.tiles[0]
     client.post(
         "/games/1/action",
-        json={"player_index": start, "action": "discard", "tile": tile.__dict__},
+        json={"player_index": start, "action": DISCARD, "tile": tile.__dict__},
     )
     resp = client.post(
         "/games/1/action",
@@ -395,13 +396,13 @@ def test_allowed_actions_endpoint() -> None:
     state.players[0].hand.tiles = [models.Tile(**tile)]
     client.post(
         "/games/1/action",
-        json={"player_index": 0, "action": "discard", "tile": tile},
+        json={"player_index": 0, "action": DISCARD, "tile": tile},
     )
     state.players[1].hand.tiles = [models.Tile("man", 1), models.Tile("man", 3)]
     resp = client.get("/games/1/allowed-actions/1")
     assert resp.status_code == 200
     actions = resp.json().get("actions")
-    assert "chi" in actions and "skip" in actions
+    assert CHI in actions and SKIP in actions
 
 
 def test_all_allowed_actions_endpoint() -> None:
@@ -413,13 +414,13 @@ def test_all_allowed_actions_endpoint() -> None:
     state.players[0].hand.tiles = [models.Tile(**tile)]
     client.post(
         "/games/1/action",
-        json={"player_index": 0, "action": "discard", "tile": tile},
+        json={"player_index": 0, "action": DISCARD, "tile": tile},
     )
     state.players[1].hand.tiles = [models.Tile("man", 1), models.Tile("man", 3)]
     resp = client.get("/games/1/allowed-actions")
     assert resp.status_code == 200
     actions = resp.json().get("actions")
-    assert isinstance(actions, list) and "chi" in actions[1]
+    assert isinstance(actions, list) and CHI in actions[1]
 
 
 def test_unknown_action_returns_400() -> None:
@@ -428,7 +429,7 @@ def test_unknown_action_returns_400() -> None:
         "/games/1/action",
         json={"player_index": 0, "action": "unknown"},
     )
-    assert resp.status_code == 400
+    assert resp.status_code == 422
 
 
 def test_next_actions_endpoint_autodraw() -> None:
@@ -474,7 +475,7 @@ def test_action_rejected_when_not_allowed(caplog: pytest.LogCaptureFixture) -> N
             "/games/1/action",
             json={
                 "player_index": 1,
-                "action": "chi",
+                "action": CHI,
                 "tiles": [
                     {"suit": "man", "value": 1},
                     {"suit": "man", "value": 2},
@@ -485,7 +486,7 @@ def test_action_rejected_when_not_allowed(caplog: pytest.LogCaptureFixture) -> N
     assert resp.status_code == 409
     detail = resp.json()["detail"]
     assert detail.startswith("Action not allowed:")
-    assert "player 1" in detail and "chi" in detail
+    assert "player 1" in detail and CHI in detail
     assert any("disallowed action" in rec.message for rec in caplog.records)
 
 
@@ -498,14 +499,14 @@ def test_action_succeeds_when_allowed() -> None:
     state.players[0].hand.tiles = [models.Tile(**tile)]
     client.post(
         "/games/1/action",
-        json={"player_index": 0, "action": "discard", "tile": tile},
+        json={"player_index": 0, "action": DISCARD, "tile": tile},
     )
     state.players[1].hand.tiles = [models.Tile("man", 1), models.Tile("man", 3)]
     resp = client.post(
         "/games/1/action",
         json={
             "player_index": 1,
-            "action": "chi",
+            "action": CHI,
             "tiles": [
                 {"suit": "man", "value": 1},
                 {"suit": "man", "value": 2},
@@ -522,7 +523,7 @@ def test_discard_wrong_player_returns_409() -> None:
     tile = state.players[1].hand.tiles[0]
     resp = client.post(
         "/games/1/action",
-        json={"player_index": 1, "action": "discard", "tile": tile.__dict__},
+        json={"player_index": 1, "action": DISCARD, "tile": tile.__dict__},
     )
     assert resp.status_code == 409
 
@@ -533,13 +534,13 @@ def test_chi_wrong_player_returns_409() -> None:
     disc_tile = state.players[0].hand.tiles[0]
     client.post(
         "/games/1/action",
-        json={"player_index": 0, "action": "discard", "tile": disc_tile.__dict__},
+        json={"player_index": 0, "action": DISCARD, "tile": disc_tile.__dict__},
     )
     resp = client.post(
         "/games/1/action",
         json={
             "player_index": 2,
-            "action": "chi",
+            "action": CHI,
             "tiles": [
                 disc_tile.__dict__,
                 disc_tile.__dict__,
@@ -556,13 +557,13 @@ def test_pon_invalid_tiles_returns_409() -> None:
     disc_tile = state.players[0].hand.tiles[0]
     client.post(
         "/games/1/action",
-        json={"player_index": 0, "action": "discard", "tile": disc_tile.__dict__},
+        json={"player_index": 0, "action": DISCARD, "tile": disc_tile.__dict__},
     )
     resp = client.post(
         "/games/1/action",
         json={
             "player_index": 1,
-            "action": "pon",
+            "action": PON,
             "tiles": [
                 disc_tile.__dict__,
                 disc_tile.__dict__,
@@ -579,13 +580,13 @@ def test_kan_invalid_tiles_returns_409() -> None:
     disc_tile = state.players[0].hand.tiles[0]
     client.post(
         "/games/1/action",
-        json={"player_index": 0, "action": "discard", "tile": disc_tile.__dict__},
+        json={"player_index": 0, "action": DISCARD, "tile": disc_tile.__dict__},
     )
     resp = client.post(
         "/games/1/action",
         json={
             "player_index": 1,
-            "action": "kan",
+            "action": KAN,
             "tiles": [
                 disc_tile.__dict__,
                 disc_tile.__dict__,
@@ -613,7 +614,7 @@ def test_riichi_action_discards_and_flags_player() -> None:
     tile = player.hand.tiles[-1]
     resp = client.post(
         "/games/1/action",
-        json={"player_index": state.current_player, "action": "riichi", "tile": tile.__dict__},
+        json={"player_index": state.current_player, "action": RIICHI, "tile": tile.__dict__},
     )
     assert resp.status_code == 200
     assert player.riichi

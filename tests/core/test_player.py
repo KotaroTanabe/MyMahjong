@@ -1,5 +1,6 @@
 from core.player import Player
 from core import models
+from core.actions import PON
 from core.models import Tile
 
 
@@ -47,6 +48,6 @@ def test_has_open_melds() -> None:
     player = Player(name="Test")
     assert not player.has_open_melds()
     player.hand.melds.append(
-        models.Meld(tiles=[models.Tile("man", 1)] * 3, type="pon")
+        models.Meld(tiles=[models.Tile("man", 1)] * 3, type=PON)
     )
     assert player.has_open_melds()

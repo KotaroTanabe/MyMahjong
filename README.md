@@ -2,7 +2,9 @@
 
 MyMahjong is a simple TypeScript monorepo for experimenting with a Mahjong game engine and related tooling.  The repository is intentionally small so the entire system can be understood at a glance.  It contains three packages:
 
-- **core** – the game logic such as tiles, players and wall implementation
+- **core** – the game logic such as tiles, players and wall implementation. This
+  package now exports action constants in `core.actions` for use by other modules
+  and tests.
 - **cli** – a command line interface for playing the game in the terminal
 - **web** – a minimal web layer that demonstrates using the core package
 

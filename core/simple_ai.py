@@ -8,6 +8,7 @@ from mahjong.shanten import Shanten
 
 from .mahjong_engine import MahjongEngine
 from .models import Tile
+from .actions import CHI, PON
 from .rules import _tile_to_index
 
 
@@ -96,7 +97,7 @@ def claim_meld(engine: MahjongEngine, player_index: int) -> bool:
         value = _calculate_shanten(remaining)
         if value < best_value:
             best_value = value
-            best_action = ("pon", [same[0], same[1], last_tile])
+            best_action = (PON, [same[0], same[1], last_tile])
 
     # Chi candidate
     if (last_player + 1) % len(state.players) == player_index and last_tile.suit in {"man", "pin", "sou"}:
@@ -121,12 +122,12 @@ def claim_meld(engine: MahjongEngine, player_index: int) -> bool:
                     best_value = value
                     meld_tiles = [*needed, last_tile]
                     meld_tiles.sort(key=lambda t: t.value)
-                    best_action = ("chi", meld_tiles)
+                    best_action = (CHI, meld_tiles)
 
     if best_action is None or best_value >= current:
         return False
 
-    if best_action[0] == "pon":
+    if best_action[0] == PON:
         engine.call_pon(player_index, best_action[1])
     else:
         engine.call_chi(player_index, best_action[1])

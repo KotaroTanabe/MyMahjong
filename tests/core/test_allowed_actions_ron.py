@@ -1,6 +1,7 @@
 from core.mahjong_engine import MahjongEngine
 from core.rules import RuleSet
 from core.models import Tile
+from core.actions import RON
 from mahjong.hand_calculating.hand_response import HandResponse
 
 
@@ -20,7 +21,7 @@ def test_allowed_actions_include_ron_when_winning() -> None:
     engine.discard_tile(0, tile)
     engine.state.players[1].hand.tiles = [Tile("pin", 1)] * 13
     actions = engine.get_allowed_actions(1)
-    assert "ron" in actions
+    assert RON in actions
 
 
 def test_allowed_actions_exclude_ron_when_not_winning() -> None:
@@ -29,4 +30,4 @@ def test_allowed_actions_exclude_ron_when_not_winning() -> None:
     engine.discard_tile(0, tile)
     engine.state.players[1].hand.tiles = [Tile("pin", 1)] * 13
     actions = engine.get_allowed_actions(1)
-    assert "ron" not in actions
+    assert RON not in actions

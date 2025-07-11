@@ -1,6 +1,7 @@
 import pytest
 from core.mahjong_engine import MahjongEngine
 from core.models import Tile
+from core.actions import CHI
 
 
 def test_call_chi_consumes_discard() -> None:
@@ -14,7 +15,7 @@ def test_call_chi_consumes_discard() -> None:
     caller.hand.tiles.extend([Tile("man", 1), Tile("man", 2)])
     engine.call_chi(1, [Tile("man", 1), Tile("man", 2), tile])
     assert len(caller.hand.melds) == 1
-    assert caller.hand.melds[0].type == "chi"
+    assert caller.hand.melds[0].type == CHI
     assert tile not in discarder.river
 
 

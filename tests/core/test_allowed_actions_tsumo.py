@@ -1,5 +1,6 @@
 from core.mahjong_engine import MahjongEngine
 from core.rules import RuleSet
+from core.actions import TSUMO
 from mahjong.hand_calculating.hand_response import HandResponse
 
 
@@ -16,10 +17,10 @@ class NeverWinRules(RuleSet):
 def test_allowed_actions_include_tsumo_when_winning() -> None:
     engine = MahjongEngine(ruleset=AlwaysWinRules())
     actions = engine.get_allowed_actions(0)
-    assert "tsumo" in actions
+    assert TSUMO in actions
 
 
 def test_allowed_actions_exclude_tsumo_when_not_winning() -> None:
     engine = MahjongEngine(ruleset=NeverWinRules())
     actions = engine.get_allowed_actions(0)
-    assert "tsumo" not in actions
+    assert TSUMO not in actions

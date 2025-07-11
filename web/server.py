@@ -7,9 +7,42 @@ import asyncio
 import logging
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from typing import Literal
 
 from core import api, models, shanten_quiz
 from core.models import GameEvent
+from core.actions import (
+    DRAW,
+    DISCARD,
+    CHI,
+    PON,
+    KAN,
+    RIICHI,
+    TSUMO,
+    RON,
+    SKIP,
+    START_KYOKU,
+    ADVANCE_HAND,
+    END_GAME,
+    VALID_ACTIONS,
+)
+
+# Explicit Literal type for known actions handled by the server
+AllowedAction = Literal[
+    "draw",
+    "discard",
+    "chi",
+    "pon",
+    "kan",
+    "riichi",
+    "tsumo",
+    "ron",
+    "skip",
+    "start_kyoku",
+    "advance_hand",
+    "end_game",
+    "auto",
+]
 
 app = FastAPI()
 # very small in-memory id tracker until multi-game support exists
@@ -291,7 +324,7 @@ class ActionRequest(BaseModel):
     """Request body for game actions."""
 
     player_index: int
-    action: str
+    action: AllowedAction
     tile: dict | None = None
     tiles: list[dict] | None = None
     ai_type: str | None = None
@@ -428,15 +461,15 @@ def _auto(req: ActionRequest) -> dict:
 
 
 ACTION_HANDLERS = {
-    "draw": _draw,
-    "discard": _discard,
-    "chi": _chi,
-    "pon": _pon,
-    "kan": _kan,
-    "riichi": _riichi,
-    "tsumo": _tsumo,
-    "ron": _ron,
-    "skip": _skip,
+    DRAW: _draw,
+    DISCARD: _discard,
+    CHI: _chi,
+    PON: _pon,
+    KAN: _kan,
+    RIICHI: _riichi,
+    TSUMO: _tsumo,
+    RON: _ron,
+    SKIP: _skip,
     "auto": _auto,
 }
 
@@ -451,7 +484,7 @@ def game_action(game_id: int, req: ActionRequest) -> dict:
         raise HTTPException(status_code=404, detail="Game not started")
     except IndexError:
         raise HTTPException(status_code=404, detail="Player not found")
-    if req.action in {"chi", "pon", "kan", "riichi", "skip"} and req.action not in allowed:
+    if req.action in {CHI, PON, KAN, RIICHI, SKIP} and req.action not in allowed:
         logger.info(
             "Player %s attempted disallowed action %s (allowed=%s)",
             req.player_index,

@@ -15,6 +15,7 @@ __all__ = [
     "tenhou_log",
     "tenhou_validator",
     "models",
+    "actions",
     "rules",
     "shanten_quiz",
 ]

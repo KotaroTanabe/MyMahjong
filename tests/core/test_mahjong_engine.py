@@ -1,6 +1,7 @@
 import pytest
 from core.mahjong_engine import MahjongEngine
 from core.models import Tile
+from core.actions import PON
 from core.rules import RuleSet
 from mahjong.hand_calculating.hand_response import HandResponse
 
@@ -89,7 +90,7 @@ def test_call_pon_adds_meld() -> None:
     caller.hand.tiles.extend([Tile("man", 1), Tile("man", 1)])
     engine.call_pon(1, [Tile("man", 1), Tile("man", 1), tile])
     assert len(caller.hand.melds) == 1
-    assert caller.hand.melds[0].type == "pon"
+    assert caller.hand.melds[0].type == PON
     assert tile not in discarder.river
 
 

@@ -4,6 +4,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from .models import Hand, Tile
+from .actions import CHI, PON, KAN
 
 
 @dataclass
@@ -38,7 +39,7 @@ class Player:
     def has_open_melds(self) -> bool:
         """Return ``True`` if the player has chi, pon or open kan melds."""
         return any(
-            meld.type in {"chi", "pon", "kan", "added_kan"}
+            meld.type in {CHI, PON, KAN, "added_kan"}
             for meld in self.hand.melds
         )
 
