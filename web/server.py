@@ -296,6 +296,9 @@ def game_action(game_id: int, req: ActionRequest) -> dict:
             tile = api.draw_tile(req.player_index)
         except IndexError:
             raise HTTPException(status_code=409, detail="Wall is empty")
+        except ValueError as err:
+            # engine enforces draw/discard sequence
+            raise HTTPException(status_code=409, detail=str(err))
         return asdict(tile)
     # invalid discards raise ValueError from the engine
     if req.action == "discard" and req.tile:

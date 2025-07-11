@@ -77,6 +77,16 @@ def test_draw_action_endpoint() -> None:
     assert "suit" in tile and "value" in tile
 
 
+def test_draw_without_discard_returns_409() -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    resp = client.post(
+        "/games/1/action",
+        json={"player_index": 0, "action": "draw"},
+    )
+    assert resp.status_code == 409
+    assert resp.json() == {"detail": "Cannot draw before discarding"}
+
+
 def test_discard_action_endpoint() -> None:
     client.post("/games", json={"players": ["A", "B", "C", "D"]})
     state = api.get_state()
