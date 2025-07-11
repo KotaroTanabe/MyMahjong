@@ -138,18 +138,18 @@ export default function GameBoard({
         prevWaiting.current = waiting.slice();
         skipSent.current.clear();
       }
-      waiting.forEach((idx) => {
-        if (aiPlayers[idx]) {
-          if (allowedActions[idx]?.length) {
-            const body = {
-              player_index: idx,
-              action: "auto",
-              ai_type: aiTypes[idx],
-            };
-            log("debug", `POST /games/${gameId}/action auto - resolve claims`);
-            sendAction(body, true);
-          }
-        } else if (
+      for (const idx of waiting) {
+        if (aiPlayers[idx] && allowedActions[idx]?.length) {
+          const body = {
+            player_index: idx,
+            action: "auto",
+            ai_type: aiTypes[idx],
+          };
+          log("debug", `POST /games/${gameId}/action auto - resolve claims`);
+          sendAction(body, true);
+          break;
+        }
+        if (
           allowedActions[idx]?.length === 1 &&
           allowedActions[idx][0] === "skip" &&
           !skipSent.current.has(idx)
@@ -159,7 +159,7 @@ export default function GameBoard({
           sendAction(body);
           skipSent.current.add(idx);
         }
-      });
+      }
       return;
     }
     skipSent.current.clear();
