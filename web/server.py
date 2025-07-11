@@ -4,6 +4,7 @@ from dataclasses import asdict
 
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 import asyncio
+import logging
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -14,6 +15,7 @@ app = FastAPI()
 # very small in-memory id tracker until multi-game support exists
 _next_game_id = 1
 _ws_connections: set[WebSocket] = set()
+logger = logging.getLogger(__name__)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -279,7 +281,16 @@ def game_action(game_id: int, req: ActionRequest) -> dict:
     except IndexError:
         raise HTTPException(status_code=404, detail="Player not found")
     if req.action in {"chi", "pon", "kan", "riichi", "skip"} and req.action not in allowed:
-        raise HTTPException(status_code=409, detail="Action not allowed")
+        logger.info(
+            "Player %s attempted disallowed action %s (allowed=%s)",
+            req.player_index,
+            req.action,
+            allowed,
+        )
+        raise HTTPException(
+            status_code=409,
+            detail=f"Action not allowed: player {req.player_index} attempted {req.action}. allowed={allowed}",
+        )
     if req.action == "draw":
         try:
             tile = api.draw_tile(req.player_index)
@@ -356,7 +367,15 @@ def game_action(game_id: int, req: ActionRequest) -> dict:
             state.waiting_for_claims if state.waiting_for_claims else [state.current_player]
         )
         if req.player_index not in allowed_players:
-            raise HTTPException(status_code=409, detail="Action not allowed")
+            logger.info(
+                "Player %s attempted auto action when not allowed (allowed players=%s)",
+                req.player_index,
+                allowed_players,
+            )
+            raise HTTPException(
+                status_code=409,
+                detail=f"Action not allowed: player {req.player_index} attempted auto. allowed players={allowed_players}",
+            )
         try:
             tile = api.auto_play_turn(
                 req.player_index,
