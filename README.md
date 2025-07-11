@@ -115,6 +115,8 @@ Future work will expand these components.
 - [x] Chi option modal when multiple chi choices are available
 - [x] Cancel in-flight allowed actions requests
 - [x] Cancel in-flight next actions requests
+- [x] Cleanup pending request controllers on unmount
+- [x] Fetch helpers require a unique `requestId`
 - [x] Download Tenhou log
 - [x] Download MJAI log
 - [x] Log access from result modal

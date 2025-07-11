@@ -74,7 +74,10 @@ export default function PlayerPanel({
     }
     const controller = new AbortController();
     controllerRef.current = controller;
-    getAllowedActions(server, gameId, playerIndex, log, { signal: controller.signal })
+    getAllowedActions(server, gameId, playerIndex, log, {
+      signal: controller.signal,
+      requestId: `panel-${playerIndex}`,
+    })
       .then((acts) => {
         if (acts && acts.error) {
           setError(`Failed to fetch actions: ${acts.error}`);

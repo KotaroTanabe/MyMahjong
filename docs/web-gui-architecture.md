@@ -29,6 +29,9 @@ Each component receives only the data it needs so the interface remains simple a
    and what actions are possible. The set of allowed actions for each player is
    pushed to the client via an `allowed_actions` WebSocket event, so no extra
    requests are needed when claims are possible.
+   Helper functions like `getAllowedActions` and `getNextActions` require a
+   unique `requestId` so in-flight calls can be cancelled. Components should pass
+   a stable id and clean up controllers when unmounting.
 5. If the only action is `draw`, the server performs it automatically and returns
    the subsequent player instead.
 6. Otherwise the GUI checks if that player is AI-controlled and either requests
