@@ -108,6 +108,7 @@ Future work will expand these components.
 - [x] Round separator lines in event log
 - [x] Debug logging of GUI API calls
 - [x] Error modal shows server rejection
+- [x] Conflict detail logged and displayed on 409 errors
 - [x] Chi option modal when multiple chi choices are available
 - [x] Cancel in-flight allowed actions requests
 - [x] Cancel in-flight next actions requests

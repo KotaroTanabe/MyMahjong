@@ -41,12 +41,27 @@ export default function GameBoard({
 
   function sendAction(body, delay = false) {
     const url = `${server.replace(/\/$/, "")}/games/${gameId}/action`;
-    const fn = () =>
-      fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      }).catch(() => {});
+    const fn = async () => {
+      try {
+        const resp = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        if (!resp.ok) {
+          let msg = `Action ${body.action} failed: ${resp.status}`;
+          try {
+            const data = await resp.json();
+            if (data.detail) msg = data.detail;
+          } catch {}
+          setError(msg);
+          log("warn", msg);
+        }
+      } catch {
+        setError("Failed to contact server");
+        log("warn", "Failed to contact server");
+      }
+    };
     if (delay && aiDelay > 0) {
       setTimeout(fn, aiDelay);
     } else {
