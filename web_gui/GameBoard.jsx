@@ -16,6 +16,7 @@ export default function GameBoard({
   sortHand = false,
   log = () => {},
   allowedActions = [[], [], [], []],
+  claimOptions = [[], [], [], []],
   aiDelay = 0,
   showLog = null,
   downloadTenhou = null,

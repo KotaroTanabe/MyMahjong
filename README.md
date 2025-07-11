@@ -162,6 +162,7 @@ Future work will expand these components.
 - [x] Multiple concurrent game instances via EngineManager
 - [x] Wait for all players to skip before next draw
 - [x] `claims_closed` event emitted when the claim window ends
+- [x] Claims options endpoint and event
 - [x] `round_end` event emitted between hands
 - [x] Game ends early if any player reaches zero or negative points (bankruptcy)
 - [x] Enforce tsumogiri after riichi

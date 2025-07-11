@@ -18,6 +18,14 @@ export function formatEvent(evt) {
       return `Player ${p} wins by ron`;
     case 'skip':
       return `Player ${p} skips`;
+    case 'claims':
+      return (
+        'Claims ' +
+        (evt.payload?.claims || [])
+          .map((c, i) => (c.length ? `${i}:${c.join('/')}` : null))
+          .filter(Boolean)
+          .join(' ')
+      );
     case 'claims_closed':
       return '捨て牌に対するアクションはありませんでした';
     case 'turn_start':

@@ -23,9 +23,11 @@ export default function App() {
   const [gameData, setGameData] = useState({
     state: null,
     allowed: [[], [], [], []],
+    claims: [[], [], [], []],
   });
   const gameState = gameData.state;
   const allowedActions = gameData.allowed;
+  const claimOptions = gameData.claims;
   const [events, setEvents] = useState([]);
   function log(level, message) {
     setEvents((evts) => [...evts.slice(-19), `[${level}] ${message}`]);
@@ -129,6 +131,14 @@ export default function App() {
         });
         return;
       }
+      if (evt.name === 'claims') {
+        setGameData((d) => ({ ...d, claims: evt.payload?.claims || [[], [], [], []] }));
+        setEvents((evts) => {
+          const line = `${formatEvent(evt)} ${eventToMjaiJson(evt)}`;
+          return [...evts.slice(-9), line];
+        });
+        return;
+      }
       if (evt.name === 'end_game') {
         wsRef.current?.close();
       }
@@ -162,7 +172,7 @@ export default function App() {
       if (evt.name === 'tsumo' || evt.name === 'ron' || evt.name === 'ryukyoku') {
         return;
       }
-      if (evt.name !== 'next_actions' && gameId) {
+      if (evt.name !== 'next_actions' && evt.name !== 'discard' && evt.name !== 'claims' && gameId) {
         logNextActions(
           server,
           gameId,
@@ -431,13 +441,14 @@ export default function App() {
             gameId={gameId}
             peek={peek}
             sortHand={sortHand}
-            log={log}
-            allowedActions={allowedActions}
-            aiDelay={aiDelay}
-            showLog={openLogModal}
-            downloadTenhou={downloadTenhou}
-            downloadMjai={downloadMjai}
-          />
+          log={log}
+          allowedActions={allowedActions}
+          claimOptions={claimOptions}
+          aiDelay={aiDelay}
+          showLog={openLogModal}
+          downloadTenhou={downloadTenhou}
+          downloadMjai={downloadMjai}
+        />
       ) : mode === 'practice' ? (
         <Practice server={server} sortHand={sortHand} log={log} />
       ) : (

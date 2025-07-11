@@ -26,6 +26,7 @@ Each node corresponds to a method in `MahjongEngine`:
 - `declare_tsumo()` – self-drawn win; updates scores and ends the hand.
 - `riichi()` – discard a tile and declare riichi in one step.
 - `discard_tile()` – place a tile in the river and set `waiting_for_claims`.
+  A `claims` event with each player's options is emitted immediately.
 - `declare_ron()` – win on another player's discard.
 - `call_pon()` / `call_chi()` – claim the discard to form a meld.
 - `skip()` – pass on the discard; once all players skip, the next player draws.

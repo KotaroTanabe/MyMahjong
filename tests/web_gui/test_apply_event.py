@@ -138,6 +138,18 @@ def test_claims_closed_clears_waiting_for_claims() -> None:
     assert output == '0'
 
 
+def test_claims_event_sets_options() -> None:
+    code = (
+        "import { applyEvent } from './web_gui/applyEvent.js';\n"
+        "const state = {};\n"
+        "const evt = {name:'claims', payload:{claims:[[\"chi\"],[],[],[]]}};\n"
+        "const newState = applyEvent(state, evt);\n"
+        "console.log(newState.claim_options[0][0]);"
+    )
+    output = run_node(code)
+    assert output == 'chi'
+
+
 def test_skip_ignored_when_not_waiting() -> None:
     code = (
         "import { applyEvent } from './web_gui/applyEvent.js';\n"
