@@ -26,7 +26,14 @@ describe('GameBoard auto draw', () => {
     fetchMock.mockClear();
     state.current_player = 1;
     state.waiting_for_claims = [1, 2, 3];
-    rerender(<GameBoard state={state} server="http://s" gameId="1" />);
+    rerender(
+      <GameBoard
+        state={state}
+        server="http://s"
+        gameId="1"
+        allowedActions={[[], ['chi'], ['chi'], ['chi']]}
+      />,
+    );
     await Promise.resolve();
     const bodies = fetchMock.mock.calls
       .filter(c => c[1] && c[1].body)
