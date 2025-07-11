@@ -90,5 +90,8 @@ know which player is expected to act and what actions they may take:
   a single player.
 - `GET /games/{id}/allowed-actions` returns the allowed actions for all players.
 
+The allowed actions lists include `draw` or `discard` when it is that player's
+turn so clients know whether to play automatically.
+
 The same data is also pushed over the WebSocket as an `allowed_actions` event
 whenever it changes. Waiting for these signals ensures actions are accepted by the server.

@@ -282,8 +282,7 @@ def get_allowed_actions(player_index: int) -> list[str]:
     """Return allowed actions for ``player_index`` in the current game."""
 
     assert _engine is not None, "Game not started"
-    engine = _engine
-    return engine.get_allowed_actions(player_index)
+    return _player_actions(player_index)
 
 
 def get_chi_options(player_index: int) -> list[list[Tile]]:
@@ -298,7 +297,7 @@ def get_all_allowed_actions() -> list[list[str]]:
 
     assert _engine is not None, "Game not started"
     return [
-        _engine.get_allowed_actions(i) for i in range(len(_engine.state.players))
+        _player_actions(i) for i in range(len(_engine.state.players))
     ]
 
 
