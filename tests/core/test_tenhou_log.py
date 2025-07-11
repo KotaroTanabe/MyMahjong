@@ -1,5 +1,6 @@
 from core.mahjong_engine import MahjongEngine
 from core.tenhou_log import events_to_tenhou_json, mjai_log_to_tenhou_json
+from core.models import Tile
 import json
 from dataclasses import asdict, is_dataclass
 
@@ -62,3 +63,14 @@ def test_mjai_log_conversion() -> None:
     assert direct["name"] == converted["name"]
     assert direct["rule"] == converted["rule"]
     assert direct["log"][0][4:] == converted["log"][0][4:]
+
+
+def test_events_to_tenhou_json_draw() -> None:
+    engine = MahjongEngine()
+    engine.state.wall.tiles = [Tile("pin", 1)]
+    engine.state.players[engine.state.current_player].hand.tiles.pop()
+    engine.draw_tile(engine.state.current_player)
+    engine.end_game()
+    data = json.loads(events_to_tenhou_json(engine.pop_events()))
+    kyoku = data["log"][0]
+    assert kyoku[-1][0] == "全員不聴"

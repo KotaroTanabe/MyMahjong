@@ -14,6 +14,15 @@ _TILE_BASE = {
     "dragon": 44,
 }
 
+# Map engine ryukyoku reasons to Tenhou strings
+_REASON_MAP = {
+    "wall_empty": "全員不聴",
+    "four_winds": "四風連打",
+    "four_riichi": "四家立直",
+    "four_kans": "四槓散了",
+    "nine_terminals": "九種九牌",
+}
+
 
 def tile_to_code(tile: Tile) -> int:
     """Return the numeric tile code used by tenhou.net/6."""
@@ -115,6 +124,20 @@ def events_to_tenhou_json(events: List[GameEvent]) -> str:
                 kyoku.append(takes[i])
                 kyoku.append(dahai[i])
             kyoku.append(["和了", delta, result_info])
+            log.append(kyoku)
+            kyoku = None
+        elif ev.name == "ryukyoku" and kyoku is not None:
+            scores = ev.payload.get("scores", start_scores)
+            delta = [scores[i] - start_scores[i] for i in range(len(scores))]
+            reason_key = ev.payload.get("reason")
+            reason = _REASON_MAP.get(str(reason_key), str(reason_key or "不明"))
+            for i in range(4):
+                kyoku.append(takes[i])
+                kyoku.append(dahai[i])
+            if any(delta):
+                kyoku.append(["流局", delta])
+            else:
+                kyoku.append([reason])
             log.append(kyoku)
             kyoku = None
 
