@@ -1,3 +1,4 @@
+from core.actions import TSUMO
 from core.mahjong_engine import MahjongEngine
 from core.rules import RuleSet
 from mahjong.hand_calculating.hand_response import HandResponse

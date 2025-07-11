@@ -10,6 +10,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from core import api, models, shanten_quiz
+from core.actions import (CHI, PON, KAN, RIICHI, TSUMO, RON, SKIP, DRAW, DISCARD, AUTO)
 from core.exceptions import InvalidActionError, NotYourTurnError
 from core.models import GameEvent
 
@@ -440,16 +441,16 @@ def _auto(req: ActionRequest) -> dict:
 
 
 ACTION_HANDLERS = {
-    "draw": _draw,
-    "discard": _discard,
-    "chi": _chi,
-    "pon": _pon,
-    "kan": _kan,
-    "riichi": _riichi,
-    "tsumo": _tsumo,
-    "ron": _ron,
-    "skip": _skip,
-    "auto": _auto,
+    DRAW: _draw,
+    DISCARD: _discard,
+    CHI: _chi,
+    PON: _pon,
+    KAN: _kan,
+    RIICHI: _riichi,
+    TSUMO: _tsumo,
+    RON: _ron,
+    SKIP: _skip,
+    AUTO: _auto,
 }
 
 
@@ -463,7 +464,7 @@ def game_action(game_id: int, req: ActionRequest) -> dict:
         raise HTTPException(status_code=404, detail="Game not started")
     except IndexError:
         raise HTTPException(status_code=404, detail="Player not found")
-    if req.action in {"chi", "pon", "kan", "riichi", "skip"} and req.action not in allowed:
+    if req.action in {CHI, PON, KAN, RIICHI, SKIP} and req.action not in allowed:
         logger.info(
             "Player %s attempted disallowed action %s (allowed=%s)",
             req.player_index,

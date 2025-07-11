@@ -1,3 +1,5 @@
+from core.actions import SKIP
+from core.actions import SKIP
 from core import api, models
 
 
@@ -6,7 +8,7 @@ def test_skip_not_offered_when_no_claims() -> None:
     assert state.waiting_for_claims == []
     for i in range(4):
         actions = api.get_allowed_actions(i)
-        assert "skip" not in actions
+        assert SKIP not in actions
 
 
 def test_skip_offered_to_all_waiting_players() -> None:
@@ -16,6 +18,6 @@ def test_skip_offered_to_all_waiting_players() -> None:
     for i in range(1, 4):
         assert i in state.waiting_for_claims
         actions = api.get_allowed_actions(i)
-        assert "skip" in actions
+        assert SKIP in actions
     assert 0 not in state.waiting_for_claims
-    assert "skip" not in api.get_allowed_actions(0)
+    assert SKIP not in api.get_allowed_actions(0)

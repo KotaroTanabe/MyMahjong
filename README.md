@@ -73,6 +73,7 @@ Future work will expand these components.
 - [x] GUI fetches next actions after every event
 - [x] GUI follows next actions from core
 - [x] Meld and win actions via GUI
+- [x] Shared action constants in core.actions
 - [x] Start game via GUI
 - [x] Start round via API
 - [x] Simple shanten-based AI for automated turns (discards tiles that keep shanten and calls pon/chi when it improves the hand)

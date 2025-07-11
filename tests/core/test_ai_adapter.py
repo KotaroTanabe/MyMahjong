@@ -1,3 +1,4 @@
+from core.actions import DISCARD, END_GAME
 from core.ai_adapter import (
     game_state_to_json,
     json_to_game_state,
@@ -66,26 +67,26 @@ def test_json_to_action() -> None:
     msg = '{"type": "discard", "tile": {"suit": "pin", "value": 3}}'
     action = json_to_action(msg)
     assert isinstance(action, models.GameAction)
-    assert action.type == "discard"
+    assert action.type == DISCARD
     assert action.tile and action.tile.value == 3
 
 
 def test_action_to_json_roundtrip() -> None:
     action = models.GameAction(
-        type="discard",
+        type=DISCARD,
         player_index=0,
         tile=models.Tile("pin", 5),
     )
     msg = action_to_json(action)
     restored = json_to_action(msg)
-    assert restored.type == "discard"
+    assert restored.type == DISCARD
     assert restored.tile and restored.tile.value == 5
 
 
 def test_send_and_receive_event() -> None:
     ai = DummyAI()
     event = GameEvent(
-        name="end_game",
+        name=END_GAME,
         payload={"scores": [25000, 24000, 23000, 26000]},
     )
     send_event_to_ai(event, ai)
