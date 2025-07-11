@@ -488,46 +488,48 @@ async def game_events(websocket: WebSocket, game_id: int) -> None:
     _ = game_id  # placeholder for future multi-game support
     await websocket.accept()
     _ws_connections.add(websocket)
+    queue: asyncio.Queue[GameEvent] = asyncio.Queue()
+    try:
+        api.register_observer(queue)
+        started = True
+    except AssertionError:
+        started = False
     prev_actions: list[list[str]] | None = None
     try:
         # send initial allowed actions if a game is running
-        try:
-            prev_actions = api.get_all_allowed_actions()
-            await websocket.send_json(
-                {"name": "allowed_actions", "payload": {"actions": prev_actions}}
-            )
-        except AssertionError:
-            prev_actions = None
-        while True:
+        if started:
             try:
-                events = api.pop_events()
+                prev_actions = api.get_all_allowed_actions()
+                await websocket.send_json(
+                    {"name": "allowed_actions", "payload": {"actions": prev_actions}}
+                )
             except AssertionError:
-                events = []
-            for event in events:
+                prev_actions = None
+        while True:
+            if started:
+                event = await queue.get()
                 await websocket.send_json(asdict(event))
                 if event.name == "round_end":
                     prev_actions = None
-                if event.name == "discard":
-                    try:
-                        updated = api.get_all_allowed_actions()
-                    except AssertionError:
-                        updated = None
-                    if updated is not None:
-                        prev_actions = updated
-                        await websocket.send_json(
-                            {"name": "allowed_actions", "payload": {"actions": updated}}
-                        )
-            try:
-                actions = api.get_all_allowed_actions()
-            except AssertionError:
-                actions = None
-            if actions is not None and actions != prev_actions:
-                prev_actions = actions
-                await websocket.send_json(
-                    {"name": "allowed_actions", "payload": {"actions": actions}}
-                )
-            await asyncio.sleep(0.1)
+                try:
+                    actions = api.get_all_allowed_actions()
+                except AssertionError:
+                    actions = None
+                if event.name == "discard" and actions is not None:
+                    prev_actions = actions
+                    await websocket.send_json(
+                        {"name": "allowed_actions", "payload": {"actions": actions}}
+                    )
+                elif actions is not None and actions != prev_actions:
+                    prev_actions = actions
+                    await websocket.send_json(
+                        {"name": "allowed_actions", "payload": {"actions": actions}}
+                    )
+            else:
+                await asyncio.sleep(0.1)
     except WebSocketDisconnect:
         pass
     finally:
+        if started:
+            api.unregister_observer(queue)
         _ws_connections.discard(websocket)

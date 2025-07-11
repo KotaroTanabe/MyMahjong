@@ -68,6 +68,7 @@ Future work will expand these components.
 - [x] Allowed actions API
 - [x] Combined allowed actions endpoint
 - [x] Allowed actions pushed via WebSocket events
+- [x] Engine event queue for WebSocket notifications
 - [x] Next actions API
 - [x] Next actions logged to event history
 - [x] GUI fetches next actions after every event

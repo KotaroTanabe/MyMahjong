@@ -1,6 +1,8 @@
 """Mahjong game engine wrapper."""
 from __future__ import annotations
 
+import asyncio
+
 from .models import GameState, Tile, Meld, GameEvent
 from .player import Player
 from .wall import Wall
@@ -36,12 +38,24 @@ class MahjongEngine:
         self.state.current_player = 0
         self.events: list[GameEvent] = []
         self.event_history: list[GameEvent] = []
+        self._observers: list[asyncio.Queue[GameEvent]] = []
         self._cached_allowed_actions: list[list[str]] | None = None
         self._claims_open = False
         self.game_over = False
         self._final_state: GameState | None = None
         self._emit("start_game", {"state": self.state})
         self.start_kyoku(dealer=0, round_number=1)
+
+    def register_observer(self, queue: asyncio.Queue[GameEvent]) -> None:
+        """Register ``queue`` to receive future events."""
+        for evt in self.events:
+            queue.put_nowait(evt)
+        self._observers.append(queue)
+
+    def unregister_observer(self, queue: asyncio.Queue[GameEvent]) -> None:
+        """Remove ``queue`` from the observer list."""
+        if queue in self._observers:
+            self._observers.remove(queue)
 
     def _invalidate_cache(self) -> None:
         """Clear cached allowed actions."""
@@ -102,6 +116,11 @@ class MahjongEngine:
         evt = GameEvent(name=name, payload=payload)
         self.events.append(evt)
         self.event_history.append(evt)
+        for q in list(self._observers):
+            try:
+                q.put_nowait(evt)
+            except asyncio.QueueFull:  # pragma: no cover - unbounded queues
+                pass
 
     def _close_claims(self) -> None:
         """Emit ``claims_closed`` if a discard claim window was open."""

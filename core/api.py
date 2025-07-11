@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from .mahjong_engine import MahjongEngine
+import asyncio
 from . import exceptions
 from .models import GameState, Tile, GameEvent, GameAction
 from .ai import AI_REGISTRY
@@ -10,6 +11,18 @@ from mahjong.hand_calculating.hand_response import HandResponse
 
 # Singleton engine instance used by interfaces
 _engine: MahjongEngine | None = None
+
+
+def register_observer(queue: asyncio.Queue[GameEvent]) -> None:
+    """Register ``queue`` to receive engine events."""
+    assert _engine is not None, "Game not started"
+    _engine.register_observer(queue)
+
+
+def unregister_observer(queue: asyncio.Queue[GameEvent]) -> None:
+    """Remove ``queue`` from the observer list."""
+    assert _engine is not None, "Game not started"
+    _engine.unregister_observer(queue)
 
 
 def start_game(player_names: list[str], *, max_rounds: int = 8) -> GameState:
