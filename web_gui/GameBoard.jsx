@@ -39,9 +39,24 @@ export default function GameBoard({
   const [aiPlayers, setAiPlayers] = useState([false, true, true, true]);
   const [aiTypes] = useState(["simple", "simple", "simple", "simple"]);
 
+  const allowedRef = useRef(allowedActions);
+  useEffect(() => {
+    allowedRef.current = allowedActions;
+  }, [allowedActions]);
+
   function sendAction(body, delay = false) {
     const url = `${server.replace(/\/$/, "")}/games/${gameId}/action`;
     const fn = async () => {
+      if (body.action === "auto") {
+        const allowed = allowedRef.current[body.player_index] || [];
+        if (!allowed.length) {
+          log(
+            "debug",
+            `Skip auto for player ${body.player_index} - not allowed`
+          );
+          return;
+        }
+      }
       try {
         const resp = await fetch(url, {
           method: "POST",
