@@ -18,6 +18,22 @@ _ws_connections: set[WebSocket] = set()
 logger = logging.getLogger(__name__)
 
 
+class GameActionError(Exception):
+    """Raised when a game action cannot be performed."""
+
+
+def handle_conflict(func):
+    """Convert ``GameActionError`` to an HTTP 409 error with logging."""
+
+    def wrapper(req: "ActionRequest"):
+        try:
+            return func(req)
+        except GameActionError as err:
+            _raise_conflict(req.player_index, req.action, str(err))
+
+    return wrapper
+
+
 def _raise_conflict(player_index: int, action: str, detail: str) -> None:
     """Log a conflict and raise an HTTP 409 error."""
     logger.info(
@@ -281,6 +297,150 @@ class ActionRequest(BaseModel):
     ai_type: str | None = None
 
 
+@handle_conflict
+def _draw(req: ActionRequest) -> dict:
+    try:
+        tile = api.draw_tile(req.player_index)
+    except IndexError:
+        raise GameActionError("Wall is empty")
+    except ValueError as err:
+        raise GameActionError(str(err))
+    return asdict(tile)
+
+
+@handle_conflict
+def _discard(req: ActionRequest) -> dict:
+    if not req.tile:
+        raise GameActionError("Tile required")
+    tile = models.Tile(**req.tile)
+    try:
+        api.discard_tile(req.player_index, tile)
+    except ValueError as err:
+        raise GameActionError(str(err))
+    return {"status": "ok"}
+
+
+@handle_conflict
+def _chi(req: ActionRequest) -> dict:
+    if not req.tiles:
+        raise GameActionError("Tiles required")
+    tiles = [models.Tile(**t) for t in req.tiles]
+    try:
+        api.call_chi(req.player_index, tiles)
+    except ValueError as err:
+        raise GameActionError(str(err))
+    return {"status": "ok"}
+
+
+@handle_conflict
+def _pon(req: ActionRequest) -> dict:
+    if not req.tiles:
+        raise GameActionError("Tiles required")
+    tiles = [models.Tile(**t) for t in req.tiles]
+    try:
+        api.call_pon(req.player_index, tiles)
+    except ValueError as err:
+        raise GameActionError(str(err))
+    return {"status": "ok"}
+
+
+@handle_conflict
+def _kan(req: ActionRequest) -> dict:
+    if not req.tiles:
+        raise GameActionError("Tiles required")
+    tiles = [models.Tile(**t) for t in req.tiles]
+    try:
+        api.call_kan(req.player_index, tiles)
+    except ValueError as err:
+        raise GameActionError(str(err))
+    return {"status": "ok"}
+
+
+@handle_conflict
+def _riichi(req: ActionRequest) -> dict:
+    if not req.tile:
+        raise GameActionError("Tile required")
+    tile = models.Tile(**req.tile)
+    try:
+        api.discard_tile(req.player_index, tile)
+    except ValueError as err:
+        raise GameActionError(str(err))
+    try:
+        api.declare_riichi(req.player_index)
+    except ValueError as err:
+        raise GameActionError(str(err))
+    return {"status": "ok"}
+
+
+@handle_conflict
+def _tsumo(req: ActionRequest) -> dict:
+    if not req.tile:
+        raise GameActionError("Tile required")
+    tile = models.Tile(**req.tile)
+    try:
+        result = api.declare_tsumo(req.player_index, tile)
+    except ValueError as err:
+        raise GameActionError(str(err))
+    return result.__dict__
+
+
+@handle_conflict
+def _ron(req: ActionRequest) -> dict:
+    if not req.tile:
+        raise GameActionError("Tile required")
+    tile = models.Tile(**req.tile)
+    try:
+        result = api.declare_ron(req.player_index, tile)
+    except ValueError as err:
+        raise GameActionError(str(err))
+    return result.__dict__
+
+
+@handle_conflict
+def _skip(req: ActionRequest) -> dict:
+    try:
+        api.skip(req.player_index)
+    except ValueError as err:
+        raise GameActionError(str(err))
+    return {"status": "ok"}
+
+
+@handle_conflict
+def _auto(req: ActionRequest) -> dict:
+    ai_type = req.ai_type or "simple"
+    state = api.get_state()
+    allowed_players = (
+        state.waiting_for_claims if state.waiting_for_claims else [state.current_player]
+    )
+    if req.player_index not in allowed_players:
+        raise GameActionError(
+            f"Action not allowed: player {req.player_index} attempted auto. allowed players={allowed_players}"
+        )
+    try:
+        tile = api.auto_play_turn(
+            req.player_index,
+            ai_type=ai_type,
+            claim_players=[req.player_index],
+        )
+    except ValueError as err:
+        raise GameActionError(str(err))
+    return asdict(tile)
+
+
+ACTION_HANDLERS = {
+    "draw": _draw,
+    "discard": _discard,
+    "chi": _chi,
+    "pon": _pon,
+    "kan": _kan,
+    "riichi": _riichi,
+    "tsumo": _tsumo,
+    "ron": _ron,
+    "skip": _skip,
+    "auto": _auto,
+}
+
+
 @app.post("/games/{game_id}/action")
 def game_action(game_id: int, req: ActionRequest) -> dict:
     """Perform a simple game action and return its result."""
@@ -303,105 +463,11 @@ def game_action(game_id: int, req: ActionRequest) -> dict:
             req.action,
             f"Action not allowed: player {req.player_index} attempted {req.action}. allowed={allowed}",
         )
-    if req.action == "draw":
-        try:
-            tile = api.draw_tile(req.player_index)
-        except IndexError:
-            _raise_conflict(req.player_index, req.action, "Wall is empty")
-        except ValueError as err:
-            # engine enforces draw/discard sequence
-            _raise_conflict(req.player_index, req.action, str(err))
-        return asdict(tile)
-    # invalid discards raise ValueError from the engine
-    if req.action == "discard" and req.tile:
-        tile = models.Tile(**req.tile)
-        try:
-            api.discard_tile(req.player_index, tile)
-        except ValueError as err:
-            _raise_conflict(req.player_index, req.action, str(err))
-        return {"status": "ok"}
-    # engine can raise ValueError when chi is not possible
-    if req.action == "chi" and req.tiles:
-        tiles = [models.Tile(**t) for t in req.tiles]
-        try:
-            api.call_chi(req.player_index, tiles)
-        except ValueError as err:
-            _raise_conflict(req.player_index, req.action, str(err))
-        return {"status": "ok"}
-    if req.action == "pon" and req.tiles:
-        tiles = [models.Tile(**t) for t in req.tiles]
-        try:
-            api.call_pon(req.player_index, tiles)
-        except ValueError as err:
-            _raise_conflict(req.player_index, req.action, str(err))
-        return {"status": "ok"}
-    if req.action == "kan" and req.tiles:
-        tiles = [models.Tile(**t) for t in req.tiles]
-        try:
-            api.call_kan(req.player_index, tiles)
-        except ValueError as err:
-            _raise_conflict(req.player_index, req.action, str(err))
-        return {"status": "ok"}
-    if req.action == "riichi" and req.tile:
-        tile = models.Tile(**req.tile)
-        try:
-            api.discard_tile(req.player_index, tile)
-        except ValueError as err:
-            _raise_conflict(req.player_index, req.action, str(err))
-        try:
-            api.declare_riichi(req.player_index)
-        except ValueError as e:
-            _raise_conflict(req.player_index, req.action, str(e))
-        return {"status": "ok"}
-    if req.action == "riichi":
-        _raise_conflict(req.player_index, req.action, "Tile required")
-    if req.action == "tsumo" and req.tile:
-        tile = models.Tile(**req.tile)
-        try:
-            result = api.declare_tsumo(req.player_index, tile)
-        except ValueError as err:
-            _raise_conflict(req.player_index, req.action, str(err))
-        return result.__dict__
-    if req.action == "ron" and req.tile:
-        tile = models.Tile(**req.tile)
-        try:
-            result = api.declare_ron(req.player_index, tile)
-        except ValueError as err:
-            _raise_conflict(req.player_index, req.action, str(err))
-        return result.__dict__
-    if req.action == "skip":
-        try:
-            api.skip(req.player_index)
-        except ValueError as err:
-            _raise_conflict(req.player_index, req.action, str(err))
-        return {"status": "ok"}
-    if req.action == "auto":
-        ai_type = req.ai_type or "simple"
-        state = api.get_state()
-        allowed_players = (
-            state.waiting_for_claims if state.waiting_for_claims else [state.current_player]
-        )
-        if req.player_index not in allowed_players:
-            logger.info(
-                "Player %s attempted auto action when not allowed (allowed players=%s)",
-                req.player_index,
-                allowed_players,
-            )
-            _raise_conflict(
-                req.player_index,
-                req.action,
-                f"Action not allowed: player {req.player_index} attempted auto. allowed players={allowed_players}",
-            )
-        try:
-            tile = api.auto_play_turn(
-                req.player_index,
-                ai_type=ai_type,
-                claim_players=[req.player_index],
-            )
-        except ValueError as err:
-            _raise_conflict(req.player_index, req.action, str(err))
-        return asdict(tile)
-    raise HTTPException(status_code=400, detail="Unknown action")
+
+    handler = ACTION_HANDLERS.get(req.action)
+    if not handler:
+        raise HTTPException(status_code=400, detail="Unknown action")
+    return handler(req)
 
 
 @app.websocket("/ws/{game_id}")

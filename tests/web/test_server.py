@@ -422,6 +422,15 @@ def test_all_allowed_actions_endpoint() -> None:
     assert isinstance(actions, list) and "chi" in actions[1]
 
 
+def test_unknown_action_returns_400() -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    resp = client.post(
+        "/games/1/action",
+        json={"player_index": 0, "action": "unknown"},
+    )
+    assert resp.status_code == 400
+
+
 def test_next_actions_endpoint_autodraw() -> None:
     client.post("/games", json={"players": ["A", "B", "C", "D"]})
     state = api.get_state()
