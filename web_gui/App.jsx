@@ -130,7 +130,11 @@ export default function App() {
       setGameData((d) => {
         const arr = [[], [], [], []];
         arr[next.player_index] = next.actions || [];
-        return { ...d, allowed: arr };
+        return {
+          ...d,
+          allowed: arr,
+          state: { ...d.state, current_player: next.player_index },
+        };
       });
       setEvents((evts) => {
         const evt = {

@@ -120,6 +120,11 @@ export function applyEvent(state, event) {
     case 'claims_closed':
       newState.waiting_for_claims = [];
       break;
+    case 'next_actions':
+      if (typeof event.payload.player_index === 'number') {
+        newState.current_player = event.payload.player_index;
+      }
+      break;
     case 'skip': {
       if (!Array.isArray(state.waiting_for_claims) || state.waiting_for_claims.length === 0) {
         break;
