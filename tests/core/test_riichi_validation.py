@@ -1,3 +1,4 @@
+from core.actions import PON
 import pytest
 from core.mahjong_engine import MahjongEngine
 from core.exceptions import InvalidActionError
@@ -35,7 +36,7 @@ def test_riichi_rejected_with_open_meld() -> None:
     player = engine.state.players[0]
     player.hand.tiles = _tenpai_tiles()
     player.hand.melds.append(
-        Meld(tiles=[Tile("man", 1)] * 3, type="pon")
+        Meld(tiles=[Tile("man", 1)] * 3, type=PON)
     )
     with pytest.raises(InvalidActionError):
         engine.declare_riichi(0)

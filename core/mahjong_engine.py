@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from .models import GameState, Tile, Meld, GameEvent
 from .player import Player
+from .actions import CHI, PON, KAN, RIICHI, TSUMO, RON, SKIP
 from .wall import Wall
 from .rules import RuleSet, StandardRuleSet, _tile_to_index
 from .exceptions import InvalidActionError, NotYourTurnError
@@ -332,7 +333,7 @@ class MahjongEngine:
             called_from = (player_index - last_player) % len(self.state.players)
         meld = Meld(
             tiles=tiles,
-            type="chi",
+            type=CHI,
             called_index=called_index,
             called_from=called_from,
         )
@@ -396,7 +397,7 @@ class MahjongEngine:
             called_from = (player_index - last_player) % len(self.state.players)
         meld = Meld(
             tiles=tiles,
-            type="pon",
+            type=PON,
             called_index=called_index,
             called_from=called_from,
         )
@@ -455,7 +456,7 @@ class MahjongEngine:
             called_from = (player_index - last_player) % len(self.state.players)
             meld = Meld(
                 tiles=meld_tiles,
-                type="kan",
+                type=KAN,
                 called_index=called_index,
                 called_from=called_from,
             )
@@ -475,7 +476,7 @@ class MahjongEngine:
 
         # Added kan upgrade from an existing pon
         for meld in player.hand.melds:
-            if meld.type == "pon" and all(
+            if meld.type == PON and all(
                 t.suit == suit and t.value == value for t in meld.tiles
             ):
                 idx = next(
@@ -701,7 +702,7 @@ class MahjongEngine:
         claims_open = self._claims_open and player_index in state.waiting_for_claims
 
         if player_index in state.waiting_for_claims:
-            actions.add("skip")
+            actions.add(SKIP)
 
         if (
             claims_open
@@ -711,9 +712,9 @@ class MahjongEngine:
         ):
             same = [t for t in tiles if t.suit == last.suit and t.value == last.value]
             if len(same) >= 2:
-                actions.add("pon")
+                actions.add(PON)
             if len(same) >= 3:
-                actions.add("kan")
+                actions.add(KAN)
             if (
                 (last_player + 1) % len(state.players) == player_index
                 and last.suit in {"man", "pin", "sou"}
@@ -722,11 +723,11 @@ class MahjongEngine:
                     return any(t.suit == last.suit and t.value == v for t in tiles)
 
                 if has(last.value - 2) and has(last.value - 1):
-                    actions.add("chi")
+                    actions.add(CHI)
                 if has(last.value - 1) and has(last.value + 1):
-                    actions.add("chi")
+                    actions.add(CHI)
                 if has(last.value + 1) and has(last.value + 2):
-                    actions.add("chi")
+                    actions.add(CHI)
 
             # Ron check - temporarily add discard to hand and evaluate
             player.hand.tiles.append(last)
@@ -745,14 +746,14 @@ class MahjongEngine:
                 (result.cost and result.cost.get("total", 0) > 0) or
                 (result.han is not None and result.han > 0)
             ):
-                actions.add("ron")
+                actions.add(RON)
 
         counts: dict[tuple[str, int], int] = {}
         for t in tiles:
             key = (t.suit, t.value)
             counts[key] = counts.get(key, 0) + 1
             if counts[key] >= 4:
-                actions.add("kan")
+                actions.add(KAN)
 
         if (
             not self._claims_open
@@ -762,7 +763,7 @@ class MahjongEngine:
             and not player.has_open_melds()
             and self._is_tenpai(player)
         ):
-            actions.add("riichi")
+            actions.add(RIICHI)
 
         if (
             player_index == state.current_player
@@ -777,7 +778,7 @@ class MahjongEngine:
                 (result.cost and result.cost.get("total", 0) > 0)
                 or (result.han is not None and result.han > 0)
             ):
-                actions.add("tsumo")
+                actions.add(TSUMO)
 
         return sorted(actions)
 

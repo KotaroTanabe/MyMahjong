@@ -10,6 +10,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from core import api, models, shanten_quiz
+from core.actions import (CHI, PON, KAN, RIICHI, TSUMO, RON, SKIP, DRAW, DISCARD, AUTO)
 from core.engine_manager import EngineManager
 from core.exceptions import InvalidActionError, NotYourTurnError
 from core.models import GameEvent
@@ -423,16 +424,16 @@ def _auto(req: ActionRequest) -> dict:
 
 
 ACTION_HANDLERS = {
-    "draw": _draw,
-    "discard": _discard,
-    "chi": _chi,
-    "pon": _pon,
-    "kan": _kan,
-    "riichi": _riichi,
-    "tsumo": _tsumo,
-    "ron": _ron,
-    "skip": _skip,
-    "auto": _auto,
+    DRAW: _draw,
+    DISCARD: _discard,
+    CHI: _chi,
+    PON: _pon,
+    KAN: _kan,
+    RIICHI: _riichi,
+    TSUMO: _tsumo,
+    RON: _ron,
+    SKIP: _skip,
+    AUTO: _auto,
 }
 
 
@@ -463,7 +464,23 @@ def game_action(game_id: int, req: ActionRequest) -> dict:
         raise HTTPException(status_code=404, detail="Game not started")
     except IndexError:
         raise HTTPException(status_code=404, detail="Player not found")
+    if req.action in {CHI, PON, KAN, RIICHI, SKIP} and req.action not in allowed:
+        logger.info(
+            "Player %s attempted disallowed action %s (allowed=%s)",
+            req.player_index,
+            req.action,
+            allowed,
+        )
+        _raise_conflict(
+            req.player_index,
+            req.action,
+            f"Action not allowed: player {req.player_index} attempted {req.action}. allowed={allowed}",
+        )
 
+    handler = ACTION_HANDLERS.get(req.action)
+    if not handler:
+        raise HTTPException(status_code=400, detail="Unknown action")
+    return handler(req)
 
 @app.websocket("/ws/{game_id}")
 async def game_events(websocket: WebSocket, game_id: int) -> None:
