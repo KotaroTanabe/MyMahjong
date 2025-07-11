@@ -100,7 +100,7 @@ export default function PlayerPanel({
     return () => controller.abort();
   }, [server, gameId, playerIndex, aiActive]);
   return (
-    <div className={`${seat} seat player-panel${active ? ' active-player' : ''}${!active && isWaiting ? ' waiting-player' : ''}`}>
+    <div className={`${seat} seat player-panel${active ? ' active-player' : ''}`}>
       <div className="player-header">
         <span className="riichi-stick">{player?.riichi ? '|' : '\u00a0'}</span>
         <span className="player-name">
