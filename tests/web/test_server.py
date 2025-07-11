@@ -3,6 +3,7 @@ import logging
 import pytest
 
 from web.server import app
+import web.server
 from core.actions import DRAW, DISCARD, CHI, PON, KAN, RIICHI, TSUMO, RON, SKIP, AUTO
 from core import api, models
 from core import exceptions as core_exceptions
@@ -652,4 +653,34 @@ def test_start_kyoku_endpoint_and_ws() -> None:
         assert data["name"] == "start_kyoku"
         assert data["payload"]["dealer"] == 1
         assert data["payload"]["round"] == 2
+
+
+def test_websocket_uses_event_queue(monkeypatch) -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+
+    called = False
+    orig_sleep = web.server.asyncio.sleep
+
+    async def fake_sleep(duration: float) -> None:
+        nonlocal called
+        called = True
+        await orig_sleep(0)
+
+    monkeypatch.setattr(web.server.asyncio, "sleep", fake_sleep)
+
+    with client.websocket_connect("/ws/1") as ws:
+        ws.receive_json()  # allowed_actions
+        ws.receive_json()  # start_game
+        ws.receive_json()  # start_kyoku
+        from core import api as core_api
+        assert core_api._engine is not None
+        core_api._engine.state.players[0].hand.tiles.pop()
+        client.post(
+            "/games/1/action",
+            json={"player_index": 0, "action": DRAW},
+        )
+        data = ws.receive_json()
+        assert data["name"] == "draw_tile"
+
+    assert not called
 

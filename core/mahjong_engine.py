@@ -9,6 +9,7 @@ from .rules import RuleSet, StandardRuleSet, _tile_to_index
 from .exceptions import InvalidActionError, NotYourTurnError
 from mahjong.shanten import Shanten
 from mahjong.hand_calculating.hand_response import HandResponse
+import asyncio
 from dataclasses import asdict
 from typing import Any
 
@@ -37,6 +38,7 @@ class MahjongEngine:
         self.state.current_player = 0
         self.events: list[GameEvent] = []
         self.event_history: list[GameEvent] = []
+        self._subscribers: list[asyncio.Queue[GameEvent]] = []
         self._cached_allowed_actions: list[list[str]] | None = None
         self._claims_open = False
         self.game_over = False
@@ -47,6 +49,27 @@ class MahjongEngine:
     def _invalidate_cache(self) -> None:
         """Clear cached allowed actions."""
         self._cached_allowed_actions = None
+
+    def subscribe(self) -> asyncio.Queue[GameEvent]:
+        """Return a queue that receives all future events."""
+        q: asyncio.Queue[GameEvent] = asyncio.Queue()
+        self._subscribers.append(q)
+        return q
+
+    def unsubscribe(self, q: asyncio.Queue[GameEvent]) -> None:
+        """Remove ``q`` from the subscriber list."""
+        if q in self._subscribers:
+            self._subscribers.remove(q)
+
+    def queue_event(self, event: GameEvent) -> None:
+        """Add ``event`` to history and notify subscribers."""
+        self.events.append(event)
+        self.event_history.append(event)
+        for sub in list(self._subscribers):
+            try:
+                sub.put_nowait(event)
+            except asyncio.QueueFull:
+                pass
 
     def _draw_replacement_tile(self, player: Player, player_index: int) -> None:
         """Draw a replacement tile from the dead wall and reveal new dora.
@@ -101,8 +124,7 @@ class MahjongEngine:
 
     def _emit(self, name: str, payload: dict) -> None:
         evt = GameEvent(name=name, payload=payload)
-        self.events.append(evt)
-        self.event_history.append(evt)
+        self.queue_event(evt)
 
     def _close_claims(self) -> None:
         """Emit ``claims_closed`` if a discard claim window was open."""

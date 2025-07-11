@@ -267,7 +267,7 @@ async def start_kyoku_route(game_id: int, req: StartKyokuRequest) -> dict:
     except KeyError:
         raise HTTPException(status_code=404, detail="Game not started")
 
-    event = {
+    return {
         "name": "start_kyoku",
         "payload": {
             "dealer": req.dealer,
@@ -275,12 +275,6 @@ async def start_kyoku_route(game_id: int, req: StartKyokuRequest) -> dict:
             "state": asdict(state),
         },
     }
-    for ws in list(_ws_connections):
-        try:
-            await ws.send_json(event)
-        except Exception:
-            pass
-    return event
 
 
 class ActionRequest(BaseModel):
@@ -488,49 +482,58 @@ async def game_events(websocket: WebSocket, game_id: int) -> None:
     await websocket.accept()
     _ws_connections.add(websocket)
     prev_actions: list[list[str]] | None = None
+    queue: asyncio.Queue[GameEvent] | None = None
     try:
-        # send initial allowed actions if a game is running
+        # subscribe to event queue and send pending events
         try:
             with manager.use_engine(game_id):
+                engine = manager.get_engine(game_id)
+                queue = engine.subscribe()
+                backlog = api.pop_events()
                 prev_actions = api.get_all_allowed_actions()
+        except KeyError:
+            backlog = []
+            prev_actions = None
+
+        if prev_actions is not None:
             await websocket.send_json(
                 {"name": "allowed_actions", "payload": {"actions": prev_actions}}
             )
-        except KeyError:
-            prev_actions = None
+        for event in backlog:
+            await websocket.send_json(asdict(event))
+
+        if queue is None:
+            await websocket.receive_text()
+            return
+
         while True:
-            try:
+            event = await queue.get()
+            await websocket.send_json(asdict(event))
+            if event.name == "round_end":
+                prev_actions = None
+            if event.name == "discard":
                 with manager.use_engine(game_id):
-                    events = api.pop_events()
-            except KeyError:
-                events = []
-            for event in events:
-                await websocket.send_json(asdict(event))
-                if event.name == "round_end":
-                    prev_actions = None
-                if event.name == "discard":
-                    try:
-                        with manager.use_engine(game_id):
-                            updated = api.get_all_allowed_actions()
-                    except KeyError:
-                        updated = None
-                    if updated is not None:
-                        prev_actions = updated
-                        await websocket.send_json(
-                            {"name": "allowed_actions", "payload": {"actions": updated}}
-                        )
-            try:
+                    updated = api.get_all_allowed_actions()
+                prev_actions = updated
+                await websocket.send_json(
+                    {"name": "allowed_actions", "payload": {"actions": updated}}
+                )
+            else:
                 with manager.use_engine(game_id):
                     actions = api.get_all_allowed_actions()
-            except KeyError:
-                actions = None
-            if actions is not None and actions != prev_actions:
-                prev_actions = actions
-                await websocket.send_json(
-                    {"name": "allowed_actions", "payload": {"actions": actions}}
-                )
-            await asyncio.sleep(0.1)
+                if actions != prev_actions:
+                    prev_actions = actions
+                    await websocket.send_json(
+                        {"name": "allowed_actions", "payload": {"actions": actions}}
+                    )
     except WebSocketDisconnect:
         pass
     finally:
         _ws_connections.discard(websocket)
+        if queue is not None:
+            try:
+                with manager.use_engine(game_id):
+                    engine = manager.get_engine(game_id)
+                    engine.unsubscribe(queue)
+            except KeyError:
+                pass

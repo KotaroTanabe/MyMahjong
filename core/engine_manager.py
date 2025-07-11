@@ -35,9 +35,7 @@ class EngineManager:
 
     def pop_events(self, game_id: int) -> list[GameEvent]:
         engine = self.get_engine(game_id)
-        events = engine.events[:]
-        engine.events.clear()
-        return events
+        return engine.pop_events()
 
     @contextmanager
     def use_engine(self, game_id: int) -> Iterator[None]:
@@ -60,5 +58,4 @@ class EngineManager:
             or last.payload.get("actions") != actions
         ):
             evt = GameEvent(name="next_actions", payload=payload)
-            engine.events.append(evt)
-            engine.event_history.append(evt)
+            engine.queue_event(evt)
