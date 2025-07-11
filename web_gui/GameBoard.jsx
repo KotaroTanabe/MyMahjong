@@ -31,6 +31,7 @@ export default function GameBoard({
 
   const prevPlayer = useRef(null);
   const prevWaiting = useRef([]);
+  const claimsRecentlyClosed = useRef(false);
   const skipSent = useRef(new Set());
   const prevCounts = useRef([]);
   const lastDrawPlayer = useRef(null);
@@ -132,6 +133,7 @@ export default function GameBoard({
     }
     const waiting = state?.waiting_for_claims ?? [];
     if (waiting.length > 0) {
+      claimsRecentlyClosed.current = true;
       if (JSON.stringify(waiting) !== JSON.stringify(prevWaiting.current)) {
         prevWaiting.current = waiting.slice();
         skipSent.current.clear();
@@ -161,7 +163,15 @@ export default function GameBoard({
       return;
     }
     skipSent.current.clear();
+    if (prevWaiting.current.length > 0) {
+      claimsRecentlyClosed.current = true;
+    }
     prevWaiting.current = [];
+
+    if (claimsRecentlyClosed.current) {
+      claimsRecentlyClosed.current = false;
+      return;
+    }
 
     const current = state?.current_player;
     if (current == null || current === prevPlayer.current) return;
