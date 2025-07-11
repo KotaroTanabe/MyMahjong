@@ -123,6 +123,24 @@ export default function App() {
   async function refreshState() {
     if (!gameId) return;
     await fetchGameState(gameId);
+    const next = await getNextActions(server, gameId, log, {
+      requestId: 'retry-next',
+    });
+    if (next && !next.aborted && next.player_index != null) {
+      setGameData((d) => {
+        const arr = [[], [], [], []];
+        arr[next.player_index] = next.actions || [];
+        return { ...d, allowed: arr };
+      });
+      setEvents((evts) => {
+        const evt = {
+          name: 'next_actions',
+          payload: next,
+        };
+        const line = `${formatEvent(evt)} ${eventToMjaiJson(evt)}`;
+        return [...evts.slice(-9), line];
+      });
+    }
     const actions = await getAllAllowedActions(server, gameId, log, {
       requestId: 'retry-actions',
     });

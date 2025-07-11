@@ -125,7 +125,7 @@ describe('App icons', () => {
   it('renders refresh icon button', () => {
     global.fetch = mockFetch();
     render(<App />);
-    const refreshButton = screen.getByLabelText('Retry');
+    const refreshButton = screen.getAllByLabelText('Retry')[0];
     expect(refreshButton.querySelector('svg')).toBeTruthy();
   });
 
