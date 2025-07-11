@@ -67,8 +67,11 @@ def events_to_tenhou_json(events: List[GameEvent]) -> str:
         if ev.name == "start_kyoku":
             state: GameState = ev.payload["state"]
             names = [p.name for p in state.players]
+            dealer = ev.payload.get("dealer", state.dealer)
+            round_number = ev.payload.get("round", state.round_number)
+            kyoku_num = (round_number - 1) * 4 + dealer
             kyoku = [
-                [ev.payload.get("dealer", 0), state.honba, state.riichi_sticks],
+                [kyoku_num, state.honba, state.riichi_sticks],
                 [p.score for p in state.players],
                 [tile_to_code(t) for t in state.dora_indicators],
                 [],

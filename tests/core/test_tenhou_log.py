@@ -74,3 +74,15 @@ def test_events_to_tenhou_json_draw() -> None:
     data = json.loads(events_to_tenhou_json(engine.pop_events()))
     kyoku = data["log"][0]
     assert kyoku[-1][0] == "全員不聴"
+
+
+def test_events_to_tenhou_json_kyoku_num() -> None:
+    engine = MahjongEngine()
+    engine.pop_events()  # clear start_game/start_kyoku
+    engine.start_kyoku(dealer=2, round_number=3)
+    tile = engine.state.players[2].hand.tiles[0]
+    engine.declare_tsumo(2, tile)
+    engine.end_game()
+    data = json.loads(events_to_tenhou_json(engine.pop_events()))
+    kyoku_info = data["log"][0][0]
+    assert kyoku_info == [(3 - 1) * 4 + 2, 1, 0]
