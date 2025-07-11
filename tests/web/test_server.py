@@ -87,6 +87,17 @@ def test_draw_without_discard_returns_409() -> None:
     assert resp.json() == {"detail": "Cannot draw before discarding"}
 
 
+def test_draw_without_discard_logs_conflict(caplog: pytest.LogCaptureFixture) -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    with caplog.at_level(logging.INFO):
+        resp = client.post(
+            "/games/1/action",
+            json={"player_index": 0, "action": "draw"},
+        )
+    assert resp.status_code == 409
+    assert any("409 conflict" in rec.message for rec in caplog.records)
+
+
 def test_discard_action_endpoint() -> None:
     client.post("/games", json={"players": ["A", "B", "C", "D"]})
     state = api.get_state()
