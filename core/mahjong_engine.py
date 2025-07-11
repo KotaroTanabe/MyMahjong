@@ -26,6 +26,13 @@ def _hand_response_dict(resp: HandResponse) -> dict[str, Any]:
     }
 
 
+def _round_wind(round_number: int) -> str:
+    """Return the round wind string for ``round_number``."""
+    winds = ["east", "south", "west", "north"]
+    index = (round_number - 1) // 4
+    return winds[index % 4]
+
+
 class MahjongEngine:
     """Simplified engine that wraps the `mahjong` library."""
 
@@ -279,12 +286,19 @@ class MahjongEngine:
             self._resolve_ryukyoku("four_riichi")
 
     def calculate_score(
-        self, player_index: int, win_tile: Tile
+        self, player_index: int, win_tile: Tile, *, is_tsumo: bool = True
     ) -> HandResponse:
         """Return scoring information for the winning hand."""
         player = self.state.players[player_index]
         return self.ruleset.calculate_score(
-            player.hand.tiles, player.hand.melds, win_tile, is_tsumo=True
+            player.hand.tiles,
+            player.hand.melds,
+            win_tile,
+            is_tsumo=is_tsumo,
+            is_riichi=player.riichi,
+            is_ippatsu=player.riichi and player.ippatsu_available,
+            seat_wind=player.seat_wind,
+            round_wind=_round_wind(self.state.round_number),
         )
 
     def call_chi(self, player_index: int, tiles: list[Tile]) -> None:
@@ -530,7 +544,7 @@ class MahjongEngine:
     def declare_tsumo(self, player_index: int, win_tile: Tile) -> HandResponse:
         """Declare a self-drawn win and return scoring info."""
         self._invalidate_cache()
-        result = self.calculate_score(player_index, win_tile)
+        result = self.calculate_score(player_index, win_tile, is_tsumo=True)
         player = self.state.players[player_index]
         ippatsu = player.riichi and player.ippatsu_available
         if result.cost and "total" in result.cost:
@@ -563,7 +577,7 @@ class MahjongEngine:
     def declare_ron(self, player_index: int, win_tile: Tile) -> HandResponse:
         """Declare a win on another player's discard."""
         self._invalidate_cache()
-        result = self.calculate_score(player_index, win_tile)
+        result = self.calculate_score(player_index, win_tile, is_tsumo=False)
         player = self.state.players[player_index]
         ippatsu = player.riichi and player.ippatsu_available
         if result.cost and "total" in result.cost:
@@ -732,9 +746,8 @@ class MahjongEngine:
             # Ron check - temporarily add discard to hand and evaluate
             player.hand.tiles.append(last)
             try:
-                result = self.ruleset.calculate_score(
-                    player.hand.tiles,
-                    player.hand.melds,
+                result = self.calculate_score(
+                    player_index,
                     last,
                     is_tsumo=False,
                 )
