@@ -139,7 +139,8 @@ export default function GameBoard({
         skipSent.current.clear();
       }
       for (const idx of waiting) {
-        if (aiPlayers[idx] && allowedActions[idx]?.length) {
+        const acts = allowedActions[idx] || [];
+        if (aiPlayers[idx] && acts.some((a) => ["chi", "pon", "kan"].includes(a))) {
           const body = {
             player_index: idx,
             action: "auto",
@@ -149,11 +150,7 @@ export default function GameBoard({
           sendAction(body, true);
           break;
         }
-        if (
-          allowedActions[idx]?.length === 1 &&
-          allowedActions[idx][0] === "skip" &&
-          !skipSent.current.has(idx)
-        ) {
+        if (acts.length === 1 && acts[0] === "skip" && !skipSent.current.has(idx)) {
           const body = { player_index: idx, action: "skip" };
           log("debug", `POST /games/${gameId}/action skip - auto skip`);
           sendAction(body);
