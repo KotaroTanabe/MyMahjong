@@ -121,9 +121,9 @@ export default function GameBoard({
     if (waiting.length > 0) {
       claimsRecentlyClosed.current = true;
       if (JSON.stringify(waiting) !== JSON.stringify(prevWaiting.current)) {
-        prevWaiting.current = waiting.slice();
         skipSent.current.clear();
       }
+      prevWaiting.current = waiting.slice();
       for (const idx of waiting) {
         const acts = allowedActions[idx] || [];
         if (aiPlayers[idx] && acts.some((a) => ["chi", "pon", "kan"].includes(a))) {
@@ -145,11 +145,11 @@ export default function GameBoard({
       }
       return;
     }
-    skipSent.current.clear();
     if (prevWaiting.current.length > 0) {
       claimsRecentlyClosed.current = true;
+      skipSent.current.clear();
     }
-    prevWaiting.current = [];
+    prevWaiting.current = waiting;
 
     if (claimsRecentlyClosed.current) {
       claimsRecentlyClosed.current = false;
