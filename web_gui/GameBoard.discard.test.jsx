@@ -39,31 +39,54 @@ describe('GameBoard discard', () => {
   });
 
   it('shows modal on server error', async () => {
-    const fetchMock = vi.fn(() => Promise.resolve({ ok: false, status: 409 }));
+    const fetchMock = vi.fn(() => Promise.resolve({ ok: false, status: 500 }));
     global.fetch = fetchMock;
     const state = { current_player: 0, players: mockPlayers(), wall: { tiles: [] } };
     render(<GameBoard state={state} server="http://s" gameId="1" />);
+    await Promise.resolve();
+    fetchMock.mockClear();
     const label = `Discard ${tileDescription({ suit: 'man', value: 1 })}`;
     const btn = screen.getAllByRole('button', { name: label })[0];
     await userEvent.click(btn);
-    const modal = await screen.findByText('Discard failed: 409');
+    const modal = await screen.findByText('Action discard failed: 500');
     expect(modal).toBeTruthy();
   });
-  it('shows server detail on conflict', async () => {
-    const fetchMock = vi.fn(() =>
-      Promise.resolve({
-        ok: false,
-        status: 409,
-        json: () => Promise.resolve({ detail: 'Action not allowed' }),
-      })
-    );
+
+  it('retries on 409 conflict using next actions', async () => {
+    let actionCalls = 0;
+    const fetchMock = vi.fn((url) => {
+      if (url.endsWith('/action')) {
+        actionCalls++;
+        if (actionCalls === 1) {
+          return Promise.resolve({
+            ok: false,
+            status: 409,
+            json: () => Promise.resolve({ detail: 'conflict' }),
+          });
+        }
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
+      }
+      if (url.endsWith('/next-actions')) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ player_index: 0, actions: ['discard'] }),
+        });
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
+    });
     global.fetch = fetchMock;
     const state = { current_player: 0, players: mockPlayers(), wall: { tiles: [] } };
     render(<GameBoard state={state} server="http://s" gameId="1" />);
     const label = `Discard ${tileDescription({ suit: 'man', value: 1 })}`;
     const btn = screen.getAllByRole('button', { name: label })[0];
     await userEvent.click(btn);
-    const modal = await screen.findByText(/Action not allowed/);
-    expect(modal).toBeTruthy();
+    await Promise.resolve();
+    expect(fetchMock.mock.calls.some(c => c[0].includes('/next-actions'))).toBe(true);
+    const lastCall = fetchMock.mock.calls.at(-1);
+    expect(JSON.parse(lastCall[1].body)).toEqual({
+      player_index: 0,
+      action: 'discard',
+    });
+    // no error modal should be shown
   });
 });

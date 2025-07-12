@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Button from './Button.jsx';
 import ChiModal from './ChiModal.jsx';
 import { getChiOptions } from './chiOptions.js';
+import { postAction } from './postAction.js';
 
 export function Controls({
   server,
@@ -23,29 +24,18 @@ export function Controls({
 
 
   async function simple(action, payload = {}) {
-    try {
-      log(
-        'debug',
-        `POST /games/${gameId}/action ${action} ${JSON.stringify(payload)} - control button`,
-      );
-      const resp = await fetch(`${server.replace(/\/$/, '')}/games/${gameId}/action`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ player_index: playerIndex, action, ...payload }),
-      });
-      if (!resp.ok) {
-        let msg = `Action ${action} failed: ${resp.status}`;
-        try {
-          const data = await resp.json();
-          if (data.detail) msg = data.detail;
-        } catch {}
-        onError(msg);
-      } else {
-        setMessage(action);
-      }
-    } catch {
-      onError('Server unreachable');
-    }
+    log(
+      'debug',
+      `POST /games/${gameId}/action ${action} ${JSON.stringify(payload)} - control button`,
+    );
+    const ok = await postAction(
+      server,
+      gameId,
+      { player_index: playerIndex, action, ...payload },
+      log,
+      onError,
+    );
+    if (ok) setMessage(action);
   }
 
   async function shanten() {
