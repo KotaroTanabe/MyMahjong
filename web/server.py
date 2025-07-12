@@ -310,6 +310,24 @@ class ActionRequest(BaseModel):
     ai_type: str | None = None
 
 
+def _require_tile(req: "ActionRequest") -> models.Tile:
+    """Return the requested tile or raise a detailed error."""
+    if not req.tile:
+        raise InvalidActionError(
+            f"Player {req.player_index} attempted {req.action} without specifying a tile"
+        )
+    return models.Tile(**req.tile)
+
+
+def _require_tiles(req: "ActionRequest") -> list[models.Tile]:
+    """Return the requested tiles or raise a detailed error."""
+    if not req.tiles:
+        raise InvalidActionError(
+            f"Player {req.player_index} attempted {req.action} without specifying tiles"
+        )
+    return [models.Tile(**t) for t in req.tiles]
+
+
 @handle_conflict
 def _draw(req: ActionRequest) -> dict:
     try:
@@ -323,9 +341,7 @@ def _draw(req: ActionRequest) -> dict:
 
 @handle_conflict
 def _discard(req: ActionRequest) -> dict:
-    if not req.tile:
-        raise InvalidActionError("Tile required")
-    tile = models.Tile(**req.tile)
+    tile = _require_tile(req)
     try:
         api.discard_tile(req.player_index, tile)
     except (InvalidActionError, NotYourTurnError):
@@ -335,9 +351,7 @@ def _discard(req: ActionRequest) -> dict:
 
 @handle_conflict
 def _chi(req: ActionRequest) -> dict:
-    if not req.tiles:
-        raise InvalidActionError("Tiles required")
-    tiles = [models.Tile(**t) for t in req.tiles]
+    tiles = _require_tiles(req)
     try:
         api.call_chi(req.player_index, tiles)
     except (InvalidActionError, NotYourTurnError):
@@ -347,9 +361,7 @@ def _chi(req: ActionRequest) -> dict:
 
 @handle_conflict
 def _pon(req: ActionRequest) -> dict:
-    if not req.tiles:
-        raise InvalidActionError("Tiles required")
-    tiles = [models.Tile(**t) for t in req.tiles]
+    tiles = _require_tiles(req)
     try:
         api.call_pon(req.player_index, tiles)
     except (InvalidActionError, NotYourTurnError):
@@ -359,9 +371,7 @@ def _pon(req: ActionRequest) -> dict:
 
 @handle_conflict
 def _kan(req: ActionRequest) -> dict:
-    if not req.tiles:
-        raise InvalidActionError("Tiles required")
-    tiles = [models.Tile(**t) for t in req.tiles]
+    tiles = _require_tiles(req)
     try:
         api.call_kan(req.player_index, tiles)
     except (InvalidActionError, NotYourTurnError):
@@ -371,9 +381,7 @@ def _kan(req: ActionRequest) -> dict:
 
 @handle_conflict
 def _riichi(req: ActionRequest) -> dict:
-    if not req.tile:
-        raise InvalidActionError("Tile required")
-    tile = models.Tile(**req.tile)
+    tile = _require_tile(req)
     try:
         api.discard_tile(req.player_index, tile)
     except (InvalidActionError, NotYourTurnError):
@@ -387,9 +395,7 @@ def _riichi(req: ActionRequest) -> dict:
 
 @handle_conflict
 def _tsumo(req: ActionRequest) -> dict:
-    if not req.tile:
-        raise InvalidActionError("Tile required")
-    tile = models.Tile(**req.tile)
+    tile = _require_tile(req)
     try:
         result = api.declare_tsumo(req.player_index, tile)
     except (InvalidActionError, NotYourTurnError):
@@ -399,9 +405,7 @@ def _tsumo(req: ActionRequest) -> dict:
 
 @handle_conflict
 def _ron(req: ActionRequest) -> dict:
-    if not req.tile:
-        raise InvalidActionError("Tile required")
-    tile = models.Tile(**req.tile)
+    tile = _require_tile(req)
     try:
         result = api.declare_ron(req.player_index, tile)
     except (InvalidActionError, NotYourTurnError):
