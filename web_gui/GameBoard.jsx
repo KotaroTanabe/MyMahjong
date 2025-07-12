@@ -52,7 +52,12 @@ export default function GameBoard({
     const fn = async () => {
       if (body.action === "auto") {
         const allowed = allowedRef.current[body.player_index] || [];
-        if (!allowed.length) {
+        const waiting = state?.waiting_for_claims || [];
+        const allowedPlayer =
+          waiting.length > 0
+            ? waiting.includes(body.player_index)
+            : state?.current_player === body.player_index;
+        if (!allowed.length || !allowedPlayer) {
           log(
             "debug",
             `Skip auto for player ${body.player_index} - not allowed`
