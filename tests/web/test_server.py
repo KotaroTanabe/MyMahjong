@@ -100,6 +100,17 @@ def test_draw_without_discard_logs_conflict(caplog: pytest.LogCaptureFixture) ->
     assert any("409 conflict" in rec.message for rec in caplog.records)
 
 
+def test_draw_conflict_recorded_in_events() -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    resp = client.post(
+        "/games/1/action",
+        json={"player_index": 0, "action": DRAW},
+    )
+    assert resp.status_code == 409
+    events = client.get("/games/1/events").json()["events"]
+    assert any(e["name"] == "error" and "Cannot draw" in e["payload"]["message"] for e in events)
+
+
 def test_invalid_action_handler(monkeypatch) -> None:
     client.post("/games", json={"players": ["A", "B", "C", "D"]})
 

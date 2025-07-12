@@ -47,14 +47,19 @@ def handle_conflict(func):
     return wrapper
 
 
-def _raise_conflict(player_index: int, action: str, detail: str) -> None:
-    """Log a conflict and raise an HTTP 409 error."""
+def _raise_conflict(game_id: int, player_index: int, action: str, detail: str) -> None:
+    """Log a conflict, record the error and raise an HTTP 409 error."""
     logger.info(
         "409 conflict: player %s attempted %s -> %s",
         player_index,
         action,
         detail,
     )
+    try:
+        manager.record_error(game_id, detail)
+    except Exception:
+        # engine might not exist yet
+        pass
     raise HTTPException(status_code=409, detail=detail)
 app.add_middleware(
     CORSMiddleware,
@@ -470,6 +475,7 @@ def game_action(game_id: int, req: ActionRequest) -> dict:
                     allowed,
                 )
                 _raise_conflict(
+                    game_id,
                     req.player_index,
                     req.action,
                     f"Action not allowed: player {req.player_index} attempted {req.action}. allowed={allowed}",
@@ -478,7 +484,11 @@ def game_action(game_id: int, req: ActionRequest) -> dict:
             handler = ACTION_HANDLERS.get(req.action)
             if not handler:
                 raise HTTPException(status_code=400, detail="Unknown action")
-            return handler(req)
+            try:
+                return handler(req)
+            except (InvalidActionError, NotYourTurnError) as err:
+                manager.record_error(game_id, str(err))
+                raise
     except KeyError:
         raise HTTPException(status_code=404, detail="Game not started")
     except IndexError:
@@ -491,6 +501,7 @@ def game_action(game_id: int, req: ActionRequest) -> dict:
             allowed,
         )
         _raise_conflict(
+            game_id,
             req.player_index,
             req.action,
             f"Action not allowed: player {req.player_index} attempted {req.action}. allowed={allowed}",

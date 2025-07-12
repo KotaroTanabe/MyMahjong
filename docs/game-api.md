@@ -64,6 +64,7 @@ translate them directly.
 | `ryukyoku`         | reason                                  | Hand ends in draw. |
 | `round_end`        | next dealer and round                   | Fired before the next hand begins. |
 | `end_game`         | final scores, reason                    | Sent after the last hand or when a player goes bankrupt. |
+| `error`            | message                                | Recorded when an action is rejected with HTTP 409. |
 
 The replacement tile drawn after any kan uses this `draw_tile` event so
 front ends always receive the tile and know it came from the dead wall.
