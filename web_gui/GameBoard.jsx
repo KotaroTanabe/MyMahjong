@@ -80,24 +80,7 @@ export default function GameBoard({
       arr[idx] = enable;
       return arr;
     });
-    if (
-      enable &&
-      idx === state?.current_player &&
-      gameId &&
-      hasDrawnTile(state?.players?.[idx], idx) &&
-      (allowedActions[idx]?.includes("discard") ?? false)
-    ) {
-      const tiles = state.players[idx].hand.tiles;
-      const tile = tiles[tiles.length - 1];
-      log(
-        "debug",
-        `POST /games/${gameId}/action discard - enable AI autoplays`,
-      );
-      sendAction(
-        { player_index: idx, action: "discard", tile },
-        true,
-      );
-    }
+    // automatic discard will be triggered by the effect hook
   }
 
   useEffect(() => {
@@ -157,13 +140,12 @@ export default function GameBoard({
     }
 
     const current = state?.current_player;
-    if (current == null || current === prevPlayer.current) return;
+    const drew = lastDrawPlayer.current === current;
+    if (current == null || (!drew && current === prevPlayer.current)) return;
     const tiles = state?.players?.[current]?.hand?.tiles ?? [];
     const last = state?.last_discard;
     const count = tiles.length;
-    const drew = lastDrawPlayer.current === current;
     const allowed = allowedActions[current] || [];
-    prevPlayer.current = current;
     if (count % 3 === 1 && last && allowed.includes("draw")) {
       const action = aiPlayers[current] ? "auto" : "draw";
       const body = { player_index: current, action };
@@ -173,6 +155,7 @@ export default function GameBoard({
         `POST /games/${gameId}/action ${action} - next player action`,
       );
       sendAction(body, action === "auto");
+      prevPlayer.current = null;
     } else if (count % 3 === 2 && aiPlayers[current] && drew && allowed.includes("discard")) {
       const body = {
         player_index: current,
@@ -182,6 +165,9 @@ export default function GameBoard({
       log("debug", "POST /games/" + gameId + "/action auto - auto discard");
       sendAction(body, true);
       lastDrawPlayer.current = null;
+      prevPlayer.current = current;
+    } else {
+      prevPlayer.current = current;
     }
   }, [
     state?.current_player,
