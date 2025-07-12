@@ -99,3 +99,7 @@ turn so clients know whether to play automatically.
 
 The same data is also pushed over the WebSocket as an `allowed_actions` event
 whenever it changes. Waiting for these signals ensures actions are accepted by the server.
+
+Front ends should handle occasional 409 conflicts by querying `next-actions`
+and automatically submitting the indicated player action. The GUI retries up to
+three times before surfacing an error to the user.

@@ -116,6 +116,7 @@ Future work will expand these components.
 - [x] 409 errors recorded in event history
 - [x] Manual state refresh button on errors
 - [x] Retry icon fetches next actions on 409 conflicts
+- [x] Automatic retry of actions on 409 conflicts
 - [x] Player and action included in 409 error messages
 - [x] Custom engine exceptions with FastAPI handlers
 - [x] Chi option modal when multiple chi choices are available

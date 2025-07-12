@@ -4,6 +4,7 @@ import PlayerPanel from "./PlayerPanel.jsx";
 import { tileToEmoji, sortTiles, sortTilesExceptLast } from "./tileUtils.js";
 import ErrorModal from "./ErrorModal.jsx";
 import ResultModal from "./ResultModal.jsx";
+import { postAction } from "./postAction.js";
 
 function tileLabel(tile) {
   return tileToEmoji(tile);
@@ -48,43 +49,23 @@ export default function GameBoard({
   }, [allowedActions]);
 
   function sendAction(body, delay = false) {
-    const url = `${server.replace(/\/$/, "")}/games/${gameId}/action`;
-    const fn = async () => {
-      if (body.action === "auto") {
-        const allowed = allowedRef.current[body.player_index] || [];
-        const waiting = state?.waiting_for_claims || [];
-        const allowedPlayer =
-          waiting.length > 0
-            ? waiting.includes(body.player_index)
-            : state?.current_player === body.player_index;
-        if (!allowed.length || !allowedPlayer) {
-          log(
-            "debug",
-            `Skip auto for player ${body.player_index} - not allowed`
-          );
-          return;
-        }
+    const fn = () =>
+      postAction(server, gameId, body, log, setError).catch(() => {});
+    if (body.action === "auto") {
+      const allowed = allowedRef.current[body.player_index] || [];
+      const waiting = state?.waiting_for_claims || [];
+      const allowedPlayer =
+        waiting.length > 0
+          ? waiting.includes(body.player_index)
+          : state?.current_player === body.player_index;
+      if (!allowed.length || !allowedPlayer) {
+        log(
+          "debug",
+          `Skip auto for player ${body.player_index} - not allowed`
+        );
+        return;
       }
-      try {
-        const resp = await fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        });
-        if (!resp.ok) {
-          let msg = `Action ${body.action} failed: ${resp.status}`;
-          try {
-            const data = await resp.json();
-            if (data.detail) msg = data.detail;
-          } catch {}
-          setError(msg);
-          log("warn", msg);
-        }
-      } catch {
-        setError("Failed to contact server");
-        log("warn", "Failed to contact server");
-      }
-    };
+    }
     if (delay && aiDelay > 0) {
       setTimeout(fn, aiDelay);
     } else {
@@ -306,55 +287,32 @@ export default function GameBoard({
 
   async function riichi(tile) {
     setSelectingRiichi(false);
-    try {
-      if (!gameId) return;
-      if (typeof tile === "string") return;
-      log(
-        "debug",
-        `POST /games/${gameId}/action riichi - user selected tile`,
-      );
-      const resp = await fetch(`${server.replace(/\/$/, "")}/games/${gameId}/action`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ player_index: 0, action: "riichi", tile }),
-      });
-      if (!resp.ok) {
-        let message = `Riichi failed: ${resp.status}`;
-        try {
-          const data = await resp.json();
-          if (data.detail) message = data.detail;
-        } catch {}
-        setError(message);
-      }
-    } catch {
-      setError("Failed to contact server");
-    }
+    if (!gameId) return;
+    if (typeof tile === "string") return;
+    log(
+      "debug",
+      `POST /games/${gameId}/action riichi - user selected tile`,
+    );
+    postAction(
+      server,
+      gameId,
+      { player_index: 0, action: "riichi", tile },
+      log,
+      setError,
+    );
   }
 
   async function discard(tile) {
-    try {
-      if (!gameId) return;
-      if (typeof tile === "string") return;
-      log("debug", `POST /games/${gameId}/action discard - user clicked tile`);
-      const resp = await fetch(
-        `${server.replace(/\/$/, "")}/games/${gameId}/action`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ player_index: 0, action: "discard", tile }),
-        },
-      );
-      if (!resp.ok) {
-        let message = `Discard failed: ${resp.status}`;
-        try {
-          const data = await resp.json();
-          if (data.detail) message = data.detail;
-        } catch {}
-        setError(message);
-      }
-    } catch {
-      setError("Failed to contact server");
-    }
+    if (!gameId) return;
+    if (typeof tile === "string") return;
+    log("debug", `POST /games/${gameId}/action discard - user clicked tile`);
+    postAction(
+      server,
+      gameId,
+      { player_index: 0, action: "discard", tile },
+      log,
+      setError,
+    );
   }
 
   const boardClass = "board-grid";
