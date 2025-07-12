@@ -468,18 +468,23 @@ def game_action(game_id: int, req: ActionRequest) -> dict:
         with manager.use_engine(game_id):
             allowed = api.get_allowed_actions(req.player_index)
             if req.action in {"chi", "pon", "kan", "riichi", "skip"} and req.action not in allowed:
-                logger.info(
-                    "Player %s attempted disallowed action %s (allowed=%s)",
-                    req.player_index,
-                    req.action,
-                    allowed,
-                )
-                _raise_conflict(
-                    game_id,
-                    req.player_index,
-                    req.action,
-                    f"Action not allowed: player {req.player_index} attempted {req.action}. allowed={allowed}",
-                )
+                if req.action == SKIP and not allowed:
+                    logger.info(
+                        "Ignoring redundant skip from player %s", req.player_index
+                    )
+                else:
+                    logger.info(
+                        "Player %s attempted disallowed action %s (allowed=%s)",
+                        req.player_index,
+                        req.action,
+                        allowed,
+                    )
+                    _raise_conflict(
+                        game_id,
+                        req.player_index,
+                        req.action,
+                        f"Action not allowed: player {req.player_index} attempted {req.action}. allowed={allowed}",
+                    )
 
             handler = ACTION_HANDLERS.get(req.action)
             if not handler:
@@ -494,18 +499,21 @@ def game_action(game_id: int, req: ActionRequest) -> dict:
     except IndexError:
         raise HTTPException(status_code=404, detail="Player not found")
     if req.action in {CHI, PON, KAN, RIICHI, SKIP} and req.action not in allowed:
-        logger.info(
-            "Player %s attempted disallowed action %s (allowed=%s)",
-            req.player_index,
-            req.action,
-            allowed,
-        )
-        _raise_conflict(
-            game_id,
-            req.player_index,
-            req.action,
-            f"Action not allowed: player {req.player_index} attempted {req.action}. allowed={allowed}",
-        )
+        if req.action == SKIP and not allowed:
+            logger.info("Ignoring redundant skip from player %s", req.player_index)
+        else:
+            logger.info(
+                "Player %s attempted disallowed action %s (allowed=%s)",
+                req.player_index,
+                req.action,
+                allowed,
+            )
+            _raise_conflict(
+                game_id,
+                req.player_index,
+                req.action,
+                f"Action not allowed: player {req.player_index} attempted {req.action}. allowed={allowed}",
+            )
 
     handler = ACTION_HANDLERS.get(req.action)
     if not handler:

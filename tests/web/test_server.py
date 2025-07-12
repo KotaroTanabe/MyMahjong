@@ -720,3 +720,19 @@ def test_start_kyoku_endpoint_and_ws() -> None:
         assert data["payload"]["dealer"] == 1
         assert data["payload"]["round"] == 2
 
+
+def test_skip_after_claims_window_is_ignored() -> None:
+    client.post("/games", json={"players": ["A", "B", "C", "D"]})
+    state = api.get_state()
+    tile = state.players[state.current_player].hand.tiles[0]
+    client.post(
+        "/games/1/action",
+        json={"player_index": state.current_player, "action": DISCARD, "tile": tile.__dict__},
+    )
+    client.post("/games/1/action", json={"player_index": 1, "action": SKIP})
+    client.post("/games/1/action", json={"player_index": 2, "action": SKIP})
+    resp1 = client.post("/games/1/action", json={"player_index": 3, "action": SKIP})
+    assert resp1.status_code == 200
+    resp2 = client.post("/games/1/action", json={"player_index": 3, "action": SKIP})
+    assert resp2.status_code == 200
+

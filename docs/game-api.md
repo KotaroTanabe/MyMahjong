@@ -81,6 +81,8 @@ If a player tries to act when it is not their turn or performs a disallowed acti
 the `/games/{id}/action` endpoint responds with **HTTP 409** and a short message such as
 `"Player 1 attempted draw on player 0's turn"` or
 `"Action not allowed: player 2 attempted auto. allowed players=[1] allowed actions={1: ['draw']}"`.
+When the claim window has already closed and no actions are pending,
+an extra `skip` request is simply ignored and returns **HTTP 200**.
 
 Before sending an action, clients should consult one of the following endpoints to
 know which player is expected to act and what actions they may take:
