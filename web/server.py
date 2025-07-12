@@ -421,8 +421,10 @@ def _auto(req: ActionRequest) -> dict:
         state.waiting_for_claims if state.waiting_for_claims else [state.current_player]
     )
     if req.player_index not in allowed_players:
+        allowed_actions = {p: api.get_allowed_actions(p) for p in allowed_players}
         raise InvalidActionError(
-            f"Action not allowed: player {req.player_index} attempted auto. allowed players={allowed_players}"
+            "Action not allowed: player %s attempted auto. allowed players=%s "
+            "allowed actions=%s" % (req.player_index, allowed_players, allowed_actions)
         )
     try:
         tile = api.auto_play_turn(

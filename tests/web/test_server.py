@@ -410,6 +410,8 @@ def test_auto_action_wrong_turn_returns_409() -> None:
         json={"player_index": wrong, "action": AUTO, "ai_type": "simple"},
     )
     assert resp.status_code == 409
+    detail = resp.json()["detail"]
+    assert "allowed actions" in detail
 
 
 def test_auto_action_claim_phase_checks_player() -> None:

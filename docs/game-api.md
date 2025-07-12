@@ -78,7 +78,8 @@ left to each interface implementation.
 The engine enforces turn order and only allows actions that are valid at the current moment.
 If a player tries to act when it is not their turn or performs a disallowed action,
 the `/games/{id}/action` endpoint responds with **HTTP 409** and a short message such as
-`"Player 1 attempted draw on player 0's turn"` or `"Action not allowed: player 2 attempted auto. allowed players=[1]"`.
+`"Player 1 attempted draw on player 0's turn"` or
+`"Action not allowed: player 2 attempted auto. allowed players=[1] allowed actions={1: ['draw']}"`.
 
 Before sending an action, clients should consult one of the following endpoints to
 know which player is expected to act and what actions they may take:
