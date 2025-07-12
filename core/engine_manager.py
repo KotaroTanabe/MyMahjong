@@ -62,3 +62,10 @@ class EngineManager:
             evt = GameEvent(name="next_actions", payload=payload)
             engine.events.append(evt)
             engine.event_history.append(evt)
+
+    def record_error(self, game_id: int, message: str) -> None:
+        """Record an error event for ``game_id``."""
+        engine = self.get_engine(game_id)
+        evt = GameEvent(name="error", payload={"message": message})
+        engine.events.append(evt)
+        engine.event_history.append(evt)

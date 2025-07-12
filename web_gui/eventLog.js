@@ -48,6 +48,8 @@ export function formatEvent(evt) {
       return 'Round ended';
     case 'end_game':
       return 'Game ended';
+    case 'error':
+      return `Error: ${evt.payload.message}`;
     default:
       return evt.name;
   }
