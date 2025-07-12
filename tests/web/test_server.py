@@ -175,16 +175,13 @@ def test_discard_invalid_tile_returns_409() -> None:
     assert resp.status_code == 409
 
 
-def test_discard_without_tile_returns_409() -> None:
+def test_discard_without_tile_uses_auto() -> None:
     client.post("/games", json={"players": ["A", "B", "C", "D"]})
     resp = client.post(
         "/games/1/action",
         json={"player_index": 0, "action": DISCARD},
     )
-    assert resp.status_code == 409
-    assert resp.json() == {
-        "detail": "Player 0 attempted discard without specifying a tile"
-    }
+    assert resp.status_code == 200
 
 
 def test_chi_without_discard_returns_409() -> None:

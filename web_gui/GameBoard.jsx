@@ -49,28 +49,27 @@ export default function GameBoard({
   }, [allowedActions]);
 
   function sendAction(body, delay = false) {
+    const allowed = allowedRef.current[body.player_index] || [];
+    const waiting = state?.waiting_for_claims || [];
+    const allowedPlayer =
+      waiting.length > 0
+        ? waiting.includes(body.player_index)
+        : state?.current_player === body.player_index;
+    if (body.action === "auto" && (!allowed.length || !allowedPlayer)) {
+      log(
+        "debug",
+        `Skip auto for player ${body.player_index} - not allowed`
+      );
+      return false;
+    }
     const fn = () =>
       postAction(server, gameId, body, log, setError).catch(() => {});
-    if (body.action === "auto") {
-      const allowed = allowedRef.current[body.player_index] || [];
-      const waiting = state?.waiting_for_claims || [];
-      const allowedPlayer =
-        waiting.length > 0
-          ? waiting.includes(body.player_index)
-          : state?.current_player === body.player_index;
-      if (!allowed.length || !allowedPlayer) {
-        log(
-          "debug",
-          `Skip auto for player ${body.player_index} - not allowed`
-        );
-        return;
-      }
-    }
     if (delay && aiDelay > 0) {
       setTimeout(fn, aiDelay);
     } else {
       fn();
     }
+    return true;
   }
 
   function toggleAI(idx) {
@@ -102,6 +101,7 @@ export default function GameBoard({
     }
     const waiting = state?.waiting_for_claims ?? [];
     if (waiting.length > 0) {
+      if (!waiting.length) return;
       claimsRecentlyClosed.current = true;
       if (JSON.stringify(waiting) !== JSON.stringify(prevWaiting.current)) {
         skipSent.current.clear();
@@ -163,8 +163,10 @@ export default function GameBoard({
         ai_type: aiTypes[current],
       };
       log("debug", "POST /games/" + gameId + "/action auto - auto discard");
-      sendAction(body, true);
-      lastDrawPlayer.current = null;
+      const sent = sendAction(body, true);
+      if (sent) {
+        lastDrawPlayer.current = null;
+      }
       prevPlayer.current = current;
     } else {
       prevPlayer.current = current;

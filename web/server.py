@@ -341,6 +341,12 @@ def _draw(req: ActionRequest) -> dict:
 
 @handle_conflict
 def _discard(req: ActionRequest) -> dict:
+    if req.tile is None:
+        try:
+            api.auto_play_turn(req.player_index)
+        except (InvalidActionError, NotYourTurnError):
+            raise
+        return {"status": "ok"}
     tile = _require_tile(req)
     try:
         api.discard_tile(req.player_index, tile)
