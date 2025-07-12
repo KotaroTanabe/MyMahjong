@@ -22,6 +22,17 @@ def test_shanten_turn_discards_best_tile(monkeypatch) -> None:
     assert player.river[-1] == discarded
 
 
+def test_shanten_turn_handles_tsumogiri(monkeypatch) -> None:
+    engine = MahjongEngine()
+    dealer = engine.state.dealer
+    player = engine.state.players[dealer]
+    player.hand.tiles = [Tile("man", 1)] * 14
+    player.must_tsumogiri = True
+    discarded = shanten_turn(engine, dealer)
+    assert discarded == player.river[-1]
+    assert not player.must_tsumogiri
+
+
 def test_claim_meld_improves_shanten() -> None:
     engine = MahjongEngine()
     discarder = engine.state.players[0]

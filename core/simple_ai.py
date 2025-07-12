@@ -62,6 +62,8 @@ def shanten_turn(engine: MahjongEngine, player_index: int) -> Tile:
     """Play a turn by discarding a shanten-neutral tile."""
 
     player = engine.state.players[player_index]
+    if player.must_tsumogiri:
+        return tsumogiri_turn(engine, player_index)
     if len(player.hand.tiles) % 3 == 1:
         engine.draw_tile(player_index)
     tile = suggest_discard(player.hand.tiles)

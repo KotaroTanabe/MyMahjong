@@ -85,7 +85,8 @@ describe('GameBoard discard', () => {
     const lastCall = fetchMock.mock.calls.at(-1);
     expect(JSON.parse(lastCall[1].body)).toEqual({
       player_index: 0,
-      action: 'discard',
+      action: 'auto',
+      ai_type: 'simple',
     });
     // no error modal should be shown
   });

@@ -21,7 +21,10 @@ export async function postAction(server, gameId, body, log = () => {}, onError =
         if (nextResp.ok) {
           const next = await nextResp.json();
           if (next && next.actions && next.actions.length > 0 && next.player_index != null) {
-            const nextBody = { player_index: next.player_index, action: next.actions[0] };
+            let nextBody = { player_index: next.player_index, action: next.actions[0] };
+            if (nextBody.action === 'discard' || nextBody.action === 'riichi') {
+              nextBody = { player_index: next.player_index, action: 'auto', ai_type: 'simple' };
+            }
             log('debug', `Retrying with ${JSON.stringify(nextBody)}`);
             return postAction(server, gameId, nextBody, log, onError, retries + 1);
           }
