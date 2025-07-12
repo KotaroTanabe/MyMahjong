@@ -46,8 +46,8 @@ describe('GameBoard AI toggle mid-turn', () => {
     expect(fetchMock.mock.calls.filter(c => c[1] && c[1].body).length).toBe(1);
     expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({
       player_index: 0,
-      action: 'discard',
-      tile: { suit: 'man', value: 1 },
+      action: 'auto',
+      ai_type: 'simple',
     });
   });
 });
